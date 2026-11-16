@@ -49,12 +49,12 @@ PESOS = {
     'IPCA+ curto': (7.5, 7.5, 'cota do ' + FUNDOS['imab5'][1]),
     'IPCA+ longo': (2.5, 7.5, 'cota do ' + FUNDOS['imab5mais'][1]),
     'Ações Brasil': (2.5, 5.0, 'cota do ' + FUNDOS['ibov'][1]),
-    'Bolsa global com hedge': (3.75, 0.0, 'S&P 500 em dólar mais o diferencial CDI − Fed Funds (FRED, BCB)'),
-    'Bolsa global sem hedge': (3.75, 7.5, 'S&P 500 convertido pela PTAX (FRED, BCB)'),
+    'Bolsa global com hedge': (0.0, 0.0, 'S&P 500 em dólar mais o diferencial CDI − Fed Funds (FRED, BCB)'),
+    'Bolsa global sem hedge': (7.5, 7.5, 'S&P 500 convertido pela PTAX (FRED, BCB)'),
     'Dólar em caixa': (7.5, 5.0, 'PTAX mais o Fed Funds, como juro do caixa em dólar (BCB, FRED)'),
 }
 assert abs(sum(p[0] for p in PESOS.values()) - 100) < 1e-9 and abs(sum(p[1] for p in PESOS.values()) - 100) < 1e-9
-REALIZAR, SAIR = 14.0, 15.9   # gatilhos do slide da aposta (juro de 1 ano a termo)
+REALIZAR, SAIR = 13.5, 15.0   # gatilhos do slide do prefixado curto (juro do prefixado de 2 anos), 16/11
 
 
 # ------------------------------------------------------------------ coleta
@@ -134,7 +134,7 @@ def tesouro():
         taxa = (tc + tv) / 2 if (tc and tv) else (tc or tv)   # meio entre a compra e a venda do investidor
         if taxa:
             por_dia.setdefault(base, []).append(((venc - base).days / 365.25, taxa))
-    termo = {}
+    termo, pre2 = {}, {}
     for d, pts in por_dia.items():
         pts.sort()
 
@@ -146,7 +146,9 @@ def tesouro():
         r1, r2 = interp(1.0), interp(2.0)
         if r1 and r2:
             termo[d] = ((1 + r2 / 100) ** 2 / (1 + r1 / 100) - 1) * 100
-    return termo
+        if r2:
+            pre2[d] = r2
+    return termo, pre2
 
 
 # ------------------------------------------------------------------ cálculo
@@ -163,7 +165,7 @@ def main():
     cdi, ptax = sgs(12), sgs(1)
     sp, dff = fred('SP500'), fred('DFF')
     cotas = cvm()
-    termo = tesouro()
+    termo, pre2 = tesouro()
     dias = sorted(d for d in cdi if d >= INICIO)
     # o último dia é o último em que todas as séries existem (os fundos chegam à CVM com 1–2 dias de atraso)
     # e cada fundo tem de ter a cota daquele dia mesmo: repetir a anterior daria variação zero falsa no fim da série
@@ -221,14 +223,14 @@ def main():
                     ret_ativa=round(acum(FONTE[c], ATIVA), 3) if dias[-1] > ATIVA else None, como=PESOS[c][2])
                for c in PESOS]
 
-    # monitor: juro de 1 ano a termo (Tesouro Direto) e dólar
-    t_dias = sorted(termo)
-    monitor = [dict(indicador='Juro de 1 ano a termo', unidade='% a.a.', valor=round(termo[t_dias[-1]], 2),
+    # monitor: juro do prefixado de 2 anos (Tesouro Direto) e dólar
+    t_dias = sorted(pre2)
+    monitor = [dict(indicador='Prefixado de 2 anos', unidade='% a.a.', valor=round(pre2[t_dias[-1]], 2),
                     data=t_dias[-1].isoformat(), realizar=REALIZAR, sair=SAIR,
-                    fonte='LTNs de ~1 e ~2 anos do Tesouro Direto (meio entre compra e venda)'),
+                    fonte='LTNs do Tesouro Direto, interpoladas a 2 anos (meio entre compra e venda)'),
                dict(indicador='Dólar (PTAX)', unidade='R$', valor=round(ultimo(ptax, max(ptax)), 4),
                     data=max(ptax).isoformat(), realizar=None, sair=None, fonte='BCB, série 1')]
-    termo_linhas = [dict(data=d.isoformat(), termo_1a=round(termo[d], 3)) for d in t_dias if d >= HOJE - dt.timedelta(days=200)]
+    termo_linhas = [dict(data=d.isoformat(), pre_2a=round(pre2[d], 3)) for d in t_dias if d >= HOJE - dt.timedelta(days=200)]
 
     codigo = Path(__file__).read_text('utf-8')
     comum = [dict(label='atualizar.py', value=codigo, type='code', lang='python'),
@@ -240,7 +242,7 @@ def main():
     fim = linhas[-1]
     print(f"ok: {len(linhas)} dias, de {linhas[0]['data']} a {fim['data']} | carteira {fim['carteira']:.2f} régua {fim['regua']:.2f} "
           f"CDI {fim['cdi']:.2f} Ibov {fim['ibovespa']:.2f} IMA-B {fim['imab']:.2f} dólar {fim['dolar']:.2f} S&P {fim['sp500_reais']:.2f} | "
-          f"termo {monitor[0]['valor']} em {monitor[0]['data']}")
+          f"prefixado 2a {monitor[0]['valor']} em {monitor[0]['data']}")
 
 
 if __name__ == '__main__':

@@ -75,8 +75,8 @@
       <span class="mz-sub">Régua <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="queda">—</b> · Ibovespa <b data-draw="kpi" data-source="comparacao" data-where="serie=Ibovespa" data-field="queda">—</b></span>
     </div>
     <div class="mz-card" id="card-termo">
-      <span class="mz-rot">Juro de 1 ano a termo (gatilho da aposta)</span>
-      <span class="mz-num" data-draw="termo-num" data-source="monitor" data-where="indicador=Juro de 1 ano a termo" data-field="valor">—</span>
+      <span class="mz-rot">Prefixado de 2 anos (gatilho de saída)</span>
+      <span class="mz-num" data-draw="termo-num" data-source="monitor" data-where="indicador=Prefixado de 2 anos" data-field="valor">—</span>
       <span class="mz-pill" data-draw="termo-status">—</span>
     </div>
   </section>
@@ -125,8 +125,8 @@
     <h2>Quando revisar</h2>
     <div class="mz-dois">
       <div class="mz-card" id="gatilho-termo">
-        <span class="mz-rot">Juro de 1 ano a termo: realizar em 14,0; sair acima de 15,9</span>
-        <div class="mz-mini" data-draw="termo-linha" data-source="termo" role="img" aria-label="Juro de 1 ano a termo nos últimos seis meses, com as linhas de realizar e de sair"></div>
+        <span class="mz-rot">Prefixado de 2 anos: embolsar em ~13,5; sair acima de ~15</span>
+        <div class="mz-mini" data-draw="termo-linha" data-source="termo" role="img" aria-label="Juro do prefixado de 2 anos nos últimos seis meses, com as linhas de embolsar e de sair"></div>
         <span class="mz-sub">Tesouro Direto: LTNs de ~1 e ~2 anos, no meio entre compra e venda. Pode diferir alguns décimos da curva da Anbima usada no case (15,24 em 13/11).</span>
       </div>
       <div class="mz-card" id="gatilho-dolar">
@@ -396,33 +396,33 @@
 </script>
 
 <script>
-  // ---------- gatilhos: juro a termo e dólar
-  const REALIZAR = 14.0, SAIR = 15.9;           // gatilhos do slide da aposta
+  // ---------- gatilhos: prefixado de 2 anos e dólar
+  const REALIZAR = 13.5, SAIR = 15.0;           // gatilhos do slide do prefixado curto
   const CENARIOS = [['Ajuste', 5.10], ['Base', 5.50], ['Estresse', 7.15]];   // dólar no fim de 2027, slide de cenários
   const linhaMon = (nome) => { const m = dash.data('monitor'); return m.status === 'ok' ? m.data.find((x) => x.indicador === nome) : null; };
   dash.draw('termo-num', (el) => {
-    const r = linhaMon('Juro de 1 ano a termo');
+    const r = linhaMon('Prefixado de 2 anos');
     el.textContent = r ? MZR.loc.format(',.2f')(+r.valor) + '%' : '—';
   });
   dash.draw('termo-status', (el) => {
-    const r = linhaMon('Juro de 1 ano a termo');
+    const r = linhaMon('Prefixado de 2 anos');
     el.classList.remove('ok', 'warn', 'bad');
     if (!r) { el.textContent = '—'; return; }
     const v = +r.valor;
-    if (v >= SAIR) { el.textContent = 'Sair: acima de 15,9'; el.classList.add('bad'); }
-    else if (v <= REALIZAR) { el.textContent = 'Realizar: o prêmio fechou'; el.classList.add('ok'); }
+    if (v >= SAIR) { el.textContent = 'Sair: acima de 15,0'; el.classList.add('bad'); }
+    else if (v <= REALIZAR) { el.textContent = 'Embolsar: o ganho veio'; el.classList.add('ok'); }
     else { el.textContent = 'Manter: entre 14,0 e 15,9 · ' + MZR.dataBR(new Date(r.data + 'T00:00:00Z')); el.classList.add('warn'); }
   });
   dash.draw('termo-linha', (el) => {
     const t = dash.data('termo');
     el.replaceChildren();
     if (t.status !== 'ok' || !t.data.length) { el.textContent = t.status === 'error' ? 'Não carregou' : '—'; return; }
-    const pts = t.data.map((x) => ({ d: new Date(x.data + 'T00:00:00Z'), v: +x.termo_1a }));
+    const pts = t.data.map((x) => ({ d: new Date(x.data + 'T00:00:00Z'), v: +x.pre_2a }));
     const W = Math.max(240, el.clientWidth), H = 130, m = { t: 8, r: 92, b: 20, l: 34 };
     const x = d3.scaleUtc().domain(d3.extent(pts, (p) => p.d)).range([m.l, W - m.r]);
     const y = d3.scaleLinear().domain([Math.min(13, d3.min(pts, (p) => p.v)), Math.max(16.4, d3.max(pts, (p) => p.v))]).nice().range([H - m.b, m.t]);
     const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
-    [[REALIZAR, 'realizar 14,0', 'var(--color-ok)'], [SAIR, 'sair 15,9', 'var(--color-bad)']].forEach(([v, rot, cor]) => {
+    [[REALIZAR, 'embolsar 13,5', 'var(--color-ok)'], [SAIR, 'sair 15,0', 'var(--color-bad)']].forEach(([v, rot, cor]) => {
       svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(v)).attr('y2', y(v)).style('stroke', cor).style('stroke-dasharray', '4 3');
       svg.append('text').attr('x', W - m.r + 4).attr('y', y(v) + 4).style('fill', cor).text(rot);
     });
