@@ -1,0 +1,469 @@
+<meta name="dash-one-writer">
+<style>
+  .mz { display: grid; gap: var(--cds-gap-xl); font-family: var(--font-anthropic-sans); color: var(--color-fg); }
+  .mz-topo h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+  .mz-topo p { margin: var(--cds-gap-sm) 0 0; max-width: 68ch; color: var(--color-fg-muted); line-height: 1.5; }
+  .mz-topo b { color: var(--color-fg); font-variant-numeric: tabular-nums; }
+  .mz-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: var(--cds-gap-md); }
+  .mz-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-xs); min-width: 0; }
+  .mz-rot { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); letter-spacing: .02em; }
+  .mz-num { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: 2rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .mz-sub { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+  .mz-sub b { color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
+  .mz-sec { display: grid; gap: var(--cds-gap-md); min-width: 0; }
+  .mz-sec h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; }
+  .mz-sec .mz-nota { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); max-width: 75ch; line-height: 1.5; }
+  .mz-barra { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); align-items: center; justify-content: space-between; }
+  .mz-chips, .mz-periodos { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); }
+  .mz-chip { font: inherit; font-size: var(--cds-font-size-caption); border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg-muted); border-radius: 999px; padding: 4px 10px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+  .mz-chip[aria-pressed="true"] { color: var(--color-fg); border-color: var(--color-fg-muted); }
+  .mz-chip:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+  .mz-chip i { width: 14px; height: 0; border-top: 2px solid currentColor; display: inline-block; }
+  .mz-graf { position: relative; min-height: 340px; }
+  .mz-graf svg { display: block; width: 100%; }
+  .mz-graf text, .mz-mini text { fill: var(--cds-text-secondary); font-size: var(--cds-font-size-caption); font-family: var(--font-anthropic-sans); }
+  .mz-dica { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); box-shadow: var(--cds-shadow-popover); border-radius: var(--cds-radius); padding: var(--cds-pad-sm); font-size: var(--cds-font-size-caption); min-width: 170px; font-variant-numeric: tabular-nums; z-index: 2; }
+  .mz-dica div { display: flex; justify-content: space-between; gap: var(--cds-gap-md); }
+  .mz-dica .t { color: var(--cds-text-secondary); margin-bottom: 4px; }
+  .mz-legenda { display: flex; gap: var(--cds-gap-md); flex-wrap: wrap; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .mz-legenda span { display: inline-flex; gap: 6px; align-items: center; }
+  .mz-legenda i { width: 22px; height: 0; border-top: 2px solid var(--color-fg-muted); display: inline-block; }
+  .mz-legenda i.p { border-top-style: dotted; }
+  .mz-dois { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--cds-gap-md); }
+  .mz-mini { min-height: 120px; position: relative; }
+  .mz-pill { justify-self: start; font-size: var(--cds-font-size-caption); font-weight: var(--cds-font-weight-medium); border-radius: 999px; padding: 2px 10px; border: 1px solid var(--color-border-line); }
+  .mz-pill.ok { color: var(--color-ok); border-color: var(--color-ok); }
+  .mz-pill.warn { color: var(--color-warn); border-color: var(--color-warn); }
+  .mz-pill.bad { color: var(--color-bad); border-color: var(--color-bad); }
+  .mz-tab { overflow-x: auto; }
+  .mz-tab table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-body); font-variant-numeric: tabular-nums; }
+  .mz-tab th, .mz-tab td { padding: 8px 10px; border-bottom: 1px solid var(--color-border-line); text-align: right; white-space: nowrap; }
+  .mz-tab th { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+  .mz-tab th:first-child, .mz-tab td:first-child { text-align: left; }
+  .mz-tab td.como { text-align: left; white-space: normal; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); min-width: 220px; }
+  .mz-tab tr.eu td { font-weight: var(--cds-font-weight-medium); }
+  .mz-pos { color: var(--color-ok); }
+  .mz-neg { color: var(--color-bad); }
+  .mz details { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); line-height: 1.6; max-width: 80ch; }
+  .mz details summary { cursor: pointer; color: var(--color-fg); }
+  [data-dash-source-state=refreshing] { opacity: .5; }
+</style>
+
+<div class="mz">
+  <header class="mz-topo" id="topo">
+    <h1>Carteira MZR</h1>
+    <p id="frase-ativa" hidden>Desde 13/11/2026, quando a carteira passou a existir, ela rende <b data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="ativa">—</b>, contra <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="ativa">—</b> da régua e <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="ativa">—</b> do CDI.</p>
+    <p id="frase-simulada">A carteira passa a existir em 13/11/2026, a data de corte do case. Antes disso, simulada com os pesos de hoje, ela teria rendido <b data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="total">—</b> em 24 meses, contra <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="total">—</b> da régua e <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="total">—</b> do CDI, com maior queda de <b data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="queda">—</b>.</p>
+    <span data-draw="frase"></span>
+  </header>
+
+  <section class="mz-cards" id="resumo" aria-label="Resumo">
+    <div class="mz-card" id="card-ativa">
+      <span class="mz-rot">Desde 13/11/2026 (carteira ativa)</span>
+      <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="ativa">—</span>
+      <span class="mz-sub" id="ativa-cdi" hidden>CDI no período: <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="ativa">—</b></span>
+      <span class="mz-sub" id="ativa-espera">Começa a contar com o fechamento de 13/11/2026</span>
+    </div>
+    <div class="mz-card" id="card-12m">
+      <span class="mz-rot">Últimos 12 meses (simulado)</span>
+      <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="m12">—</span>
+      <span class="mz-sub">Régua <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="m12">—</b> · CDI <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="m12">—</b></span>
+    </div>
+    <div class="mz-card" id="card-queda">
+      <span class="mz-rot">Maior queda em 24 meses</span>
+      <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="queda">—</span>
+      <span class="mz-sub">Régua <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="queda">—</b> · Ibovespa <b data-draw="kpi" data-source="comparacao" data-where="serie=Ibovespa" data-field="queda">—</b></span>
+    </div>
+    <div class="mz-card" id="card-termo">
+      <span class="mz-rot">Juro de 1 ano a termo (gatilho da aposta)</span>
+      <span class="mz-num" data-draw="termo-num" data-source="monitor" data-where="indicador=Juro de 1 ano a termo" data-field="valor">—</span>
+      <span class="mz-pill" data-draw="termo-status">—</span>
+    </div>
+  </section>
+
+  <section class="mz-sec" id="evolucao">
+    <h2>Carteira contra a régua e os principais índices</h2>
+    <div class="mz-barra">
+      <div class="mz-chips" role="group" aria-label="Séries no gráfico">
+        <button type="button" class="mz-chip" id="chip-carteira" data-serie="carteira" aria-pressed="true"><i data-cor="0"></i>Carteira</button>
+        <button type="button" class="mz-chip" id="chip-regua" data-serie="regua" aria-pressed="true"><i data-cor="1"></i>Régua</button>
+        <button type="button" class="mz-chip" id="chip-cdi" data-serie="cdi" aria-pressed="true"><i data-cor="2"></i>CDI</button>
+        <button type="button" class="mz-chip" id="chip-ibovespa" data-serie="ibovespa" aria-pressed="true"><i data-cor="3"></i>Ibovespa</button>
+        <button type="button" class="mz-chip" id="chip-imab" data-serie="imab" aria-pressed="false"><i data-cor="4"></i>IMA-B</button>
+        <button type="button" class="mz-chip" id="chip-dolar" data-serie="dolar" aria-pressed="false"><i data-cor="5"></i>Dólar</button>
+        <button type="button" class="mz-chip" id="chip-sp500" data-serie="sp500_reais" aria-pressed="false"><i data-cor="6"></i>S&amp;P 500 em reais</button>
+      </div>
+      <div class="mz-periodos" role="group" aria-label="Período">
+        <button type="button" class="mz-chip" id="per-24" data-dias="730" aria-pressed="true">24 meses</button>
+        <button type="button" class="mz-chip" id="per-12" data-dias="365" aria-pressed="false">12 meses</button>
+        <button type="button" class="mz-chip" id="per-3" data-dias="92" aria-pressed="false">3 meses</button>
+      </div>
+    </div>
+    <div class="mz-graf" id="grafico" data-draw="grafico" data-source="serie"></div>
+    <div class="mz-legenda" aria-hidden="true"><span><i class="p"></i>Simulação, antes de a carteira existir</span><span><i></i>Carteira ativa, desde 13/11/2026</span></div>
+    <p class="mz-nota">Base 100 no início do período. Até 13/11/2026 a carteira não existia: o trecho pontilhado aplica os pesos de hoje ao passado. Retornos antes do IR.</p>
+  </section>
+
+  <section class="mz-sec" id="risco">
+    <h2>Quanto rendeu e quanto caiu no caminho</h2>
+    <div class="mz-graf mz-disp" id="dispersao" data-draw="dispersao" data-source="comparacao"></div>
+    <p class="mz-nota">Cada ponto é uma série em 24 meses: no eixo horizontal, a maior queda do pico ao fundo; no vertical, o retorno acumulado. Quanto mais para cima e para a esquerda, melhor. Antes de 13/11/2026, a carteira e a régua são simulação.</p>
+  </section>
+
+  <section class="mz-sec" id="comparacao-sec">
+    <h2>Retorno por período</h2>
+    <div class="mz-tab">
+      <table id="tabela-comparacao" data-source="comparacao" data-row-key="serie">
+        <thead><tr><th data-field="serie">Série</th><th data-field="dia">Último dia</th><th data-field="mes">No mês</th><th data-field="ano">No ano</th><th data-field="m12">12 meses</th><th data-field="ativa">Desde 13/11/26</th><th data-field="queda">Maior queda</th></tr></thead>
+        <tbody data-draw="comparacao-linhas"></tbody>
+      </table>
+    </div>
+    <p class="mz-nota" data-draw="ate" data-source="serie">—</p>
+  </section>
+
+  <section class="mz-sec" id="gatilhos">
+    <h2>Quando revisar</h2>
+    <div class="mz-dois">
+      <div class="mz-card" id="gatilho-termo">
+        <span class="mz-rot">Juro de 1 ano a termo: realizar em 14,0; sair acima de 15,9</span>
+        <div class="mz-mini" data-draw="termo-linha" data-source="termo" role="img" aria-label="Juro de 1 ano a termo nos últimos seis meses, com as linhas de realizar e de sair"></div>
+        <span class="mz-sub">Tesouro Direto: LTNs de ~1 e ~2 anos, no meio entre compra e venda. Pode diferir alguns décimos da curva da Anbima usada no case (15,24 em 13/11).</span>
+      </div>
+      <div class="mz-card" id="gatilho-dolar">
+        <span class="mz-rot">Dólar contra os cenários de fim de 2027</span>
+        <span class="mz-num" data-draw="dolar-num" data-source="monitor" data-where="indicador=Dólar (PTAX)" data-field="valor">—</span>
+        <div class="mz-mini" data-draw="dolar-escala" data-source="monitor" role="img" aria-label="Dólar de hoje numa régua com os cenários de ajuste, base e estresse"></div>
+        <span class="mz-sub">Ajuste R$ 5,10 · base R$ 5,50 · estresse R$ 7,15 (slide de cenários)</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="mz-sec" id="classes-sec">
+    <h2>As classes</h2>
+    <div class="mz-tab">
+      <table id="tabela-classes" data-source="classes" data-row-key="classe">
+        <thead><tr><th data-field="classe">Classe</th><th data-field="carteira">Carteira %</th><th data-field="regua">Régua %</th><th data-field="desvio">Desvio</th><th data-field="ret_dia">Último dia</th><th data-field="ret_12m">12 meses</th><th data-field="ret_ativa">Desde 13/11/26</th><th data-field="como">Como medimos</th></tr></thead>
+        <tbody data-draw="classes-linhas"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <details id="metodo">
+    <summary>Como o painel é feito</summary>
+    <p>A carteira e a régua são as do case: régua é a carteira moderada mediana de C6, Daycoval e Genial; a carteira tem os desvios com tese (prefixado curto, dólar, menos bolsa e IPCA+ longo). Pesos fixos, rebalanceados no primeiro dia útil de cada mês, retornos antes do IR.</p>
+    <p>Os dados são públicos e coletados todo dia útil por um script: CDI e dólar do Banco Central, S&amp;P 500 e juro americano do FRED, cotas diárias de fundos passivos na CVM no lugar dos índices da B3 e da Anbima (Ibovespa, IMA-B, IMA-B 5, IMA-B 5+, IRF-M e crédito high grade, já líquidas da taxa de administração) e taxas do Tesouro Direto. O S&amp;P 500 é o índice de preço, sem dividendos.</p>
+    <p>Até 13/11/2026 a carteira é uma simulação. Simulação não é desempenho: mostra como os pesos de hoje teriam se comportado.</p>
+  </details>
+</div>
+
+<script>
+  // ---------- comum: formatos em pt-BR, nomes das séries e estado dos controles
+  const loc = d3.formatLocale({ decimal: ',', thousands: '.', grouping: [3], currency: ['R$ ', ''] });
+  const f2 = loc.format(',.2f'), f1 = loc.format(',.1f');
+  const pct = (v, casas = 2) => (v == null || !isFinite(v)) ? '—' : (v > 0 ? '+' : v < 0 ? '−' : '') + (casas === 1 ? f1 : f2)(Math.abs(v)) + '%';
+  const dataBR = d3.utcFormat('%d/%m/%Y');
+  window.MZR = {
+    loc, f2, pct, dataBR,
+    nomes: { carteira: 'Carteira', regua: 'Régua', cdi: 'CDI', ibovespa: 'Ibovespa', imab: 'IMA-B', dolar: 'Dólar', sp500_reais: 'S&P 500 em reais' },
+    ordem: ['carteira', 'regua', 'cdi', 'ibovespa', 'imab', 'dolar', 'sp500_reais'],
+    ATIVA: '2026-11-13',
+    cor: (k) => dash.colors[window.MZR.ordem.indexOf(k) % dash.colors.length],
+  };
+  document.querySelectorAll('.mz-chip i[data-cor]').forEach((i) => { i.style.color = dash.colors[+i.dataset.cor % dash.colors.length]; });
+  document.querySelectorAll('.mz-chips .mz-chip').forEach((b) => b.addEventListener('click', () => {
+    b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
+    dash.draw('grafico');
+  }));
+  document.querySelectorAll('.mz-periodos .mz-chip').forEach((b) => b.addEventListener('click', () => {
+    document.querySelectorAll('.mz-periodos .mz-chip').forEach((o) => o.setAttribute('aria-pressed', o === b ? 'true' : 'false'));
+    dash.draw('grafico');
+  }));
+</script>
+
+<script>
+  // ---------- retorno de cada série por período, a partir da série diária (base 100)
+  dash.calc('comparacao', {
+    inputs: ['serie'],
+    title: 'Retorno por período',
+    description: 'Retorno da carteira, da régua e de cada índice no último dia, no mês, no ano, em 12 meses, desde 13/11/2026 e a maior queda, em %.',
+    fn: (serie) => {
+      if (!serie.length) return [];
+      const nomes = { carteira: 'Carteira', regua: 'Régua', cdi: 'CDI', ibovespa: 'Ibovespa', imab: 'IMA-B', dolar: 'Dólar', sp500_reais: 'S&P 500 em reais' };
+      const ult = serie[serie.length - 1], fim = ult.data;
+      const ate = (d) => { let r = null; for (const x of serie) { if (x.data <= d) r = x; else break; } return r; };
+      const menos = (dias) => { const t = new Date(fim + 'T00:00:00Z'); t.setUTCDate(t.getUTCDate() - dias); return t.toISOString().slice(0, 10); };
+      const fimMesAnt = ate(fim.slice(0, 8) + '00'), fimAnoAnt = ate(fim.slice(0, 4) + '-00'), ha12 = ate(menos(365));
+      const inicio = ate('2026-11-13'), ativa = fim > '2026-11-13';
+      const r = (a, b, k) => (a && b) ? (+b[k] / +a[k] - 1) * 100 : null;
+      return Object.keys(nomes).map((k) => {
+        let pico = -Infinity, queda = 0;
+        for (const x of serie) { pico = Math.max(pico, +x[k]); queda = Math.min(queda, +x[k] / pico - 1); }
+        return {
+          serie: nomes[k],
+          dia: r(serie[serie.length - 2], ult, k), mes: r(fimMesAnt, ult, k), ano: r(fimAnoAnt, ult, k), m12: r(ha12, ult, k),
+          ativa: ativa ? r(inicio, ult, k) : null, total: r(serie[0], ult, k), queda: queda * 100,
+        };
+      });
+    },
+  });
+</script>
+
+<script>
+  // ---------- números da frase e dos cartões
+  dash.draw('kpi', (el) => {
+    const c = dash.data('comparacao');
+    if (c.status !== 'ok' || !c.data || !c.data.length) { el.textContent = '—'; return; }
+    const nome = decodeURIComponent(el.dataset.where.split('=')[1]);
+    const linha = c.data.find((x) => x.serie === nome);
+    const v = linha ? linha[el.dataset.field] : null;
+    el.textContent = v == null ? '—' : MZR.pct(v, 2);
+  });
+  dash.draw('frase', () => {
+    const c = dash.data('comparacao');
+    const ativa = c.status === 'ok' && c.data && c.data.some((x) => x.serie === 'Carteira' && x.ativa != null);
+    document.querySelectorAll('#frase-ativa').forEach((p) => { p.hidden = !ativa; });
+    document.querySelectorAll('#frase-simulada').forEach((p) => { p.hidden = ativa; });
+    document.querySelectorAll('#ativa-cdi').forEach((p) => { p.hidden = !ativa; });
+    document.querySelectorAll('#ativa-espera').forEach((p) => { p.hidden = ativa; });
+  });
+  dash.draw('ate', (el) => {
+    const s = dash.data('serie');
+    if (s.status !== 'ok' || !s.data.length) { el.textContent = '—'; return; }
+    const d = s.data[s.data.length - 1].data;
+    el.textContent = 'Até ' + MZR.dataBR(new Date(d + 'T00:00:00Z')) + ', o último dia em que todas as fontes já publicaram (os fundos chegam à CVM com um ou dois dias de atraso).';
+  });
+</script>
+
+<script>
+  // ---------- gráfico principal: base 100, pontilhado antes de a carteira existir
+  dash.draw('grafico', (el) => {
+    const s = dash.data('serie');
+    el.replaceChildren();
+    if (s.status !== 'ok') { el.textContent = s.status === 'error' ? 'Não carregou' : '—'; return; }
+    const visiveis = [...document.querySelectorAll('.mz-chips .mz-chip')].filter((b) => b.getAttribute('aria-pressed') === 'true').map((b) => b.dataset.serie);
+    const perBtn = [...document.querySelectorAll('.mz-periodos .mz-chip')].find((b) => b.getAttribute('aria-pressed') === 'true');
+    const dias = perBtn ? +perBtn.dataset.dias : 730;
+    const fim = new Date(s.data[s.data.length - 1].data + 'T00:00:00Z');
+    const corte = new Date(fim); corte.setUTCDate(corte.getUTCDate() - dias);
+    const linhas = s.data.map((x) => ({ ...x, d: new Date(x.data + 'T00:00:00Z') })).filter((x) => x.d >= corte);
+    if (!linhas.length) { el.textContent = '—'; return; }
+    const base = linhas[0];
+    const pts = linhas.map((x) => { const o = { d: x.d, data: x.data }; MZR.ordem.forEach((k) => { o[k] = +x[k] / +base[k] * 100; }); return o; });
+    const curto = { ...MZR.nomes, sp500_reais: 'S&P 500 (R$)' };   // rótulo do fim da linha, mais curto que o da legenda
+    const W = Math.max(280, el.clientWidth), H = 340, m = { t: 12, r: 132, b: 28, l: 44 };
+    const x = d3.scaleUtc().domain(d3.extent(pts, (p) => p.d)).range([m.l, W - m.r]);
+    const vals = pts.flatMap((p) => visiveis.map((k) => p[k]));
+    const y = d3.scaleLinear().domain(d3.extent(vals.length ? vals : [99, 101])).nice().range([H - m.b, m.t]);
+    const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+      .attr('aria-label', 'Carteira, régua e índices, base 100 no início do período; pontilhado antes de 13/11/2026');
+    svg.append('g').selectAll('line').data(y.ticks(5)).join('line')
+      .attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y).style('stroke', 'var(--cds-chart-grid)');
+    svg.append('g').attr('transform', `translate(0,${H - m.b})`)
+      .call(d3.axisBottom(x).ticks(Math.max(2, Math.floor(W / 110))).tickFormat(d3.utcFormat('%m/%y')).tickSizeOuter(0))
+      .call((g) => g.select('.domain').style('stroke', 'var(--cds-chart-axis)')).call((g) => g.selectAll('line').remove());
+    svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(0).tickFormat((v) => MZR.loc.format(',.0f')(v)))
+      .call((g) => g.select('.domain').remove());
+    const ativa = new Date(MZR.ATIVA + 'T00:00:00Z');
+    if (ativa >= pts[0].d && ativa <= pts[pts.length - 1].d) {
+      svg.append('line').attr('x1', x(ativa)).attr('x2', x(ativa)).attr('y1', m.t).attr('y2', H - m.b).style('stroke', 'var(--cds-chart-reference)').style('stroke-dasharray', '3 3');
+      svg.append('text').attr('x', x(ativa) - 4).attr('y', m.t + 10).attr('text-anchor', 'end').text('carteira ativa →');
+    }
+    const ln = (k) => d3.line().x((p) => x(p.d)).y((p) => y(p[k]));
+    const sim = pts.filter((p) => p.d <= ativa), viva = pts.filter((p) => p.d >= ativa);
+    const ordemDesenho = visiveis.slice().sort((a, b) => (a === 'carteira') - (b === 'carteira'));
+    ordemDesenho.forEach((k) => {
+      const larg = k === 'carteira' ? 2.5 : 1.5;
+      if (sim.length > 1) svg.append('path').datum(sim).attr('d', ln(k)).style('fill', 'none').style('stroke', MZR.cor(k)).style('stroke-width', larg).style('stroke-dasharray', '1.5 3').style('stroke-linecap', 'round');
+      if (viva.length > 1) svg.append('path').datum(viva).attr('d', ln(k)).style('fill', 'none').style('stroke', MZR.cor(k)).style('stroke-width', larg);
+    });
+    // rótulos no fim das linhas, afastados para não se encostarem
+    const ultimo = pts[pts.length - 1];
+    const rot = visiveis.map((k) => ({ k, y: y(ultimo[k]) })).sort((a, b) => a.y - b.y);
+    for (let i = 1; i < rot.length; i++) if (rot[i].y - rot[i - 1].y < 13) rot[i].y = rot[i - 1].y + 13;
+    svg.append('g').selectAll('text').data(rot).join('text').attr('x', W - m.r + 6).attr('y', (r) => r.y + 4)
+      .style('fill', (r) => MZR.cor(r.k)).style('font-weight', (r) => r.k === 'carteira' ? 600 : 400)
+      .text((r) => `${curto[r.k]} ${MZR.loc.format(',.1f')(ultimo[r.k])}`);
+    svg.append('circle').attr('cx', x(ultimo.d)).attr('cy', y(ultimo.carteira)).attr('r', visiveis.includes('carteira') ? 4 : 0).style('fill', MZR.cor('carteira'));
+    // dica com a cruz que segue o ponteiro
+    const dica = d3.select(el).append('div').attr('class', 'mz-dica').style('display', 'none');
+    const cruz = svg.append('line').attr('y1', m.t).attr('y2', H - m.b).style('stroke', 'var(--cds-chart-axis)').style('display', 'none');
+    const bis = d3.bisector((p) => p.d).center;
+    svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b).style('fill', 'transparent')
+      .on('pointermove', (ev) => {
+        const [px] = d3.pointer(ev); const p = pts[bis(pts, x.invert(px))];
+        cruz.attr('x1', x(p.d)).attr('x2', x(p.d)).style('display', null);
+        dica.style('display', null).selectAll('*').remove();
+        dica.append('div').attr('class', 't').text(MZR.dataBR(p.d) + (p.data < MZR.ATIVA ? ' · simulação' : ' · carteira ativa'));
+        visiveis.forEach((k) => { const r = dica.append('div'); r.append('span').style('color', MZR.cor(k)).text(MZR.nomes[k]); r.append('span').text(MZR.loc.format(',.2f')(p[k])); });
+        const lx = Math.min(x(p.d) + 12, W - 190); dica.style('left', lx + 'px').style('top', '8px');
+      })
+      .on('pointerleave', () => { cruz.style('display', 'none'); dica.style('display', 'none'); });
+  });
+</script>
+
+<script>
+  // ---------- retorno contra maior queda, em 24 meses (a pergunta "por que não só bolsa?")
+  dash.draw('dispersao', (el) => {
+    const c = dash.data('comparacao');
+    el.replaceChildren();
+    if (c.status !== 'ok' || !c.data || !c.data.length) { el.textContent = c.status === 'error' ? 'Não carregou' : '—'; return; }
+    const chave = Object.fromEntries(Object.entries(MZR.nomes).map(([k, n]) => [n, k]));
+    const pts = c.data.filter((r) => r.total != null && r.queda != null).map((r) => ({ nome: r.serie, k: chave[r.serie], x: Math.abs(+r.queda), y: +r.total }));
+    const W = Math.max(280, el.clientWidth), H = 320, m = { t: 16, r: 16, b: 40, l: 48 };
+    const x = d3.scaleLinear().domain([0, d3.max(pts, (p) => p.x) * 1.08]).nice().range([m.l, W - m.r]);
+    const y = d3.scaleLinear().domain(d3.extent([0, ...pts.map((p) => p.y)])).nice().range([H - m.b, m.t]);
+    const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+      .attr('aria-label', 'Retorno em 24 meses contra a maior queda de cada série: a carteira rende perto do CDI com queda quase nula; Ibovespa e S&P 500 caíram mais de 20%');
+    svg.append('g').selectAll('line').data(y.ticks(5)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y).style('stroke', 'var(--cds-chart-grid)');
+    svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(Math.max(3, Math.floor(W / 120))).tickSize(0).tickFormat((v) => v === 0 ? '0%' : '−' + MZR.loc.format(',.0f')(v) + '%'))
+      .call((g) => g.select('.domain').style('stroke', 'var(--cds-chart-axis)'));
+    svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(0).tickFormat((v) => MZR.loc.format(',.0f')(v) + '%')).call((g) => g.select('.domain').remove());
+    svg.append('text').attr('x', W - m.r).attr('y', H - 6).attr('text-anchor', 'end').text('maior queda →');
+    svg.append('text').attr('x', m.l).attr('y', m.t - 4).text('↑ retorno');
+    if (y.domain()[0] < 0) svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(0)).attr('y2', y(0)).style('stroke', 'var(--cds-chart-reference)');
+    // rótulos: à direita do ponto, ou à esquerda perto da borda; empurrados para não se encostarem
+    const rot = pts.map((p) => ({ ...p, px: x(p.x), py: y(p.y), lado: x(p.x) > W * 0.7 ? -1 : 1 })).sort((a, b) => a.py - b.py);
+    rot.forEach((r) => { r.ly = r.py; });
+    for (let i = 0; i < rot.length; i++) for (let j = 0; j < i; j++) {
+      if (rot[i].lado === rot[j].lado && Math.abs(rot[i].px - rot[j].px) < 150 && rot[i].ly - rot[j].ly < 14) rot[i].ly = rot[j].ly + 14;
+    }
+    // pontos quase sobrepostos (carteira e régua): o de cima rotulado à direita do par, o de baixo embaixo dele
+    for (let i = 0; i < rot.length; i++) for (let j = i + 1; j < rot.length; j++) {
+      if (Math.abs(rot[i].px - rot[j].px) < 40 && Math.abs(rot[i].py - rot[j].py) < 20) {
+        const [cima, baixo] = rot[i].py <= rot[j].py ? [rot[i], rot[j]] : [rot[j], rot[i]];
+        cima.modo = 'acima'; baixo.modo = 'abaixo'; cima.xRot = Math.max(cima.px, baixo.px) + 11;
+      }
+    }
+    const g = svg.append('g');
+    rot.forEach((r) => {
+      const eu = r.k === 'carteira';
+      g.append('circle').attr('cx', r.px).attr('cy', r.py).attr('r', eu ? 7 : 5).style('fill', MZR.cor(r.k)).style('stroke', 'var(--color-bg)').style('stroke-width', 2);
+      const t = g.append('text').style('fill', 'var(--color-fg)').style('font-weight', eu ? 600 : 400).text(r.nome);
+      if (r.modo === 'acima') t.attr('x', r.xRot).attr('y', r.py + 4).attr('text-anchor', 'start');   // à direita do par
+      else if (r.modo === 'abaixo') t.attr('x', r.px).attr('y', r.py + 21).attr('text-anchor', 'middle');
+      else t.attr('x', r.px + r.lado * 11).attr('y', r.ly + 4).attr('text-anchor', r.lado > 0 ? 'start' : 'end');
+    });
+    // dica ao passar o ponteiro perto de um ponto
+    const dica = d3.select(el).append('div').attr('class', 'mz-dica').style('display', 'none');
+    svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b).style('fill', 'transparent')
+      .on('pointermove', (ev) => {
+        const [mx, my] = d3.pointer(ev);
+        const p = d3.least(rot, (r) => (r.px - mx) ** 2 + (r.py - my) ** 2);
+        if (!p || (p.px - mx) ** 2 + (p.py - my) ** 2 > 900) { dica.style('display', 'none'); return; }
+        dica.style('display', null).selectAll('*').remove();
+        dica.append('div').attr('class', 't').text(p.nome + ', 24 meses');
+        [['Retorno', MZR.pct(p.y, 1)], ['Maior queda', MZR.pct(-p.x, 1)], ['Por R$ 1 milhão, no fundo', '−R$ ' + MZR.loc.format(',.0f')(p.x * 10) + ' mil']].forEach(([a, b]) => { const r = dica.append('div'); r.append('span').text(a); r.append('span').text(b); });
+        dica.style('left', Math.min(p.px + 12, W - 210) + 'px').style('top', Math.max(0, p.py - 60) + 'px');
+      })
+      .on('pointerleave', () => dica.style('display', 'none'));
+  });
+</script>
+
+<script>
+  // ---------- tabelas
+  dash.draw('comparacao-linhas', (tb) => {
+    const c = dash.data('comparacao');
+    tb.replaceChildren();
+    if (c.status !== 'ok' || !c.data) return;
+    c.data.forEach((r) => {
+      const tr = document.createElement('tr'); if (r.serie === 'Carteira') tr.className = 'eu';
+      tr.dataset.key = encodeURIComponent(r.serie);
+      const td0 = document.createElement('td'); td0.textContent = r.serie; tr.append(td0);
+      ['dia', 'mes', 'ano', 'm12', 'ativa', 'queda'].forEach((k) => {
+        const td = document.createElement('td'); td.textContent = MZR.pct(r[k], 2);
+        if (r[k] != null && k !== 'queda') td.className = r[k] > 0 ? 'mz-pos' : r[k] < 0 ? 'mz-neg' : '';
+        tr.append(td);
+      });
+      tb.append(tr);
+    });
+  });
+  dash.draw('classes-linhas', (tb) => {
+    const c = dash.data('classes');
+    tb.replaceChildren();
+    if (c.status !== 'ok') return;
+    c.data.forEach((r) => {
+      const tr = document.createElement('tr'); tr.dataset.key = encodeURIComponent(r.classe);
+      const cel = (t, cls) => { const td = document.createElement('td'); td.textContent = t; if (cls) td.className = cls; tr.append(td); };
+      const num = (v) => v == null ? '—' : MZR.loc.format(',.2f')(+v);
+      cel(r.classe);
+      cel(num(r.carteira)); cel(num(r.regua));
+      const dv = +r.desvio; cel(dv === 0 ? '—' : (dv > 0 ? '+' : '−') + MZR.loc.format(',.2f')(Math.abs(dv)));
+      ['ret_dia', 'ret_12m', 'ret_ativa'].forEach((k) => cel(MZR.pct(r[k] == null ? null : +r[k], 2), r[k] == null ? '' : (+r[k] > 0 ? 'mz-pos' : +r[k] < 0 ? 'mz-neg' : '')));
+      cel(r.como, 'como');
+      tb.append(tr);
+    });
+  });
+</script>
+
+<script>
+  // ---------- gatilhos: juro a termo e dólar
+  const REALIZAR = 14.0, SAIR = 15.9;           // gatilhos do slide da aposta
+  const CENARIOS = [['Ajuste', 5.10], ['Base', 5.50], ['Estresse', 7.15]];   // dólar no fim de 2027, slide de cenários
+  const linhaMon = (nome) => { const m = dash.data('monitor'); return m.status === 'ok' ? m.data.find((x) => x.indicador === nome) : null; };
+  dash.draw('termo-num', (el) => {
+    const r = linhaMon('Juro de 1 ano a termo');
+    el.textContent = r ? MZR.loc.format(',.2f')(+r.valor) + '%' : '—';
+  });
+  dash.draw('termo-status', (el) => {
+    const r = linhaMon('Juro de 1 ano a termo');
+    el.classList.remove('ok', 'warn', 'bad');
+    if (!r) { el.textContent = '—'; return; }
+    const v = +r.valor;
+    if (v >= SAIR) { el.textContent = 'Sair: acima de 15,9'; el.classList.add('bad'); }
+    else if (v <= REALIZAR) { el.textContent = 'Realizar: o prêmio fechou'; el.classList.add('ok'); }
+    else { el.textContent = 'Manter: entre 14,0 e 15,9 · ' + MZR.dataBR(new Date(r.data + 'T00:00:00Z')); el.classList.add('warn'); }
+  });
+  dash.draw('termo-linha', (el) => {
+    const t = dash.data('termo');
+    el.replaceChildren();
+    if (t.status !== 'ok' || !t.data.length) { el.textContent = t.status === 'error' ? 'Não carregou' : '—'; return; }
+    const pts = t.data.map((x) => ({ d: new Date(x.data + 'T00:00:00Z'), v: +x.termo_1a }));
+    const W = Math.max(240, el.clientWidth), H = 130, m = { t: 8, r: 92, b: 20, l: 34 };
+    const x = d3.scaleUtc().domain(d3.extent(pts, (p) => p.d)).range([m.l, W - m.r]);
+    const y = d3.scaleLinear().domain([Math.min(13, d3.min(pts, (p) => p.v)), Math.max(16.4, d3.max(pts, (p) => p.v))]).nice().range([H - m.b, m.t]);
+    const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
+    [[REALIZAR, 'realizar 14,0', 'var(--color-ok)'], [SAIR, 'sair 15,9', 'var(--color-bad)']].forEach(([v, rot, cor]) => {
+      svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(v)).attr('y2', y(v)).style('stroke', cor).style('stroke-dasharray', '4 3');
+      svg.append('text').attr('x', W - m.r + 4).attr('y', y(v) + 4).style('fill', cor).text(rot);
+    });
+    svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickSize(0).tickFormat((v) => MZR.loc.format(',.0f')(v))).call((g) => g.select('.domain').remove());
+    svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(4).tickFormat(d3.utcFormat('%m/%y')).tickSizeOuter(0)).call((g) => g.select('.domain').style('stroke', 'var(--cds-chart-axis)')).call((g) => g.selectAll('line').remove());
+    svg.append('path').datum(pts).attr('d', d3.line().x((p) => x(p.d)).y((p) => y(p.v))).style('fill', 'none').style('stroke', dash.colors[0]).style('stroke-width', 2);
+    const u = pts[pts.length - 1];
+    svg.append('circle').attr('cx', x(u.d)).attr('cy', y(u.v)).attr('r', 4).style('fill', dash.colors[0]);
+    const dica = d3.select(el).append('div').attr('class', 'mz-dica').style('display', 'none');
+    const bis = d3.bisector((p) => p.d).center;
+    svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b).style('fill', 'transparent')
+      .on('pointermove', (ev) => { const p = pts[bis(pts, x.invert(d3.pointer(ev)[0]))]; dica.style('display', null).text(MZR.dataBR(p.d) + ': ' + MZR.loc.format(',.2f')(p.v) + '%').style('left', Math.min(x(p.d) + 8, W - 170) + 'px').style('top', '0px'); })
+      .on('pointerleave', () => dica.style('display', 'none'));
+  });
+  dash.draw('dolar-num', (el) => {
+    const r = linhaMon('Dólar (PTAX)');
+    el.textContent = r ? 'R$ ' + MZR.loc.format(',.2f')(+r.valor) : '—';
+  });
+  dash.draw('dolar-escala', (el) => {
+    const r = linhaMon('Dólar (PTAX)');
+    el.replaceChildren();
+    if (!r) { el.textContent = '—'; return; }
+    const W = Math.max(240, el.clientWidth), H = 86, m = { l: 44, r: 52 };   // espaço para os rótulos centrados nas pontas
+    const x = d3.scaleLinear().domain([4.9, 7.4]).range([m.l, W - m.r]);
+    const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
+    svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', 30).attr('y2', 30).style('stroke', 'var(--cds-chart-axis)');
+    // rótulos dos cenários: medidos depois de desenhados; o que encostaria no vizinho desce para a 2ª linha, com um fio
+    let fimAnterior = -Infinity;
+    CENARIOS.forEach(([nome, v]) => {
+      svg.append('line').attr('x1', x(v)).attr('x2', x(v)).attr('y1', 24).attr('y2', 36).style('stroke', 'var(--cds-chart-reference)');
+      const t = svg.append('text').attr('x', x(v)).attr('y', 52).attr('text-anchor', 'middle').text(nome + ' ' + MZR.loc.format(',.2f')(v));
+      const larg = t.node().getComputedTextLength() || (nome.length + 5) * 7;
+      if (x(v) - larg / 2 < fimAnterior + 6) {
+        t.attr('y', 72);
+        svg.append('line').attr('x1', x(v)).attr('x2', x(v)).attr('y1', 37).attr('y2', 60).style('stroke', 'var(--cds-chart-reference)').style('stroke-dasharray', '2 2');
+      } else {
+        fimAnterior = x(v) + larg / 2;
+      }
+    });
+    const v = +r.valor;
+    svg.append('circle').attr('cx', x(v)).attr('cy', 30).attr('r', 6).style('fill', dash.colors[0]);
+    svg.append('text').attr('x', x(v)).attr('y', 14).attr('text-anchor', 'middle').style('fill', 'var(--color-fg)').text('hoje ' + MZR.loc.format(',.2f')(v));
+  });
+</script>

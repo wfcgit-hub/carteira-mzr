@@ -1,0 +1,55 @@
+# Atualiza o painel da carteira MZR todo dia, nos servidores do GitHub (sem depender de computador ligado).
+# Coleta só fontes públicas (BCB, FRED, CVM e Tesouro Direto), recalcula carteira, régua e índices, refaz o
+# index.html e publica. Os arquivos baixados ficam em cache entre as execuções; só o mês corrente e o anterior
+# da CVM são baixados de novo a cada dia.
+name: Atualizar painel
+
+on:
+  schedule:
+    - cron: '0 11 * * *'     # 08:00 em Brasília: BCB, FRED e CVM já publicaram o dia anterior
+    - cron: '0 22 * * 1-5'   # 19:00 em Brasília: pega a PTAX e o Tesouro Direto do próprio dia
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: atualizar-painel
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Recuperar os dados brutos já baixados
+        uses: actions/cache@v4
+        with:
+          path: dados-brutos
+          key: brutos-${{ github.run_id }}
+          restore-keys: brutos-
+
+      - name: Coletar e calcular
+        run: python -I -X utf8 coletor/atualizar.py .
+
+      - name: Gerar a página
+        run: python -I -X utf8 coletor/site_estatico.py . .
+
+      - name: Publicar se mudou
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html .nojekyll dados
+          if git diff --cached --quiet; then
+            echo "Nada mudou."
+          else
+            ULTIMO=$(python -c "import json;print(json.load(open('dados/serie.json',encoding='utf-8'))['rows'][-1]['data'])")
+            git commit -m "Dados até ${ULTIMO} (atualização automática)"
+            git push
+          fi
