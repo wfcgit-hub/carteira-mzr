@@ -125,15 +125,15 @@
     <h2>Quando revisar</h2>
     <div class="mz-dois">
       <div class="mz-card" id="gatilho-termo">
-        <span class="mz-rot">Prefixado de 2 anos: embolsar em ~13,5; sair acima de ~15</span>
+        <span class="mz-rot">Prefixado de 2 anos: embolsar em ~13,8 (o base no preço); sair acima de ~16 (a deterioração no preço)</span>
         <div class="mz-mini" data-draw="termo-linha" data-source="termo" role="img" aria-label="Juro do prefixado de 2 anos nos últimos seis meses, com as linhas de embolsar e de sair"></div>
         <span class="mz-sub">Tesouro Direto: LTNs de ~1 e ~2 anos, no meio entre compra e venda. Pode diferir alguns décimos da curva da Anbima usada no case (15,24 em 13/11).</span>
       </div>
       <div class="mz-card" id="gatilho-dolar">
         <span class="mz-rot">Dólar contra os cenários de fim de 2027</span>
         <span class="mz-num" data-draw="dolar-num" data-source="monitor" data-where="indicador=Dólar (PTAX)" data-field="valor">—</span>
-        <div class="mz-mini" data-draw="dolar-escala" data-source="monitor" role="img" aria-label="Dólar de hoje numa régua com os cenários de ajuste, base e estresse"></div>
-        <span class="mz-sub">Ajuste R$ 5,10 · base R$ 5,50 · estresse R$ 7,15 (slide de cenários)</span>
+        <div class="mz-mini" data-draw="dolar-escala" data-source="monitor" role="img" aria-label="Dólar de hoje numa régua com os cenários de ajuste, base e deterioração"></div>
+        <span class="mz-sub">Ajuste R$ 5,10 · base R$ 5,67 · deterioração R$ 6,80, ou 7,48 com o mundo em aversão (slide de cenários)</span>
       </div>
     </div>
   </section>
@@ -150,8 +150,8 @@
 
   <details id="metodo">
     <summary>Como o painel é feito</summary>
-    <p>A carteira e a régua são as do case: régua é a carteira moderada mediana de C6, Daycoval e Genial; a carteira tem os desvios com tese (prefixado curto, dólar, menos bolsa e IPCA+ longo). Pesos fixos, rebalanceados no primeiro dia útil de cada mês, retornos antes do IR.</p>
-    <p>Os dados são públicos e coletados todo dia útil por um script: CDI e dólar do Banco Central, S&amp;P 500 e juro americano do FRED, cotas diárias de fundos passivos na CVM no lugar dos índices da B3 e da Anbima (Ibovespa, IMA-B, IMA-B 5, IMA-B 5+, IRF-M e crédito high grade, já líquidas da taxa de administração) e taxas do Tesouro Direto. O S&amp;P 500 é o índice de preço, sem dividendos.</p>
+    <p>A carteira e a régua são as do case: régua é a carteira moderada mediana de C6, Daycoval e Genial; a carteira tem os desvios com tese (mais prefixado curto, crédito e Treasuries de 10 anos; menos bolsa; sem IPCA+ longo). Pesos fixos, rebalanceados no primeiro dia útil de cada mês, retornos antes do IR.</p>
+    <p>Os dados são públicos e coletados todo dia útil por um script: CDI e dólar do Banco Central, S&amp;P 500, Fed Funds e juro dos Treasuries de 2 e de 10 anos do FRED, cotas diárias de fundos passivos na CVM no lugar dos índices da B3 e da Anbima (Ibovespa, IMA-B, IMA-B 5, IMA-B 5+, IRF-M e crédito high grade, já líquidas da taxa de administração) e taxas do Tesouro Direto. O S&amp;P 500 é o índice de preço, sem dividendos.</p>
     <p>Até 13/11/2026 a carteira é uma simulação. Simulação não é desempenho: mostra como os pesos de hoje teriam se comportado.</p>
   </details>
 </div>
@@ -397,8 +397,8 @@
 
 <script>
   // ---------- gatilhos: prefixado de 2 anos e dólar
-  const REALIZAR = 13.5, SAIR = 15.0;           // gatilhos do slide do prefixado curto
-  const CENARIOS = [['Ajuste', 5.10], ['Base', 5.50], ['Estresse', 7.15]];   // dólar no fim de 2027, slide de cenários
+  const REALIZAR = 13.8, SAIR = 16.0;           // gatilhos do slide do prefixado curto: juro do cenário base e da deterioração
+  const CENARIOS = [['Ajuste', 5.10], ['Base', 5.67], ['Deterioração', 6.80]];   // dólar no fim de 2027, slide de cenários
   const linhaMon = (nome) => { const m = dash.data('monitor'); return m.status === 'ok' ? m.data.find((x) => x.indicador === nome) : null; };
   dash.draw('termo-num', (el) => {
     const r = linhaMon('Prefixado de 2 anos');
@@ -409,9 +409,9 @@
     el.classList.remove('ok', 'warn', 'bad');
     if (!r) { el.textContent = '—'; return; }
     const v = +r.valor;
-    if (v >= SAIR) { el.textContent = 'Sair: acima de 15,0'; el.classList.add('bad'); }
+    if (v >= SAIR) { el.textContent = 'Sair: acima de 16,0'; el.classList.add('bad'); }
     else if (v <= REALIZAR) { el.textContent = 'Embolsar: o ganho veio'; el.classList.add('ok'); }
-    else { el.textContent = 'Manter: entre 13,5 e 15,0 · ' + MZR.dataBR(new Date(r.data + 'T00:00:00Z')); el.classList.add('warn'); }
+    else { el.textContent = 'Manter: entre 13,8 e 16,0 · ' + MZR.dataBR(new Date(r.data + 'T00:00:00Z')); el.classList.add('warn'); }
   });
   dash.draw('termo-linha', (el) => {
     const t = dash.data('termo');
@@ -422,7 +422,7 @@
     const x = d3.scaleUtc().domain(d3.extent(pts, (p) => p.d)).range([m.l, W - m.r]);
     const y = d3.scaleLinear().domain([Math.min(13, d3.min(pts, (p) => p.v)), Math.max(16.4, d3.max(pts, (p) => p.v))]).nice().range([H - m.b, m.t]);
     const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
-    [[REALIZAR, 'embolsar 13,5', 'var(--color-ok)'], [SAIR, 'sair 15,0', 'var(--color-bad)']].forEach(([v, rot, cor]) => {
+    [[REALIZAR, 'embolsar 13,8', 'var(--color-ok)'], [SAIR, 'sair 16,0', 'var(--color-bad)']].forEach(([v, rot, cor]) => {
       svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(v)).attr('y2', y(v)).style('stroke', cor).style('stroke-dasharray', '4 3');
       svg.append('text').attr('x', W - m.r + 4).attr('y', y(v) + 4).style('fill', cor).text(rot);
     });

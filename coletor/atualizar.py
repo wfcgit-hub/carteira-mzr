@@ -5,7 +5,8 @@ Uso: python -I -X utf8 atualizar.py <pasta do painel>
 
 Fontes, todas públicas e automáticas (nada da B3, da Anbima, do MSCI, da CME, da ICE ou do Yahoo):
 - Banco Central, SGS: CDI diário (série 12) e dólar PTAX de venda (série 1);
-- FRED (Fed de St. Louis): S&P 500 (SP500, índice de preço, sem dividendos) e Fed Funds efetivo (DFF);
+- FRED (Fed de St. Louis): S&P 500 (SP500, índice de preço, sem dividendos), Fed Funds efetivo (DFF) e juro dos
+  Treasuries de 2 e de 10 anos (DGS2, DGS10);
 - CVM, dados abertos: cotas diárias de fundos passivos, que fazem as vezes dos índices da B3 e da Anbima
   (cotas líquidas de taxa de administração; ver FUNDOS);
 - Tesouro Transparente: preços e taxas do Tesouro Direto, para o juro de 1 ano a termo (LTNs de ~1 e ~2 anos).
@@ -41,20 +42,20 @@ FUNDOS = {  # classe: (CNPJ, nome do fundo) — fundos de investimento que repor
 }
 LCI_CDI = 0.866   # LCI/LCA de banco grande: 86,6% do CDI (Quantum, via Seu Dinheiro, 24/09/2026)
 # classe: (peso na carteira, peso na régua, como a série é feita)
-PESOS = {
+PESOS = {  # carteira J do case (16/11/2026)
     'LCI/LCA': (30.0, 30.0, '86,6% do CDI (BCB, série 12)'),
-    'Tesouro Selic': (15.0, 20.0, 'CDI (BCB, série 12)'),
-    'Crédito high grade': (10.0, 10.0, 'cota do ' + FUNDOS['credito'][1]),
-    'Prefixado': (17.5, 7.5, 'cota do ' + FUNDOS['irfm'][1]),
+    'Tesouro Selic': (12.5, 20.0, 'CDI (BCB, série 12)'),
+    'Crédito high grade': (12.5, 10.0, 'cota do ' + FUNDOS['credito'][1]),
+    'Prefixado': (20.0, 7.5, 'cota do ' + FUNDOS['irfm'][1]),
     'IPCA+ curto': (7.5, 7.5, 'cota do ' + FUNDOS['imab5'][1]),
-    'IPCA+ longo': (2.5, 7.5, 'cota do ' + FUNDOS['imab5mais'][1]),
+    'IPCA+ longo': (0.0, 7.5, 'cota do ' + FUNDOS['imab5mais'][1]),
     'Ações Brasil': (2.5, 5.0, 'cota do ' + FUNDOS['ibov'][1]),
-    'Bolsa global com hedge': (0.0, 0.0, 'S&P 500 em dólar mais o diferencial CDI − Fed Funds (FRED, BCB)'),
-    'Bolsa global sem hedge': (7.5, 7.5, 'S&P 500 convertido pela PTAX (FRED, BCB)'),
-    'Dólar em caixa': (7.5, 5.0, 'PTAX mais o Fed Funds, como juro do caixa em dólar (BCB, FRED)'),
+    'Bolsa global sem hedge': (2.5, 7.5, 'S&P 500 convertido pela PTAX (FRED, BCB)'),
+    'Treasury 2 anos': (2.5, 5.0, 'Treasury de 2 anos pelo juro (FRED, DGS2), convertido pela PTAX (BCB)'),
+    'Treasury 10 anos': (10.0, 0.0, 'Treasury de 10 anos pelo juro (FRED, DGS10), convertido pela PTAX (BCB)'),
 }
 assert abs(sum(p[0] for p in PESOS.values()) - 100) < 1e-9 and abs(sum(p[1] for p in PESOS.values()) - 100) < 1e-9
-REALIZAR, SAIR = 13.5, 15.0   # gatilhos do slide do prefixado curto (juro do prefixado de 2 anos), 16/11
+REALIZAR, SAIR = 13.8, 16.0   # gatilhos do slide do prefixado curto: o juro do cenário base e o da deterioração, 16/11
 
 
 # ------------------------------------------------------------------ coleta
@@ -152,6 +153,15 @@ def tesouro():
 
 
 # ------------------------------------------------------------------ cálculo
+def titulo(a, b, dias, anos):
+    """Retorno de um Treasury de prazo constante entre dois dias, pelo juro (%): carrego menos duração × variação,
+    com convexidade; título ao par com cupom semestral (a mesma conta do bloco 11 do case, em base diária)."""
+    a, b = a / 100, b / 100
+    n = 2 * anos
+    dur = (1 - (1 + a / 2) ** -n) / (a / 2) / 2 / (1 + a / 2)
+    return a * dias / 365 - dur * (b - a) + 0.5 * dur ** 2 * (b - a) ** 2
+
+
 def ultimo(serie, d, limite=5):
     """Último valor até d, sem olhar mais de `limite` dias para trás (feriado lá fora, fundo que atrasou)."""
     for k in range(limite + 1):
@@ -163,16 +173,16 @@ def ultimo(serie, d, limite=5):
 
 def main():
     cdi, ptax = sgs(12), sgs(1)
-    sp, dff = fred('SP500'), fred('DFF')
+    sp, dff, y2, y10 = fred('SP500'), fred('DFF'), fred('DGS2'), fred('DGS10')
     cotas = cvm()
     termo, pre2 = tesouro()
     dias = sorted(d for d in cdi if d >= INICIO)
     # o último dia é o último em que todas as séries existem (os fundos chegam à CVM com 1–2 dias de atraso)
     # e cada fundo tem de ter a cota daquele dia mesmo: repetir a anterior daria variação zero falsa no fim da série
-    while dias and (any(ultimo(s, dias[-1], 4) is None for s in (ptax, sp, dff))
+    while dias and (any(ultimo(s, dias[-1], 4) is None for s in (ptax, sp, dff, y2, y10))
                     or any(dias[-1] not in c for c in cotas.values()) or dias[-1] not in ptax):
         dias.pop()
-    ret = {k: [] for k in ('cdi', 'lci', 'credito', 'irfm', 'imab5', 'imab5mais', 'imab', 'ibov', 'sp_reais', 'sp_hedge', 'dolar', 'dolar_puro')}
+    ret = {k: [] for k in ('cdi', 'lci', 'credito', 'irfm', 'imab5', 'imab5mais', 'imab', 'ibov', 'sp_reais', 'sp_hedge', 'dolar', 'dolar_puro', 'tsy2', 'tsy10')}
     for a, b in zip(dias, dias[1:]):
         r_cdi = cdi[b] / 100  # a taxa do dia b remunera de a para b
         fx = ultimo(ptax, b) / ultimo(ptax, a) - 1
@@ -186,9 +196,11 @@ def main():
         ret['sp_hedge'].append((1 + rsp) * (1 + r_cdi - ff) - 1)
         ret['dolar'].append((1 + fx) * (1 + ff) - 1)
         ret['dolar_puro'].append(fx)
+        for k, y, anos in (('tsy2', y2, 2), ('tsy10', y10, 10)):
+            ret[k].append((1 + titulo(ultimo(y, a), ultimo(y, b), (b - a).days, anos)) * (1 + fx) - 1)
     FONTE = {'LCI/LCA': 'lci', 'Tesouro Selic': 'cdi', 'Crédito high grade': 'credito', 'Prefixado': 'irfm',
              'IPCA+ curto': 'imab5', 'IPCA+ longo': 'imab5mais', 'Ações Brasil': 'ibov',
-             'Bolsa global com hedge': 'sp_hedge', 'Bolsa global sem hedge': 'sp_reais', 'Dólar em caixa': 'dolar'}
+             'Bolsa global sem hedge': 'sp_reais', 'Treasury 2 anos': 'tsy2', 'Treasury 10 anos': 'tsy10'}
 
     def carteira(col):
         """Valor diário com os pesos `col` (0 carteira, 1 régua), rebalanceado no 1º dia útil de cada mês."""
