@@ -411,7 +411,7 @@
     const v = +r.valor;
     if (v >= SAIR) { el.textContent = 'Sair: acima de 15,0'; el.classList.add('bad'); }
     else if (v <= REALIZAR) { el.textContent = 'Embolsar: o ganho veio'; el.classList.add('ok'); }
-    else { el.textContent = 'Manter: entre 14,0 e 15,9 · ' + MZR.dataBR(new Date(r.data + 'T00:00:00Z')); el.classList.add('warn'); }
+    else { el.textContent = 'Manter: entre 13,5 e 15,0 · ' + MZR.dataBR(new Date(r.data + 'T00:00:00Z')); el.classList.add('warn'); }
   });
   dash.draw('termo-linha', (el) => {
     const t = dash.data('termo');
