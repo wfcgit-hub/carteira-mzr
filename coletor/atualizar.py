@@ -84,12 +84,22 @@ def sgs(codigo):
 
 
 def fred(serie):
+    """Série diária do FRED. Em 17/11/2026 o FRED passou a entregar só o último ano do S&P 500; por isso o download novo
+    é somado ao que já estava no cache (dados-brutos), sem apagar os dias antigos."""
+    destino = BRUTOS / 'fred' / f'{serie}.csv'
+
+    def ler(texto):
+        out = {}
+        for linha in list(csv.reader(io.StringIO(texto)))[1:]:
+            if len(linha) == 2 and linha[1] not in ('', '.'):
+                out[dt.date.fromisoformat(linha[0])] = float(linha[1])
+        return out
+
+    antigo = ler(destino.read_text('utf-8')) if destino.exists() else {}
     url = f'https://fred.stlouisfed.org/graph/fredgraph.csv?id={serie}&cosd={INICIO - dt.timedelta(days=10):%Y-%m-%d}'
-    f = baixar(url, BRUTOS / 'fred' / f'{serie}.csv', sempre=True)
-    out = {}
-    for linha in list(csv.reader(io.StringIO(f.read_text('utf-8'))))[1:]:
-        if len(linha) == 2 and linha[1] not in ('', '.'):
-            out[dt.date.fromisoformat(linha[0])] = float(linha[1])
+    novo = ler(baixar(url, destino, sempre=True).read_text('utf-8'))
+    out = {**antigo, **novo}
+    destino.write_text('observation_date,' + serie + '\n' + ''.join(f'{d.isoformat()},{v}\n' for d, v in sorted(out.items())), 'utf-8')
     return out
 
 
