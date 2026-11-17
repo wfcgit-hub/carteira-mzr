@@ -55,7 +55,7 @@ PESOS = {  # carteira J do case (16/11/2026)
     'Treasury 10 anos': (10.0, 0.0, 'Treasury de 10 anos pelo juro (FRED, DGS10), convertido pela PTAX (BCB)'),
 }
 assert abs(sum(p[0] for p in PESOS.values()) - 100) < 1e-9 and abs(sum(p[1] for p in PESOS.values()) - 100) < 1e-9
-REALIZAR, SAIR = 14.0, 15.1   # slide do prefixado curto (revisor, 16/11): o base no preço (~14,0) e o piso da deterioração no preço (15,1–15,5) no juro de 2 anos; a saída é pela tese, o preço só confirma
+REALIZAR, SAIR = 14.0, 15.1   # termômetro dos cenários no juro de 2 anos: o base no preço (~14,0) e o piso da deterioração no preço (15,1); a carteira não vende no meio (candidato, 16/11)
 
 
 # ------------------------------------------------------------------ coleta

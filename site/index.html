@@ -122,11 +122,11 @@
   </section>
 
   <section class="mz-sec" id="gatilhos">
-    <h2>Quando revisar</h2>
+    <h2>Em que cenário o mercado está</h2>
     <div class="mz-dois">
       <div class="mz-card" id="gatilho-termo">
-        <span class="mz-rot">Prefixado de 2 anos: embolsar em ~14,0 (o base no preço); acima de ~15,1, a deterioração está no preço e a tese é revista</span>
-        <div class="mz-mini" data-draw="termo-linha" data-source="termo" role="img" aria-label="Juro do prefixado de 2 anos nos últimos seis meses, com as linhas de embolsar e de sair"></div>
+        <span class="mz-rot">Juro do prefixado de 2 anos: ~14,0 põe o cenário base no preço; acima de ~15,1, a deterioração</span>
+        <div class="mz-mini" data-draw="termo-linha" data-source="termo" role="img" aria-label="Juro do prefixado de 2 anos nos últimos seis meses, com as linhas do cenário base e da deterioração"></div>
         <span class="mz-sub">Tesouro Direto: LTNs de ~1 e ~2 anos, no meio entre compra e venda. Pode diferir alguns décimos da curva da Anbima usada no case (15,24 em 13/11).</span>
       </div>
       <div class="mz-card" id="gatilho-dolar">
@@ -397,7 +397,7 @@
 
 <script>
   // ---------- gatilhos: prefixado de 2 anos e dólar
-  const REALIZAR = 14.0, SAIR = 15.1;           // slide do prefixado curto: o base no preço e o piso da deterioração no preço (a saída é pela tese)
+  const REALIZAR = 14.0, SAIR = 15.1;           // termômetro: o cenário base no preço (~14,0) e o piso da deterioração no preço (15,1); a carteira não vende no meio
   const CENARIOS = [['Ajuste', 5.10], ['Base', 5.67], ['Deterioração', 6.80]];   // dólar no fim de 2027, slide de cenários
   const linhaMon = (nome) => { const m = dash.data('monitor'); return m.status === 'ok' ? m.data.find((x) => x.indicador === nome) : null; };
   dash.draw('termo-num', (el) => {
@@ -409,20 +409,20 @@
     el.classList.remove('ok', 'warn', 'bad');
     if (!r) { el.textContent = '—'; return; }
     const v = +r.valor;
-    if (v >= SAIR) { el.textContent = 'Deterioração no preço: rever a tese'; el.classList.add('bad'); }
-    else if (v <= REALIZAR) { el.textContent = 'Embolsar: o ganho veio'; el.classList.add('ok'); }
-    else { el.textContent = 'Manter: entre 14,0 e 15,1 · ' + MZR.dataBR(new Date(r.data + 'T00:00:00Z')); el.classList.add('warn'); }
+    if (v >= SAIR) { el.textContent = 'Deterioração no preço'; el.classList.add('bad'); }
+    else if (v <= REALIZAR) { el.textContent = 'Cenário base no preço'; el.classList.add('ok'); }
+    else { el.textContent = 'Entre o base e a deterioração · ' + MZR.dataBR(new Date(r.data + 'T00:00:00Z')); el.classList.add('warn'); }
   });
   dash.draw('termo-linha', (el) => {
     const t = dash.data('termo');
     el.replaceChildren();
     if (t.status !== 'ok' || !t.data.length) { el.textContent = t.status === 'error' ? 'Não carregou' : '—'; return; }
     const pts = t.data.map((x) => ({ d: new Date(x.data + 'T00:00:00Z'), v: +x.pre_2a }));
-    const W = Math.max(240, el.clientWidth), H = 130, m = { t: 8, r: 92, b: 20, l: 34 };
+    const W = Math.max(240, el.clientWidth), H = 130, m = { t: 8, r: 118, b: 20, l: 34 };
     const x = d3.scaleUtc().domain(d3.extent(pts, (p) => p.d)).range([m.l, W - m.r]);
     const y = d3.scaleLinear().domain([Math.min(13, d3.min(pts, (p) => p.v)), Math.max(16.4, d3.max(pts, (p) => p.v))]).nice().range([H - m.b, m.t]);
     const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
-    [[REALIZAR, 'embolsar 14,0', 'var(--color-ok)'], [SAIR, 'rever 15,1', 'var(--color-bad)']].forEach(([v, rot, cor]) => {
+    [[REALIZAR, 'base 14,0', 'var(--color-ok)'], [SAIR, 'deterioração 15,1', 'var(--color-bad)']].forEach(([v, rot, cor]) => {
       svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(v)).attr('y2', y(v)).style('stroke', cor).style('stroke-dasharray', '4 3');
       svg.append('text').attr('x', W - m.r + 4).attr('y', y(v) + 4).style('fill', cor).text(rot);
     });
