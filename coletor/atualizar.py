@@ -80,6 +80,11 @@ def baixar(url, destino, sempre=False, tentativas=6):
             return destino
         except Exception as erro:  # noqa: BLE001
             if k == tentativas - 1:
+                # 21/11/2026: o Tesouro Transparente e o BCB às vezes derrubam a conexão o dia todo. Com cópia guardada
+                # (cache do Actions), o painel segue com ela; o atraso aparece em dados/fontes.json e no aviso do topo.
+                if destino.exists():
+                    print(f'aviso: falhou {url} ({erro}); uso a cópia guardada')
+                    return destino
                 raise RuntimeError(f'falhou {url}: {erro}')
             time.sleep(10 * (k + 1))   # o BCB às vezes derruba a conexão (21/11/2026): espera mais a cada tentativa
 
