@@ -172,7 +172,7 @@
   .mz-topo h1 { font-size: clamp(28px, 4.2vw, 42px); line-height: 1.15; max-width: 30ch; margin-top: 8px; text-wrap: balance; }
   .mz-lead { margin: 12px 0 0; color: var(--color-fg-muted); font-size: 15px; max-width: 70ch; line-height: 1.5; }
   .mz-tese { margin-top: 30px; display: grid; gap: 10px; }
-  .mz-tese-cab { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .mz-tese-cab { display: grid; gap: 2px; }
   .mz-tese-cab h2 { font-size: 17px; font-weight: var(--cds-font-weight-medium); margin: 0; }
   .mz-tese-cab .mz-nota { margin: 0; }
   .mz-tese-graf, .mz-choq { min-height: 0; }
@@ -203,6 +203,30 @@
   .mz-dv.mais, .mz-dv.menos { color: var(--color-fg); }
   .mz-cen-classes tr.ref td { border-top: 1px solid var(--color-fg-muted); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
   .mz-tab td.eu-c { font-weight: var(--cds-font-weight-medium); }
+  /* ---------- revisão de acabamento */
+  .mz-nota, .mz-sub, .mz-lead, .mz-msg, .mz-frescor, .mz-veredito { text-wrap: pretty; }
+  .mz-lead { max-width: 80ch; }
+  .mz-tab table.mz-comb { border-collapse: separate; border-spacing: 4px; }
+  .mz-comb th, .mz-comb td { border-bottom: none; border-radius: 6px; }
+  .mz-comb tr:first-child th { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  #cenarios .mz-dois .mz-card .mz-rot { min-height: 4.4em; }
+  .mz-mes td { vertical-align: top; }
+  #tabela-historia, #tabela-historia-risco { table-layout: fixed; }
+  #tabela-historia th:first-child, #tabela-historia-risco th:first-child { width: 46%; }
+  .mz-legenda-trilha { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .mz-legenda-trilha span { display: inline-flex; align-items: center; gap: 6px; }
+  .mz-legenda-trilha i { display: inline-block; width: 22px; height: 0; border-top: 2px solid; }
+  .mz-legenda-trilha i.faixa { height: 10px; border: none; background: var(--serie-0); opacity: .25; border-radius: 2px; }
+  .mz-legenda-trilha i.trac { border-top-style: dashed; }
+  .mz-legenda-trilha i.pont { border-top-style: dotted; }
+  .mz-sec > *, .mz-mais-corpo > *, .mz details { min-width: 0; }
+  @media (max-width: 720px) {
+    .mz-aloc td.cl { min-width: 0; width: 46%; }
+    .mz-aloc th.mz-aloc-barras, .mz-aloc td.mz-aloc-barras { min-width: 0; width: auto; }
+    .mz-aloc th, .mz-aloc td { padding-left: 6px; padding-right: 6px; }
+    .mz-aloc th:last-child, .mz-aloc td.mz-dv { white-space: nowrap; font-size: 13px; }
+    .mz-aloc td.mz-aloc-barras .mz-aloc-l span { font-size: 11px; }
+  }
 </style>
 
 <div class="mz">
@@ -306,7 +330,11 @@
       <button type="button" class="mz-chip" data-zoom="ano" aria-pressed="false">Os 12 meses</button>
     </div>
     <div class="mz-graf mz-trilha" id="trilha" data-draw="trilha" data-source="serie"></div>
-    <p class="mz-nota">Retorno acumulado desde 13/11/2026. A faixa dourada vai do cenário de ajuste ao de deterioração; o tracejado é o caminho esperado no cenário mais provável.</p>
+    <div class="mz-legenda-trilha" aria-hidden="true">
+      <span><i style="color: var(--serie-0)"></i>Carteira</span><span><i style="color: var(--serie-1)"></i>Régua</span><span><i style="color: var(--serie-2)"></i>CDI</span>
+      <span><i class="faixa"></i>Carteira esperada: do ajuste à deterioração</span><span><i class="trac" style="color: var(--serie-0)"></i>Esperada no cenário mais provável</span><span><i class="pont" style="color: var(--serie-2)"></i>CDI esperado</span>
+    </div>
+    <p class="mz-nota">Retorno acumulado desde 13/11/2026, antes do IR.</p>
 
     <details class="mz-mais">
       <summary>Ver detalhes: cada série, cada classe e o último dia</summary>
@@ -321,7 +349,8 @@
         <h3>Cada classe</h3>
         <div class="mz-tab">
           <table id="tabela-classes" data-source="classes" data-row-key="classe">
-            <thead><tr><th data-field="classe">Classe</th><th data-field="carteira">Peso-alvo %</th><th data-field="peso_hoje">Peso hoje %</th><th data-field="regua">Régua %</th><th data-field="desvio">Desvio</th><th data-field="ret_dia">Último dia</th><th data-field="ret_ativa">Desde 13/11/26</th><th data-field="ret_12m_sim">12 meses até 13/11/26 (simulação)</th><th data-field="como">Como medimos</th></tr></thead>
+            <caption>Pesos em % do patrimônio; retornos em %</caption>
+            <thead><tr><th data-field="classe">Classe</th><th data-field="carteira">Peso-alvo</th><th data-field="peso_hoje">Peso hoje</th><th data-field="regua">Régua</th><th data-field="desvio">Desvio</th><th data-field="ret_dia">Último dia</th><th data-field="ret_ativa">Desde 13/11</th><th data-field="ret_12m_sim">12 meses (simulação)</th></tr></thead>
             <tbody data-draw="classes-linhas"></tbody>
           </table>
         </div>
@@ -429,8 +458,8 @@
             <button type="button" class="mz-chip" id="per-3" data-dias="92" aria-pressed="false">3 meses</button>
           </div>
         </div>
-        <div class="mz-graf" id="grafico" data-draw="grafico" data-source="serie"></div>
         <div class="mz-legenda" aria-hidden="true"><span><i class="p"></i>Simulação: pesos de hoje aplicados ao passado</span><span><i></i>Real, desde 13/11/2026</span></div>
+        <div class="mz-graf" id="grafico" data-draw="grafico" data-source="serie"></div>
         <div class="mz-graf mz-queda" id="queda" data-draw="queda" data-source="serie"></div>
         <p class="mz-nota">Base 100 no início do período. Embaixo, quanto cada uma esteve abaixo do seu último pico.</p>
         <div class="mz-tab">
@@ -610,7 +639,7 @@
   dash.draw('frescor-topo', (el) => {
     const g = fonteGerada();
     if (!g) { el.textContent = ''; return; }
-    el.textContent = 'Dados até ' + MZR.dataBR(new Date(g.serie_ate + 'T00:00:00Z')) + ' (último dia com todas as fontes) · página gerada em ' + g.gerado + ' (Brasília)';
+    el.textContent = 'Dados até ' + MZR.dataBR(new Date(g.serie_ate + 'T00:00:00Z')) + ' · página gerada em ' + g.gerado + ' (Brasília)';
   });
   dash.draw('frescor-alerta', (el) => {
     const f = dash.data('fontes'), g = fonteGerada();
@@ -680,8 +709,8 @@
     [['2024-11-27', 'pacote fiscal', 'start'], ['2026-10-04', 'eleição', 'end'], ['2026-10-25', null, null]].forEach(([d0, rot, lado]) => {
       const d = new Date(d0 + 'T00:00:00Z');
       if (d < pts[0].d || d > pts[pts.length - 1].d) return;
-      svg.append('line').attr('x1', x(d)).attr('x2', x(d)).attr('y1', H - m.b - 16).attr('y2', H - m.b).style('stroke', 'var(--cds-chart-reference)');
-      if (rot) svg.append('text').attr('x', x(d) + (lado === 'start' ? 4 : -4)).attr('y', H - m.b - 6).attr('text-anchor', lado).text(rot);
+      svg.append('line').attr('x1', x(d)).attr('x2', x(d)).attr('y1', m.t).attr('y2', H - m.b).style('stroke', 'var(--cds-chart-reference)').style('stroke-dasharray', '2 4').style('opacity', 0.7);
+      if (rot) svg.append('text').attr('x', x(d) + (lado === 'start' ? 4 : -4)).attr('y', lado === 'start' ? m.t + 10 : m.t + 26).attr('text-anchor', lado).text(rot);
     });
     const ln = (k) => d3.line().x((p) => x(p.d)).y((p) => y(p[k]));
     const sim = pts.filter((p) => p.d <= ativa), viva = pts.filter((p) => p.d >= ativa);
@@ -823,7 +852,6 @@
         }
         tr.append(td);
       });
-      cel(r.como, 'como');
       tb.append(tr);
     });
   });
@@ -855,7 +883,7 @@
     const x = d3.scaleUtc().domain(d3.extent(pts, (p) => p.d)).range([m.l, W - m.r]);
     const y = d3.scaleLinear().domain([Math.min(13, d3.min(pts, (p) => p.v)), Math.max(16.4, d3.max(pts, (p) => p.v))]).nice().range([H - m.b, m.t]);
     const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
-    [[REALIZAR, 'apresentado 14,0', 'var(--color-ok)'], [SAIR, 'deterioração 15,1', 'var(--color-bad)']].forEach(([v, rot, cor]) => {
+    [[REALIZAR, 'apresentado 14,0', 'var(--cds-chart-reference)'], [SAIR, 'deterioração 15,1', 'var(--color-bad)']].forEach(([v, rot, cor]) => {
       svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(v)).attr('y2', y(v)).style('stroke', cor).style('stroke-dasharray', '4 3');
       svg.append('text').attr('x', W - m.r + 4).attr('y', y(v) + 4).style('fill', cor).text(rot);
     });
@@ -899,13 +927,13 @@
         ant = x; return o;
       });
       if (pts.length < 2) return;
-      const W = Math.max(280, el.clientWidth), H = 210, m = { t: 20, r: 132, b: 22, l: 44 };
+      const W = Math.max(280, el.clientWidth), H = 220, m = { t: 30, r: 132, b: 22, l: 44 };
       const x = d3.scaleUtc().domain(d3.extent(pts, (p) => p.d)).range([m.l, W - m.r]);
       const lo = Math.min(-0.5, d3.min(pts, (p) => Math.min(p.carteira, p.regua)));
       const y = d3.scaleLinear().domain([lo, 0]).nice().range([H - m.b, m.t]);
       const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
         .attr('aria-label', 'Quanto a carteira e a régua estão abaixo do pico anterior, em %; o pico recomeça em 13/11/2026');
-      svg.append('text').attr('x', m.l).attr('y', 10).text('Abaixo do pico anterior, em %');
+      svg.append('text').attr('x', 0).attr('y', 13).text('Abaixo do pico anterior, em %');
       svg.append('g').selectAll('line').data(y.ticks(3).filter((v) => v < 0)).join('line')
         .attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y).style('stroke', 'var(--cds-chart-grid)');
       svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(3).tickSize(0).tickFormat((v) => n2(v)))
@@ -928,7 +956,7 @@
           .style('stroke-dasharray', j === 0 ? '1.5 3' : null).style('stroke-linecap', 'round'));
       });
       const u = pts[pts.length - 1];
-      const rot = empurra(ks.map((k) => ({ k, y: y(u[k]) })), 13);
+      const rot = empurra(ks.map((k) => ({ k, y: y(u[k]) })), 15);
       svg.append('g').selectAll('text').data(rot).join('text').attr('x', W - m.r + 6).attr('y', (r) => r.y + 4)
         .style('fill', (r) => MZR.cor(r.k)).style('font-weight', (r) => r.k === 'carteira' ? 600 : 400)
         .text((r) => `${MZR.nomes[r.k]} ${n2(u[r.k])}`);
@@ -1288,7 +1316,7 @@
     });
 
     // ---- liquidez: em quanto tempo cada parte da carteira vira caixa
-    const BALDE = { 'Tesouro Selic': 0, 'Prefixado': 0, 'IPCA+ curto': 0, 'IPCA+ longo': 0, 'Ações Brasil': 0, 'Treasury 2 anos': 0, 'Treasury 10 anos': 0,
+    const BALDE = { 'Tesouro Selic': 0, 'Prefixado 2 anos': 0, 'IPCA+ 3 anos': 0, 'IPCA+ 10 anos': 0, 'Bolsa Brasil': 0, 'Treasury 2 anos': 0, 'Treasury 10 anos': 0,
       'Bolsa global sem hedge': 0, 'Crédito high grade': 1, 'LCI/LCA': 2 };
     const BALDES = ['Até 5 dias úteis', 'Até 30 dias', 'LCI/LCA: escada de 6 a 24 meses'];
     dash.draw('liquidez', (el) => {
@@ -1565,6 +1593,7 @@
       const W = Math.max(280, el.clientWidth), estreito = W < 640;
       const lh = estreito ? 74 : 52, cab = 26;
       const m = { l: estreito ? 8 : 230, r: estreito ? 8 : 250 };
+      const colX = (j) => W - 12 - (2 - j) * 82;   // borda direita de cada coluna de números (carteira, régua, CDI)
       const H = cab + linhas.length * lh + 10;
       const vals = linhas.flatMap((r) => [r.carteira, r.regua, r.cdi]);
       const x = d3.scaleLinear().domain([Math.floor(d3.min(vals) - 0.3), Math.ceil(d3.max(vals) + 0.3)]).range([m.l + 10, W - m.r - 10]);
@@ -1574,9 +1603,10 @@
       const cols = [['carteira', 'Carteira'], ['regua', 'Régua'], ['cdi', 'CDI']];
       if (!estreito) {
         cols.forEach(([k, n], i) => {
-          const cx = W - m.r + 40 + i * 76;
-          svg.append('circle').attr('cx', cx - 26).attr('cy', 10).attr('r', 5).style('fill', k === 'cdi' ? 'var(--color-panel)' : COR[k]).style('stroke', COR[k]).style('stroke-width', 2);
-          svg.append('text').attr('x', cx - 18).attr('y', 14).style('fill', 'var(--color-fg)').style('font-weight', k === 'carteira' ? 600 : 400).text(n);
+          const xd = colX(i);
+          const tx = svg.append('text').attr('x', xd).attr('y', 14).attr('text-anchor', 'end').style('fill', 'var(--color-fg)').style('font-weight', k === 'carteira' ? 600 : 400).text(n);
+          const larg = tx.node().getComputedTextLength() || n.length * 7.5;
+          svg.append('circle').attr('cx', xd - larg - 11).attr('cy', 10).attr('r', 4.5).style('fill', k === 'cdi' ? 'var(--color-panel)' : COR[k]).style('stroke', COR[k]).style('stroke-width', 2);
         });
       } else {
         let lx = 0;
@@ -1589,7 +1619,7 @@
       linhas.forEach((r, i) => {
         const yy = cab + i * lh, yb = estreito ? yy + 42 : yy + lh / 2;
         if (r.media) svg.append('line').attr('x1', 0).attr('x2', W).attr('y1', yy + 2).attr('y2', yy + 2).style('stroke', 'var(--color-border-line)');
-        if (i === hoje) svg.append('rect').attr('x', 0).attr('y', yy + 4).attr('width', W).attr('height', lh - 8).attr('rx', 8).style('fill', 'var(--serie-0)').style('opacity', 0.09);
+        if (i === hoje) svg.append('rect').attr('x', 0).attr('y', estreito ? yy - 2 : yy + 4).attr('width', W).attr('height', estreito ? lh - 2 : lh - 8).attr('rx', 8).style('fill', 'var(--serie-0)').style('opacity', 0.09);
         // nome e chance
         svg.append('text').attr('x', estreito ? 0 : 12).attr('y', estreito ? yy + 14 : yb - 2).style('fill', 'var(--color-fg)').style('font-size', '14px').style('font-weight', r.media ? 600 : 500).text(r.rot);
         const st = svg.append('text').attr('x', estreito ? 0 : 12).attr('y', estreito ? yy + 18 : yb + 15).attr('dx', estreito ? 0 : 0);
@@ -1602,9 +1632,9 @@
             .style('fill', k === 'cdi' ? 'var(--color-panel)' : COR[k]).style('stroke', k === 'carteira' ? 'var(--color-panel)' : COR[k]).style('stroke-width', 2);
         });
         if (estreito) {
-          svg.append('text').attr('x', x(r.carteira)).attr('y', yb - 13).attr('text-anchor', 'middle').style('fill', 'var(--color-fg)').style('font-weight', 600).text(p1(r.carteira));
+          svg.append('text').attr('x', W).attr('y', yy + 14).attr('text-anchor', 'end').style('fill', 'var(--color-fg)').style('font-size', '15px').style('font-weight', 600).text('Carteira ' + p1(r.carteira));
         } else {
-          cols.forEach(([k], j) => svg.append('text').attr('x', W - m.r + 40 + j * 76 + 30).attr('y', yb + 5).attr('text-anchor', 'end')
+          cols.forEach(([k], j) => svg.append('text').attr('x', colX(j)).attr('y', yb + 5).attr('text-anchor', 'end')
             .style('fill', 'var(--color-fg)').style('font-size', k === 'carteira' ? '16px' : '14px').style('font-weight', k === 'carteira' ? 600 : 400).text(p1(r[k])));
         }
       });
@@ -1699,8 +1729,9 @@
       T.classes.concat([{ classe: 'CDI', cen: cdi, media: T.media.cdi, ref: true }]).forEach((c) => {
         const tr = document.createElement('tr'); if (c.ref) tr.className = 'ref';
         cel(tr, c.classe, 'cl');
-        c.cen.forEach((v, i) => cel(tr, p1(v), c.ref ? '' : v >= cdi[i] ? 'mz-pos' : 'mz-neg'));
-        cel(tr, p1(c.media), c.ref ? '' : c.media >= T.media.cdi ? 'mz-pos' : 'mz-neg');
+        const tom = (v, ref) => (c.ref || Math.abs(v - ref) < 0.05 ? '' : v > ref ? 'mz-pos' : 'mz-neg');
+        c.cen.forEach((v, i) => cel(tr, p1(v), tom(v, cdi[i])));
+        cel(tr, p1(c.media), tom(c.media, T.media.cdi));
         tb.append(tr);
       });
     });
@@ -1740,7 +1771,7 @@
       svg.append('g').selectAll('line').data(y.ticks(5)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y).style('stroke', 'var(--cds-chart-grid)');
       svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(0).tickFormat((v) => L.format(',.1~f')(v) + '%')).call((g) => g.select('.domain').remove());
       svg.append('g').attr('transform', `translate(0,${H - m.b})`)
-        .call(d3.axisBottom(x).ticks(Math.max(3, Math.floor((W - m.l - m.r) / 90))).tickFormat(zoom() === 'ano' ? d3.utcFormat('%m/%y') : d3.utcFormat('%d/%m')).tickSizeOuter(0))
+        .call(d3.axisBottom(x).ticks(Math.max(3, Math.floor((W - m.l - m.r) / 120))).tickFormat(zoom() === 'ano' ? d3.utcFormat('%m/%y') : d3.utcFormat('%d/%m')).tickSizeOuter(0))
         .call((g) => g.select('.domain').style('stroke', 'var(--cds-chart-axis)')).call((g) => g.selectAll('line').remove());
       svg.append('path').datum(faixa).attr('d', d3.area().x((f) => x(f.d)).y0((f) => y(f.lo)).y1((f) => y(f.hi))).style('fill', 'var(--serie-0)').style('opacity', 0.14);
       svg.append('path').datum(faixa).attr('d', d3.line().x((f) => x(f.d)).y((f) => y(f.base))).style('fill', 'none').style('stroke', 'var(--serie-0)').style('stroke-width', 1.5).style('stroke-dasharray', '5 4');
@@ -1757,7 +1788,7 @@
         { y: y(ff.lo), t: 'ajuste ' + p1(ff.lo), c: 'var(--color-fg-muted)' },
         { y: y(ff.cdi), t: 'CDI esperado ' + p1(ff.cdi), c: 'var(--color-fg-muted)' },
       ].sort((a, b) => a.y - b.y);
-      for (let i = 1; i < rot.length; i++) if (rot[i].y - rot[i - 1].y < 13) rot[i].y = rot[i - 1].y + 13;
+      for (let i = 1; i < rot.length; i++) if (rot[i].y - rot[i - 1].y < 15) rot[i].y = rot[i - 1].y + 15;
       rot.forEach((r) => svg.append('text').attr('x', W - m.r + 8).attr('y', r.y + 4).style('fill', r.c).text(r.t));
       svg.append('text').attr('x', x(u.d) + 8).attr('y', y(u.carteira) - 8).style('fill', 'var(--color-fg)').style('font-weight', 600).text('carteira ' + MZR.pct(u.carteira, 2));
       // dica
@@ -1858,5 +1889,19 @@
         + MZR.pct(a.sim_total, 1) + ', contra ' + MZR.pct(b.sim_total, 1) + ' da régua e ' + MZR.pct(d.sim_total, 1) + ' do CDI: o seguro custou.';
       el.style.display = '';
     });
+  })();
+</script>
+
+<script>
+  // ---------- acabamento: o cabeçalho de cada coluna acompanha o alinhamento das células dela
+  (() => {
+    const alinhar = () => document.querySelectorAll('.mz-tab table').forEach((tb) => {
+      const ths = tb.querySelectorAll('thead th'), tr = tb.querySelector('tbody tr');
+      if (!tr || !ths.length || tr.children.length !== ths.length || tr.querySelector('th')) return;
+      ths.forEach((th, i) => { const a = getComputedStyle(tr.children[i]).textAlign; th.style.textAlign = a === 'start' ? 'left' : a; });
+    });
+    let fila = null;
+    new MutationObserver(() => { clearTimeout(fila); fila = setTimeout(alinhar, 30); }).observe(document.querySelector('.mz'), { childList: true, subtree: true });
+    document.addEventListener('DOMContentLoaded', () => setTimeout(alinhar, 50));
   })();
 </script>

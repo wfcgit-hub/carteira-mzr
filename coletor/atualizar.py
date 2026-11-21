@@ -56,10 +56,10 @@ PESOS = {  # carteira J do case (16/11/2026)
     'LCI/LCA': (30.0, 30.0, '86,6% do CDI (BCB, série 12)'),
     'Tesouro Selic': (12.5, 20.0, 'CDI (BCB, série 12)'),
     'Crédito high grade': (12.5, 10.0, 'cota do ' + FUNDOS['credito'][1]),
-    'Prefixado': (20.0, 7.5, 'cota do ' + FUNDOS['irfm'][1]),
-    'IPCA+ curto': (7.5, 7.5, 'cota do ' + FUNDOS['imab5'][1]),
-    'IPCA+ longo': (0.0, 7.5, 'cota do ' + FUNDOS['imab5mais'][1]),
-    'Ações Brasil': (2.5, 5.0, 'cota do ' + FUNDOS['ibov'][1]),
+    'Prefixado 2 anos': (20.0, 7.5, 'cota do ' + FUNDOS['irfm'][1]),
+    'IPCA+ 3 anos': (7.5, 7.5, 'cota do ' + FUNDOS['imab5'][1]),
+    'IPCA+ 10 anos': (0.0, 7.5, 'cota do ' + FUNDOS['imab5mais'][1]),
+    'Bolsa Brasil': (2.5, 5.0, 'cota do ' + FUNDOS['ibov'][1]),
     'Bolsa global sem hedge': (2.5, 7.5, 'cota do ' + FUNDOS['global'][1] + ', S&P 500 sem proteção cambial'),
     'Treasury 2 anos': (2.5, 5.0, 'Treasury de 2 anos pelo juro (FRED, DGS2), convertido pela PTAX (BCB)'),
     'Treasury 10 anos': (10.0, 0.0, 'Treasury de 10 anos pelo juro (FRED, DGS10), convertido pela PTAX (BCB)'),
@@ -286,8 +286,8 @@ def main():
         ret['dolar_puro'].append(fx)
         for k, y, anos in (('tsy2', y2, 2), ('tsy10', y10, 10)):
             ret[k].append((1 + titulo(ultimo(y, a), ultimo(y, b), (b - a).days, anos)) * (1 + fx) - 1)
-    FONTE = {'LCI/LCA': 'lci', 'Tesouro Selic': 'cdi', 'Crédito high grade': 'credito', 'Prefixado': 'irfm',
-             'IPCA+ curto': 'imab5', 'IPCA+ longo': 'imab5mais', 'Ações Brasil': 'ibov',
+    FONTE = {'LCI/LCA': 'lci', 'Tesouro Selic': 'cdi', 'Crédito high grade': 'credito', 'Prefixado 2 anos': 'irfm',
+             'IPCA+ 3 anos': 'imab5', 'IPCA+ 10 anos': 'imab5mais', 'Bolsa Brasil': 'ibov',
              'Bolsa global sem hedge': 'sp_reais', 'Treasury 2 anos': 'tsy2', 'Treasury 10 anos': 'tsy10'}
 
     PESOS_DIA = {}
@@ -433,7 +433,7 @@ def main():
     def aliquota(c, dias_corridos):
         if c == 'LCI/LCA':
             return 0.0
-        if c in ('Ações Brasil', 'Bolsa global sem hedge', 'Treasury 2 anos', 'Treasury 10 anos'):
+        if c in ('Bolsa Brasil', 'Bolsa global sem hedge', 'Treasury 2 anos', 'Treasury 10 anos'):
             return 0.15
         return 0.225 if dias_corridos <= 180 else 0.20 if dias_corridos <= 360 else 0.175 if dias_corridos <= 720 else 0.15
     def liquido(i0, i1, col):
@@ -509,7 +509,7 @@ def main():
         return (1 - (1 + y / 2) ** (-2 * prazo)) / y
     y_pre = pre2[max(pre2)]
     r3, r10 = juro_real[max(juro_real)]
-    D = {'Prefixado': 2 / (1 + y_pre / 100), 'IPCA+ curto': 3 / (1 + r3 / 100), 'IPCA+ longo': 10 / (1 + r10 / 100),
+    D = {'Prefixado 2 anos': 2 / (1 + y_pre / 100), 'IPCA+ 3 anos': 3 / (1 + r3 / 100), 'IPCA+ 10 anos': 10 / (1 + r10 / 100),
          'Treasury 2 anos': dmod_par(y2[max(y2)], 2), 'Treasury 10 anos': dmod_par(y10[max(y10)], 10)}
     USD = ('Bolsa global sem hedge', 'Treasury 2 anos', 'Treasury 10 anos')
 
@@ -519,21 +519,21 @@ def main():
         maior = max(cart, key=lambda c: abs(cart[c]))
         return dict(carteira=round(sum(cart.values()), 3), regua=round(sum(PESOS[c][1] / 100 * imp[c] for c in PESOS), 3),
                     maior=maior, maior_pp=round(cart[maior], 3))
-    pre_up = {'Prefixado': -D['Prefixado'] * 2}
-    real_up = {'IPCA+ curto': -D['IPCA+ curto'] * 1, 'IPCA+ longo': -D['IPCA+ longo'] * 1}
+    pre_up = {'Prefixado 2 anos': -D['Prefixado 2 anos'] * 2}
+    real_up = {'IPCA+ 3 anos': -D['IPCA+ 3 anos'] * 1, 'IPCA+ 10 anos': -D['IPCA+ 10 anos'] * 1}
     tsy = lambda dp: {'Treasury 2 anos': -D['Treasury 2 anos'] * dp, 'Treasury 10 anos': -D['Treasury 10 anos'] * dp}  # noqa: E731
     f2 = lambda v: f'{v:.2f}'.replace('.', ',')  # noqa: E731
     choques = [
-        dict(nome='Juro prefixado +2 p.p.', tipo='simples', como=f'LTN de 2 anos, duration {f2(D["Prefixado"])}', **choque(pre_up)),
-        dict(nome='Juro real (IPCA+) +1 p.p.', tipo='simples', como=f'NTN-B de ~3 e ~10 anos, durations {f2(D["IPCA+ curto"])} e {f2(D["IPCA+ longo"])}', **choque(real_up)),
+        dict(nome='Juro prefixado +2 p.p.', tipo='simples', como=f'LTN de 2 anos, duration {f2(D["Prefixado 2 anos"])}', **choque(pre_up)),
+        dict(nome='Juro real (IPCA+) +1 p.p.', tipo='simples', como=f'NTN-B de ~3 e ~10 anos, durations {f2(D["IPCA+ 3 anos"])} e {f2(D["IPCA+ 10 anos"])}', **choque(real_up)),
         dict(nome='Dólar +10%', tipo='simples', como='bolsa global e Treasuries, sem hedge', **choque({}, 10)),
-        dict(nome='Ibovespa −15%', tipo='simples', como='beta 1', **choque({'Ações Brasil': -15})),
+        dict(nome='Ibovespa −15%', tipo='simples', como='beta 1', **choque({'Bolsa Brasil': -15})),
         dict(nome='Bolsa americana −15% em dólar', tipo='simples', como='beta 1, em dólar', **choque({'Bolsa global sem hedge': -15})),
         dict(nome='Juro dos Treasuries +1 p.p.', tipo='simples', como=f'durations {f2(D["Treasury 2 anos"])} e {f2(D["Treasury 10 anos"])}', **choque(tsy(1))),
         dict(nome='Combinado: estresse doméstico', tipo='combinado', como='juro prefixado +2 p.p., juro real +1 p.p., dólar +10%, Ibovespa −15%',
-             **choque({**pre_up, **real_up, 'Ações Brasil': -15}, 10)),
+             **choque({**pre_up, **real_up, 'Bolsa Brasil': -15}, 10)),
         dict(nome='Combinado: aversão global', tipo='combinado', como='bolsa americana −15%, Treasuries −0,5 p.p., dólar +10%, Ibovespa −15%',
-             **choque({'Bolsa global sem hedge': -15, 'Ações Brasil': -15, **tsy(-0.5)}, 10)),
+             **choque({'Bolsa global sem hedge': -15, 'Bolsa Brasil': -15, **tsy(-0.5)}, 10)),
     ]
 
     # monitor: juro do prefixado de 2 anos (Tesouro Direto) e dólar
