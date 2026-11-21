@@ -1780,7 +1780,9 @@
     const FER = new Set(['2026-11-20', '2026-12-25', '2027-01-01', '2027-02-08', '2027-02-09', '2027-03-26', '2027-04-21', '2027-05-27',
       '2027-09-07', '2027-10-12', '2027-11-02', '2027-11-15', '2027-11-20']);
     const duAte = (d) => { let n = 0; const x = dia(MZR.ATIVA); while (x < d) { x.setUTCDate(x.getUTCDate() + 1); if (x.getUTCDay() % 6 !== 0 && !FER.has(x.toISOString().slice(0, 10))) n++; } return n; };
-    const esperado = (taxa, d) => (Math.pow(1 + taxa / 100, duAte(d) / 252) - 1) * 100;
+    // o retorno de 12 meses da tese é atingido em 13/11/2027: divide pelos dias úteis desse ano (≈250), não por 252 fixos
+    const DU_ANO = (() => { const d = dia(MZR.ATIVA); d.setUTCFullYear(d.getUTCFullYear() + 1); return duAte(d); })();
+    const esperado = (taxa, d) => (Math.pow(1 + taxa / 100, duAte(d) / DU_ANO) - 1) * 100;
     MZR.esperado = esperado;
     dash.draw('trilha', (el) => {
       const s = dash.data('serie'), T = tese();
@@ -1790,11 +1792,14 @@
       const reais = s.data.filter((x) => x.data >= base.data).map((x) => ({ d: dia(x.data), carteira: (+x.carteira / +base.carteira - 1) * 100, regua: (+x.regua / +base.regua - 1) * 100, cdi: (+x.cdi / +base.cdi - 1) * 100 }));
       const ini = dia(MZR.ATIVA), fimAno = new Date(ini); fimAno.setUTCFullYear(fimAno.getUTCFullYear() + 1);
       const ult = reais[reais.length - 1].d;
-      const fim = zoom() === 'ano' ? fimAno : new Date(Math.max(ult.getTime() + 21 * 864e5, ini.getTime() + 35 * 864e5));
-      const datas = d3.utcDay.range(ini, new Date(fim.getTime() + 864e5), zoom() === 'ano' ? 7 : 1).concat([fim]);
+      const ano = zoom() === 'ano';
+      // "até agora" termina no último dado; "os 12 meses" vai até 13/11/2027
+      const fim = ano ? fimAno : (ult > ini ? ult : new Date(ini.getTime() + 7 * 864e5));
+      // o esperado nos mesmos dias úteis da série (até agora) ou uma vez por semana (12 meses): sem degraus de fim de semana
+      const datas = ano ? d3.utcDay.range(ini, new Date(fim.getTime() + 864e5), 7).concat([fim]) : reais.map((r) => r.d);
       const [aj, ba, de] = T.cenarios;
       const faixa = datas.map((d) => ({ d, lo: esperado(Math.min(aj.carteira, de.carteira), d), hi: esperado(Math.max(aj.carteira, de.carteira), d), base: esperado(ba.carteira, d), cdi: esperado(ba.cdi, d) }));
-      const W = Math.max(280, el.clientWidth), H = 300, m = { t: 14, r: 150, b: 26, l: 46 };
+      const W = Math.max(280, el.clientWidth), H = 300, m = { t: 14, r: ano ? 150 : 200, b: 26, l: 46 };
       const x = d3.scaleUtc().domain([ini, fim]).range([m.l, W - m.r]);
       const vmax = Math.max(d3.max(faixa, (f) => f.hi), d3.max(reais, (r) => Math.max(r.carteira, r.regua, r.cdi)));
       const vmin = Math.min(0, d3.min(reais, (r) => Math.min(r.carteira, r.regua, r.cdi)));
@@ -1804,7 +1809,7 @@
       svg.append('g').selectAll('line').data(y.ticks(5)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y).style('stroke', 'var(--cds-chart-grid)');
       svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(0).tickFormat((v) => L.format(',.1~f')(v) + '%')).call((g) => g.select('.domain').remove());
       svg.append('g').attr('transform', `translate(0,${H - m.b})`)
-        .call(d3.axisBottom(x).ticks(Math.max(3, Math.floor((W - m.l - m.r) / 120))).tickFormat(zoom() === 'ano' ? d3.utcFormat('%m/%y') : d3.utcFormat('%d/%m')).tickSizeOuter(0))
+        .call(((eixo) => (!ano && reais.length <= 12 ? eixo.tickValues(reais.map((r) => r.d)) : eixo.ticks(Math.max(3, Math.floor((W - m.l - m.r) / 120)))))(d3.axisBottom(x)).tickFormat(ano ? d3.utcFormat('%m/%y') : d3.utcFormat('%d/%m')).tickSizeOuter(0))
         .call((g) => g.select('.domain').style('stroke', 'var(--cds-chart-axis)')).call((g) => g.selectAll('line').remove());
       svg.append('path').datum(faixa).attr('d', d3.area().x((f) => x(f.d)).y0((f) => y(f.lo)).y1((f) => y(f.hi))).style('fill', 'var(--serie-0)').style('opacity', 0.14);
       svg.append('path').datum(faixa).attr('d', d3.line().x((f) => x(f.d)).y((f) => y(f.base))).style('fill', 'none').style('stroke', 'var(--serie-0)').style('stroke-width', 1.5).style('stroke-dasharray', '5 4');
@@ -1815,15 +1820,21 @@
       svg.append('circle').attr('cx', x(u.d)).attr('cy', y(u.carteira)).attr('r', 4.5).style('fill', COR.carteira);
       // rótulos à direita: o fim de cada caminho esperado
       const ff = faixa[faixa.length - 1];
-      const rot = [
-        { y: y(ff.hi), t: 'deterioração ' + p1(esperado(Math.max(aj.carteira, de.carteira), fim)), c: 'var(--color-fg-muted)' },
+      // 12 meses: onde cada caminho esperado chega; até agora: onde cada série está, ao lado do esperado para hoje
+      const rot = (ano ? [
+        { y: y(ff.hi), t: 'deterioração ' + p1(ff.hi), c: 'var(--color-fg-muted)' },
         { y: y(ff.base), t: 'mais provável ' + p1(ff.base), c: 'var(--serie-0)' },
         { y: y(ff.lo), t: 'ajuste ' + p1(ff.lo), c: 'var(--color-fg-muted)' },
         { y: y(ff.cdi), t: 'CDI esperado ' + p1(ff.cdi), c: 'var(--color-fg-muted)' },
-      ].sort((a, b) => a.y - b.y);
+      ] : [
+        { y: y(u.carteira), t: 'Carteira ' + MZR.pct(u.carteira, 2), c: COR.carteira, b: true },
+        { y: y(u.regua), t: 'Régua ' + MZR.pct(u.regua, 2), c: COR.regua },
+        { y: y(u.cdi), t: 'CDI ' + MZR.pct(u.cdi, 2), c: COR.cdi },
+        { y: y(ff.base), t: 'Esperado, mais provável ' + MZR.pct(ff.base, 2), c: 'var(--color-fg-muted)' },
+      ]).sort((a, b) => a.y - b.y);
       for (let i = 1; i < rot.length; i++) if (rot[i].y - rot[i - 1].y < 15) rot[i].y = rot[i - 1].y + 15;
-      rot.forEach((r) => svg.append('text').attr('x', W - m.r + 8).attr('y', r.y + 4).style('fill', r.c).text(r.t));
-      svg.append('text').attr('x', x(u.d) + 8).attr('y', y(u.carteira) - 8).style('fill', 'var(--color-fg)').style('font-weight', 600).text('carteira ' + MZR.pct(u.carteira, 2));
+      rot.forEach((r) => svg.append('text').attr('x', W - m.r + 8).attr('y', r.y + 4).style('fill', r.c).style('font-weight', r.b ? 600 : null).text(r.t));
+      if (ano) svg.append('text').attr('x', x(u.d) + 8).attr('y', y(u.carteira) - 8).style('fill', 'var(--color-fg)').style('font-weight', 600).text('carteira ' + MZR.pct(u.carteira, 2));
       // dica
       const dica = d3.select(el).append('div').attr('class', 'mz-dica').style('display', 'none');
       const bis = d3.bisector((r) => r.d).center;
