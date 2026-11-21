@@ -449,7 +449,7 @@
             <tbody data-draw="historia-risco-linhas"></tbody>
           </table>
         </div>
-        <p class="mz-nota">Backtest do case: 119 meses, pesos de hoje rebalanceados todo mês, sem custos.</p>
+        <p class="mz-nota">Backtest do case: 119 meses, pesos de hoje rebalanceados todo mês, sem custos. As crises usam meses inteiros; em "Passado", as crises dos últimos 24 meses usam os dias exatos e as cotas diárias do painel, por isso os números de 2024 e 2026 diferem.</p>
         <h3>Os choques, um a um</h3>
         <div class="mz-tab">
           <table class="mz-estresse" id="tabela-choques" data-source="choques" data-row-key="nome">
@@ -518,6 +518,7 @@
             <tbody data-draw="episodios-linhas"></tbody>
           </table>
         </div>
+        <p class="mz-nota">Dias exatos de cada episódio, com as cotas diárias do painel. Em "Riscos", a tabela de 10 anos usa meses inteiros do backtest do case, por isso os números das mesmas crises diferem.</p>
       </div>
     </details>
   </section>
@@ -558,7 +559,7 @@
         <dt>Régua</dt><dd>A carteira moderada mediana de C6, Daycoval e Genial. É o padrão de comparação da carteira.</dd>
         <dt>Cenários</dt><dd>Ajuste crível (10% de chance): um pacote fiscal novo e maior. Ajuste já apresentado (60%): o PLP 299 passa, mas não segura a dívida. Deterioração (30%): a dívida piora e o dólar sobe.</dd>
         <dt>Real e simulação</dt><dd>A carteira passou a existir em 13/11/2026; o que vem depois é real. Antes disso, simulação: os pesos de hoje aplicados ao passado.</dd>
-        <dt>p.p. (ponto percentual)</dt><dd>A diferença entre dois percentuais: +0,43% contra +0,15% é +0,28 p.p.</dd>
+        <dt>p.p. (ponto percentual)</dt><dd>A diferença entre dois percentuais: +0,50% contra +0,20% é +0,30 p.p.</dd>
         <dt>% do CDI</dt><dd>O retorno dividido pelo do CDI no mesmo período: 100% é empatar com o CDI.</dd>
         <dt>Maior queda do pico</dt><dd>A maior perda entre um pico e o ponto mais baixo depois dele (em inglês, drawdown).</dd>
         <dt>Volatilidade</dt><dd>Quanto o retorno oscila, em termos anuais.</dd>
@@ -1413,7 +1414,7 @@
       const rot = document.createElement('span'); rot.className = 'rot'; rot.textContent = 'Comentário automático, gerado por regra a partir dos dados de ' + MZR.dataBR(dia(d));
       el.append(rot, document.createTextNode('No dia, a carteira rendeu ' + MZR.pct(v('Carteira'), 2) + ', a régua ' + MZR.pct(v('Régua'), 2) + ' e o CDI ' + MZR.pct(v('CDI'), 2) + '. '
         + 'O que mais somou foi ' + mais.c + ' (' + sn(mais.v, ' p.p.') + '); o que mais tirou, ' + menos.c + ' (' + sn(menos.v, ' p.p.') + '). '
-        + (ptax ? 'Dólar a R$ ' + L.format(',.2f')(+ptax.valor) : '') + (pre ? '; prefixado de 2 anos a ' + L.format(',.2f')(+pre.valor) + '%.' : '.')));
+        + (ptax && pre ? 'Em ' + MZR.dataBR(new Date(pre.data + 'T00:00:00Z')).slice(0, 5) + ', dólar a R$ ' + L.format(',.2f')(+ptax.valor) + ' e prefixado de 2 anos a ' + L.format(',.2f')(+pre.valor) + '%.' : '')));
       el.style.display = '';
     });
 
