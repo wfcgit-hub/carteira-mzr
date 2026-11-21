@@ -303,6 +303,7 @@
   .mz-comb th, .mz-comb td { border-bottom: none; border-radius: 6px; }
   .mz-comb tr:first-child th { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
   #cenarios .mz-dois .mz-card .mz-rot { min-height: 4.4em; }
+  #cenarios .mz-dois .mz-card { align-content: start; }
   .mz-mes td { vertical-align: top; }
   #tabela-historia, #tabela-historia-risco { table-layout: fixed; }
   #tabela-historia th:first-child, #tabela-historia-risco th:first-child { width: 46%; }
@@ -349,7 +350,7 @@
     <div class="mz-tese">
       <div class="mz-tese-cab">
         <h2>Quanto deve render em 12 meses, em cada cenário</h2>
-        <span class="mz-nota">Antes do IR · chances do case</span>
+        <span class="mz-nota" data-draw="tese-focus" data-source="premissas">Antes do IR · chances do case</span>
       </div>
       <div class="mz-graf mz-tese-graf" id="tese" data-draw="tese" data-source="tese"></div>
     </div>
@@ -379,10 +380,10 @@
 
   <!-- 2. MERCADO HOJE -->
   <section class="mz-sec mz-bloco" id="cenarios">
-    <h2>Em que cenário o mercado está hoje</h2>
+    <h2>O que o mercado projeta hoje</h2>
     <p class="mz-msg" data-draw="msg" data-msg="gatilhos" style="display:none"></p>
     <div class="mz-graf mz-sinais" id="sinais" data-draw="sinais" data-source="premissas"></div>
-    <p class="mz-nota">Cada linha põe um sinal de hoje na escala dos três cenários do case. Mostra distância, não probabilidade.</p>
+    <p class="mz-nota">A mediana do Focus para 2027 na escala dos três cenários do case. Só projeções entram aqui: preços de mercado, como o juro a termo, trazem prêmio de risco e ficam nos detalhes. Mostra distância, não probabilidade.</p>
 
     <details class="mz-mais">
       <summary>Ver detalhes: curva de juros, Focus e próximos eventos</summary>
@@ -394,17 +395,19 @@
             <div class="mz-mini" data-draw="termo-linha" data-source="termo" role="img" aria-label="Juro do prefixado de 2 anos nos últimos seis meses"></div>
           </div>
           <div class="mz-card" id="gatilho-termo-1a1a">
-            <span class="mz-rot">Juro de 1 ano daqui a 1 ano, contra a Selic de cada cenário</span>
-            <span class="mz-num" data-draw="termo-ult" data-source="termo" data-campo="fwd_1a1a">—</span>
-            <div class="mz-mini" data-draw="termo-mini" data-source="termo" data-campo="fwd_1a1a" data-refs="12.0:ajuste 12,0|13.5:apresentado 13,5|15.5:deterioração 15,5" role="img" aria-label="Juro a termo de 1 ano daqui a 1 ano nos últimos seis meses"></div>
+            <span class="mz-rot">O prêmio do prefixado: juro de 1 ano daqui a 1 ano no mercado, contra o esperado pelo case</span>
+            <span class="mz-num" data-draw="premio-num" data-source="termo">—</span>
+            <div class="mz-mini" data-draw="termo-mini" data-source="termo" data-campo="fwd_1a1a" data-refs="13.85:esperado 13,85:ref|14.34:média 14,34:ref" role="img" aria-label="Juro a termo de 1 ano daqui a 1 ano nos últimos seis meses, contra o juro esperado pelo case"></div>
+            <span class="mz-sub" data-draw="premio-sub" data-source="termo">—</span>
           </div>
           <div class="mz-card" id="gatilho-inflacao">
-            <span class="mz-rot">Inflação implícita de 3 anos, contra o IPCA de cada cenário</span>
+            <span class="mz-rot">Inflação implícita de 3 anos: o preço do mercado, contra o IPCA esperado pelo case</span>
             <span class="mz-num" data-draw="termo-ult" data-source="termo" data-campo="infl_impl_3a">—</span>
-            <div class="mz-mini" data-draw="termo-mini" data-source="termo" data-campo="infl_impl_3a" data-refs="4.6:ajuste 4,6|5.5:apresentado 5,5|7.1:deterioração 7,1" role="img" aria-label="Inflação implícita de 3 anos nos últimos seis meses"></div>
+            <div class="mz-mini" data-draw="termo-mini" data-source="termo" data-campo="infl_impl_3a" data-refs="5.5:esperado 5,5:ref" role="img" aria-label="Inflação implícita de 3 anos nos últimos seis meses, contra o IPCA esperado pelo case"></div>
+            <span class="mz-sub">Inclui prêmio de risco de inflação: é o preço que o mercado cobra, não a inflação que ele espera.</span>
           </div>
         </div>
-        <p class="mz-nota">Taxas do Tesouro Direto. O juro a termo e a inflação implícita incluem prêmio de risco, por isso tendem a ficar acima do que se espera.</p>
+        <p class="mz-nota">Taxas do Tesouro Direto. O prefixado de 2 anos é o termômetro do slide de gatilhos do deck; o juro a termo e a inflação implícita são preços, comparados com o que o case espera.</p>
         <h3>Premissas do case contra o Focus</h3>
         <div class="mz-prem-lista" data-draw="premissas" data-source="premissas"></div>
         <p class="mz-nota"><i class="mz-marca" style="color: var(--serie-0)">●</i> mediana do Focus · faixa dourada: da menor à maior resposta · <i class="mz-marca" style="color: var(--serie-1)">◇</i> o que já aconteceu · traços: os cenários do case.</p>
@@ -613,7 +616,7 @@
     <p><b>Imposto.</b> Estimativa de resgate no fim do período, para pessoa física: LCI/LCA isenta; renda fixa tributável e o CDI de comparação pela tabela regressiva (22,5% até 180 dias, 20% até 360, 17,5% até 720 e 15% acima); ações, bolsa americana e Treasuries a 15% sobre o ganho em reais (Lei 14.754/2023 nas aplicações no exterior); IOF de 1,1% no câmbio da compra dos Treasuries. Sem compensação de perdas e sem come-cotas; o imposto efetivo depende de como cada classe é comprada.</p>
     <p><b>Premissas e termômetros.</b> Focus do Banco Central: mediana, menor e maior resposta para 2027, publicado toda semana. Taxas do Tesouro Direto, no meio entre compra e venda: juro a termo de 1 ano daqui a 1 ano, das LTNs de ~1 e ~2 anos; inflação implícita de 3 anos, do prefixado contra o IPCA+ no mesmo prazo. As duas incluem prêmios de risco e não são previsão pura.</p>
     <p><b>Estresse.</b> Os episódios usam a série diária da simulação: o pacote fiscal (26/11 a 18/12/2024), a eleição (02 a 26/10/2026) e as três piores quinzenas da carteira. Os choques são instantâneos e lineares: duration modificada de hoje (LTN de 2 anos e NTN-B de ~3 e ~10 anos pelo Tesouro Direto; Treasuries ao par pelo FRED), beta 1 nas bolsas e câmbio sem hedge. Não somam carrego, convexidade nem a correlação entre os choques.</p>
-    <p><b>Sinais e cenários.</b> O mapa dos sinais compara cada valor de hoje com os três cenários do case, numa escala em que ajuste, base e deterioração ficam igualmente espaçados. Não atribui probabilidade aos cenários: mostra só de qual cenário cada sinal está mais perto.</p>
+    <p><b>Projeções e preços.</b> O mapa compara só projeções com os cenários do case: a mediana do Focus para a Selic, o IPCA e o dólar de 2027, numa escala em que os três cenários ficam igualmente espaçados. Preços de mercado não entram nele: o juro a termo e a inflação implícita carregam prêmio de risco e aparecem nos detalhes, comparados com o que o case espera. A diferença entre o juro a termo de 1 ano daqui a 1 ano e o juro esperado pelo case (13,85% no cenário mais provável; 14,34% na média pelas chances) é o prêmio que o prefixado de 2 anos captura.</p>
     <p><b>Comentário e mensagens.</b> O comentário do topo e as frases sob os títulos são gerados por regra a partir dos dados do dia, sem edição manual.</p>
     <p><b>Avisos.</b> Rentabilidade passada não é garantia de rentabilidade futura. A rentabilidade divulgada não é líquida de impostos. A simulação não é desempenho: mostra como os pesos de hoje teriam se comportado.</p>
     <p><b>Licenças.</b> Dados do Banco Central, da CVM e do Tesouro Transparente, abertos. Juro dos Treasuries: FRED, Federal Reserve Bank of St. Louis; este painel não é endossado nem certificado pelo Federal Reserve Bank of St. Louis.</p>
@@ -1276,13 +1279,14 @@
       const pts = t.data.filter((x) => x[campo] != null).map((x) => ({ d: dia(x.data), v: +x[campo] }));
       if (pts.length < 2) { el.textContent = '—'; return; }
       const cores = ['var(--color-ok)', 'var(--cds-chart-reference)', 'var(--color-bad)'];
-      const refs = el.dataset.refs.split('|').map((s, i) => { const [v, rot] = s.split(':'); return { v: +v, rot, cor: cores[i] }; });
+      const COR_REF = { ok: 'var(--color-ok)', ref: 'var(--cds-chart-reference)', bad: 'var(--color-bad)' };
+      const refs = el.dataset.refs.split('|').map((s, i) => { const [v, rot, c] = s.split(':'); return { v: +v, rot, cor: c ? COR_REF[c] : cores[i] }; });
       const W = Math.max(240, el.clientWidth), H = 130, m = { t: 8, r: 112, b: 20, l: 34 };
       const x = d3.scaleUtc().domain(d3.extent(pts, (p) => p.d)).range([m.l, W - m.r]);
       const y = d3.scaleLinear().domain(d3.extent(pts.map((p) => p.v).concat(refs.map((r) => r.v)))).nice().range([H - m.b, m.t]);
       const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
       refs.forEach((r) => svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(r.v)).attr('y2', y(r.v)).style('stroke', r.cor).style('stroke-dasharray', '4 3'));
-      empurra(refs.map((r) => ({ ...r, y: y(r.v) })), 12).forEach((r) => svg.append('text').attr('x', W - m.r + 4).attr('y', r.y + 4).style('fill', r.cor).text(r.rot));
+      empurra(refs.map((r) => ({ ...r, y: y(r.v) })), 15).forEach((r) => svg.append('text').attr('x', W - m.r + 4).attr('y', r.y + 4).style('fill', r.cor).text(r.rot));
       svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickSize(0).tickFormat((v) => L.format(',.1~f')(v))).call((g) => g.select('.domain').remove());
       svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(d3.utcMonth.every(2)).tickFormat(d3.utcFormat('%m/%y')).tickSizeOuter(0))
         .call((g) => g.select('.domain').style('stroke', 'var(--cds-chart-axis)')).call((g) => g.selectAll('line').remove());
@@ -1370,14 +1374,12 @@
       const ptax = linha('monitor', 'indicador', 'Dólar (PTAX)');
       return [
         ['Focus: Selic no fim de 2027', pr.Selic ? +pr.Selic.focus : null, cen('Selic'), false],
-        ['Juro de 1 ano daqui a 1 ano', ult('fwd_1a1a'), cen('Selic'), false],
         ['Focus: IPCA de 2027', pr.IPCA ? +pr.IPCA.focus : null, cen('IPCA'), false],
-        ['Inflação implícita de 3 anos', ult('infl_impl_3a'), cen('IPCA'), false],
         ['Focus: dólar no fim de 2027', pr['Câmbio'] ? +pr['Câmbio'].focus : null, cen('Câmbio'), true],
-        ['Dólar hoje (PTAX)', ptax ? +ptax.valor : null, cen('Câmbio'), true],
       ].filter((s) => s[1] != null && s[2]).map(([nome, v, [a, b, c], dol]) => {
         const pos = v <= b ? (v - b) / (b - a) + 1 : (v - b) / (c - b) + 1;
-        return { nome, v, dol, pos, perto: Math.max(0, Math.min(2, Math.round(pos))) };
+        const meio = pos > 0 && pos < 2 && Math.abs(pos - Math.floor(pos) - 0.5) < 0.1;
+        return { nome, v, dol, pos, perto: meio ? null : Math.max(0, Math.min(2, Math.round(pos))), entre: meio ? Math.floor(pos) : null };
       });
     };
     MZR.sinais = sinais;
@@ -1523,11 +1525,9 @@
       } else if (el.dataset.msg === 'gatilhos') {
         const ss = sinais();
         if (ss.length) {
-          const n = [0, 1, 2].map((k) => ss.filter((s) => s.perto === k).length);
-          const nomes = ['do ajuste crível', 'do ajuste já apresentado', 'da deterioração'];
-          const ordem = [0, 1, 2].filter((k) => n[k]).sort((p, q) => n[q] - n[p]);
-          const partes = ordem.map((k, j) => (j === 0 ? n[k] + ' dos ' + ss.length + ' sinais ' + (n[k] === 1 ? 'está' : 'estão') + ' mais perto ' : n[k] + ' ') + nomes[k]);
-          t = partes.slice(0, -1).join(', ') + (partes.length > 1 ? ' e ' : '') + partes[partes.length - 1] + '. Os sinais do Tesouro incluem prêmio de risco; os do Focus, não.';
+          const NOM = ['o ajuste crível', 'o ajuste já apresentado', 'a deterioração'], DE = ['do ajuste crível', 'do ajuste já apresentado', 'da deterioração'];
+          const curto = (s) => s.nome.replace('Focus: ', '').replace(' no fim de 2027', '').replace(' de 2027', '').replace('dólar', 'Dólar');
+          t = 'Projeções do Focus para 2027. ' + ss.map((s) => curto(s) + ': ' + (s.perto == null ? 'no meio, entre ' + NOM[s.entre] + ' e ' + NOM[s.entre + 1] : 'mais perto ' + DE[s.perto])).join('; ') + '.';
         }
       }
       el.textContent = t;
@@ -1668,12 +1668,17 @@
     const dia = (s) => new Date(s + 'T00:00:00Z');
     const COR = { carteira: 'var(--serie-0)', regua: 'var(--serie-1)', cdi: 'var(--serie-2)' };
     // de qual cenário o mercado está mais perto hoje (maioria dos sinais; empate = nenhum)
-    const cenarioHoje = () => {
+    const focusHoje = () => {
       const ss = MZR.sinais ? MZR.sinais() : [];
       if (!ss.length) return null;
-      const n = [0, 1, 2].map((k) => ss.filter((x) => x.perto === k).length), mx = Math.max(...n);
-      return n.filter((x) => x === mx).length === 1 ? n.indexOf(mx) : null;
+      const p = Math.max(0, Math.min(2, d3.mean(ss, (x) => x.pos))), fr = p - Math.floor(p);
+      return Math.abs(fr - 0.5) < 0.15 && p < 2 ? { idx: null, entre: Math.floor(p) } : { idx: Math.round(p), entre: null };
     };
+    const cenarioHoje = () => { const f = focusHoje(); return f ? f.idx : null; };
+    dash.draw('tese-focus', (el) => {
+      const f = focusHoje(), NOM = ['o ajuste crível', 'o ajuste já apresentado', 'a deterioração'];
+      el.textContent = 'Antes do IR · chances do case' + (!f ? '' : f.idx == null ? ' · na média, o Focus está entre ' + NOM[f.entre] + ' e ' + NOM[f.entre + 1] : ' · na média, o Focus está mais perto d' + NOM[f.idx]);
+    });
 
     // ---- o gráfico da tese: um ponto por série em cada cenário, com os números ao lado
     dash.draw('tese', (el) => {
@@ -1717,7 +1722,7 @@
         svg.append('text').attr('x', estreito ? 0 : 12).attr('y', estreito ? yy + 14 : yb - 2).style('fill', 'var(--color-fg)').style('font-size', '14px').style('font-weight', r.media ? 600 : 500).text(r.rot);
         const st = svg.append('text').attr('x', estreito ? 0 : 12).attr('y', estreito ? yy + 18 : yb + 15).attr('dx', estreito ? 0 : 0);
         if (estreito) st.attr('x', 0).attr('y', yy + 64);
-        st.text(r.sub + (i === hoje ? ' · mais perto do mercado hoje' : '')).style('fill', i === hoje ? 'var(--serie-0)' : null).style('font-weight', i === hoje ? 600 : null);
+        st.text(r.sub + (i === hoje ? ' · mais perto do Focus hoje' : '')).style('fill', i === hoje ? 'var(--serie-0)' : null).style('font-weight', i === hoje ? 600 : null);
         // trilho e pontos
         svg.append('line').attr('x1', x.range()[0] - 8).attr('x2', x.range()[1] + 8).attr('y1', yb).attr('y2', yb).style('stroke', 'var(--cds-chart-grid)').style('stroke-width', 4).style('stroke-linecap', 'round');
         ['regua', 'cdi', 'carteira'].forEach((k) => {
@@ -1999,8 +2004,29 @@
   })();
 </script>
 
+<script>
+  // ---------- o prêmio do prefixado: juro a termo de 1 ano daqui a 1 ano (mercado) menos o juro de 1 ano esperado pelo case em nov/27
+  (() => {
+    const ESPERADO = 13.85, MEDIA = 14.34;   // case: juro de 1 ano daqui a 12 meses no cenário mais provável e na média pelas chances (12,3 / 13,85 / 16,0)
+    const L = MZR.loc;
+    const ult = () => { const t = dash.data('termo'); if (t.status !== 'ok') return null; return [...t.data].reverse().find((x) => x.fwd_1a1a != null) || null; };
+    dash.draw('premio-num', (el) => {
+      const u = ult();
+      if (!u) { el.textContent = '—'; return; }
+      const p = u.fwd_1a1a - ESPERADO;
+      el.textContent = (p > 0 ? '+' : p < 0 ? '−' : '') + L.format(',.2f')(Math.abs(p)) + ' p.p.';
+    });
+    dash.draw('premio-sub', (el) => {
+      const u = ult();
+      if (!u) { el.textContent = '—'; return; }
+      el.textContent = 'O mercado cobra ' + L.format(',.2f')(u.fwd_1a1a) + '% (' + MZR.dataBR(new Date(u.data + 'T00:00:00Z')).slice(0, 5) + '); o case espera '
+        + L.format(',.2f')(ESPERADO) + '% no cenário mais provável e ' + L.format(',.2f')(MEDIA) + '% na média. Com o termo acima do esperado, o prefixado de 2 anos tende a render mais que o CDI: 15,5% contra 13,5% no cenário mais provável.';
+    });
+  })();
+</script>
+
 <footer class="publico-rodape">
-  Atualizado em 21/11/2026 15:04 (Brasília), com dados até 18/11/2026. Fontes públicas: Banco Central (CDI, PTAX, Selic, IPCA e Focus), CVM (cotas diárias de fundos passivos, no lugar dos índices),
+  Atualizado em 21/11/2026 15:13 (Brasília), com dados até 18/11/2026. Fontes públicas: Banco Central (CDI, PTAX, Selic, IPCA e Focus), CVM (cotas diárias de fundos passivos, no lugar dos índices),
   Tesouro Direto e FRED (juro dos Treasuries; este painel não é endossado nem certificado pelo Federal Reserve Bank of St. Louis). Case MZR Family Office, Summer 2026/2.
   Antes de 13/11/2026, simulação com os pesos de hoje, informação suplementar; não é desempenho passado. Rentabilidade passada não é garantia de rentabilidade futura; a rentabilidade divulgada não é líquida de impostos.
 </footer>
