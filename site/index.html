@@ -58,6 +58,33 @@
   .mz-tab caption { caption-side: top; text-align: left; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); padding-bottom: 6px; }
   .mz-fontes td { text-align: left; }
   .mz-fontes .atrasado { color: var(--color-warn); font-weight: var(--cds-font-weight-medium); }
+  .mz-queda { min-height: 132px; }
+  .mz-atr { min-height: 0; }
+  .mz-alterna { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); }
+  .mz-mes { font-size: var(--cds-font-size-caption); }
+  .mz-mes th, .mz-mes td { padding: 3px 4px; border-bottom: none; }
+  .mz-mes th[scope=row] { text-align: left; vertical-align: top; font-size: var(--cds-font-size-body); color: var(--color-fg); padding-top: 6px; }
+  .mz-mes td.serie { text-align: left; color: var(--color-fg-muted); }
+  .mz-mes tr.ano-ini > * { border-top: 1px solid var(--color-border-line); }
+  .mz-mes tr.pc td { padding-bottom: 6px; }
+  .mz-mes span.v { display: block; padding: 2px 4px; border-radius: 4px; }
+  .mz-mes span.acima { background: color-mix(in srgb, var(--color-ok) 16%, transparent); }
+  .mz-mes span.abaixo { background: color-mix(in srgb, var(--color-bad) 12%, transparent); }
+  .mz-mes span.real { box-shadow: inset 0 0 0 1.5px var(--serie-0); font-weight: var(--cds-font-weight-medium); }
+  .mz-mes .ano { border-left: 1px solid var(--color-border-line); font-weight: var(--cds-font-weight-medium); }
+  .mz-mes .eu td:not(.serie) { color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
+  .mz-tab td .q { display: block; font-size: 11px; color: var(--color-fg-muted); font-weight: 400; }
+  .mz-risco td:nth-child(2) { font-weight: var(--cds-font-weight-medium); }
+  .mz-prem-lista { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--cds-gap-lg); }
+  .mz-prem { display: grid; gap: var(--cds-gap-xs); min-width: 0; }
+  .mz-prem-esc { position: relative; }
+  .mz-prem-esc svg { display: block; width: 100%; }
+  .mz-prem-esc text { fill: var(--cds-text-secondary); font-size: var(--cds-font-size-caption); font-family: var(--font-anthropic-sans); }
+  .mz-marca { font-style: normal; }
+  .mz-risco th:last-child, .mz-fontes th { text-align: left; }
+  .mz-tab td .q span { display: block; }
+  #tabela-classes th { white-space: normal; vertical-align: bottom; min-width: 64px; }
+  #tabela-classes td.como { min-width: 200px; }
 </style>
 
 <div class="mz">
@@ -104,6 +131,7 @@
         <span class="mz-rot">12 meses até 13/11/2026</span>
         <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="sim_m12">—</span>
         <span class="mz-sub">Régua <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="sim_m12">—</b> · CDI <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="sim_m12">—</b> · <b data-draw="pp-cdi" data-source="comparacao" data-field="sim_m12">—</b> contra o CDI</span>
+        <span class="mz-sub">Acima do IPCA (nov/25 a out/26): <b data-draw="real-ipca" data-source="mensal">—</b></span>
       </div>
       <div class="mz-card mz-sim" id="card-24m">
         <span class="mz-rot">24 meses até 13/11/2026</span>
@@ -137,14 +165,23 @@
       </div>
     </div>
     <div class="mz-graf" id="grafico" data-draw="grafico" data-source="serie"></div>
+    <div class="mz-graf mz-queda" id="queda" data-draw="queda" data-source="serie"></div>
     <div class="mz-legenda" aria-hidden="true"><span><i class="p"></i>Simulação, antes de a carteira existir</span><span><i></i>Carteira ativa, desde 13/11/2026</span></div>
-    <p class="mz-nota">Base 100 no início do período. Até 13/11/2026 a carteira não existia: o trecho pontilhado aplica os pesos de hoje ao passado. Retornos antes do IR.</p>
+    <p class="mz-nota">Base 100 no início do período. Até 13/11/2026 a carteira não existia: o trecho pontilhado aplica os pesos de hoje ao passado. Retornos antes do IR. Embaixo, quanto cada uma está abaixo do seu pico anterior; o pico recomeça em 13/11/2026, para que a queda real não herde a da simulação.</p>
   </section>
 
   <section class="mz-sec" id="risco">
     <h2>Quanto rendeu e quanto caiu no caminho <span class="mz-selo">simulação · 13/11/2024 a 13/11/2026</span></h2>
     <div class="mz-graf mz-disp" id="dispersao" data-draw="dispersao" data-source="comparacao"></div>
     <p class="mz-nota">Cada ponto é uma série nos 24 meses até 13/11/2026: no eixo horizontal, a maior queda do pico ao fundo; no vertical, o retorno acumulado. Quanto mais para cima e para a esquerda, melhor. A carteira e a régua são simulação: os pesos de hoje aplicados ao passado.</p>
+    <div class="mz-tab">
+      <table class="mz-risco" id="tabela-risco" data-source="risco" data-row-key="chave">
+        <caption>Risco na simulação, retornos diários de 13/11/2024 a 13/11/2026</caption>
+        <thead><tr><th>Medida</th><th>Carteira</th><th>Régua</th><th>CDI</th><th>Como se calcula</th></tr></thead>
+        <tbody data-draw="risco-linhas"></tbody>
+      </table>
+    </div>
+    <p class="mz-nota">Na simulação, a carteira rendeu menos que o CDI, por isso o Sharpe é negativo. A margem de erro tem o tamanho do próprio Sharpe: dois anos de dados não bastam para separar carteira, régua e CDI com confiança. A escolha dos pesos se apoia nos cenários do case, não neste passado.</p>
   </section>
 
   <section class="mz-sec" id="comparacao-sec">
@@ -152,7 +189,7 @@
     <div class="mz-tab">
       <table id="tabela-real" data-source="comparacao" data-row-key="serie">
         <caption>Real, desde 13/11/2026</caption>
-        <thead><tr><th>Série</th><th>Último dia</th><th>Desde 13/11/26</th><th>Contra o CDI</th></tr></thead>
+        <thead><tr><th>Série</th><th>Último dia</th><th>Desde 13/11/26</th><th>Contra o CDI</th><th>% do CDI</th></tr></thead>
         <tbody data-draw="tabela-real"></tbody>
       </table>
     </div>
@@ -160,11 +197,53 @@
     <div class="mz-tab">
       <table id="tabela-sim" data-source="comparacao" data-row-key="serie">
         <caption>Simulação, 13/11/2024 a 13/11/2026 (pesos de hoje aplicados ao passado; informação suplementar)</caption>
-        <thead><tr><th>Série</th><th>12 meses até 13/11/26</th><th>24 meses</th><th>Contra o CDI (24 meses)</th><th>Maior queda</th></tr></thead>
+        <thead><tr><th>Série</th><th>12 meses até 13/11/26</th><th>% do CDI em 12 meses</th><th>24 meses</th><th>Contra o CDI (24 meses)</th><th>Maior queda</th></tr></thead>
         <tbody data-draw="tabela-sim"></tbody>
       </table>
     </div>
     <p class="mz-nota" data-draw="ate" data-source="serie">—</p>
+  </section>
+
+  <section class="mz-sec" id="mensal-sec">
+    <h2>Mês a mês</h2>
+    <div class="mz-tab">
+      <table class="mz-mes" id="tabela-mensal" data-source="mensal" data-row-key="linha">
+        <thead><tr><th>Ano</th><th></th><th>Jan</th><th>Fev</th><th>Mar</th><th>Abr</th><th>Mai</th><th>Jun</th><th>Jul</th><th>Ago</th><th>Set</th><th>Out</th><th>Nov</th><th>Dez</th><th class="ano">No ano</th></tr></thead>
+        <tbody data-draw="mensal-linhas"></tbody>
+      </table>
+    </div>
+    <p class="mz-nota">Retorno de cada mês, em %. Na linha "% do CDI", verde quando a carteira rendeu mais que o CDI e vermelho quando rendeu menos. Tudo até 13/11/2026 é simulação; o contorno dourado marca o real. Novembro de 2026 aparece partido: até 13/11 (simulação) e depois (real). O primeiro mês começa em 13/11/2024 e o último vai até o dado mais recente. "No ano" soma só a simulação.</p>
+  </section>
+
+  <section class="mz-sec" id="atribuicao-sec">
+    <h2>De onde vem a diferença para a régua</h2>
+    <div class="mz-alterna" id="atr-periodos" role="group" aria-label="Período da atribuição">
+      <button type="button" class="mz-chip" data-periodo="sim12" aria-pressed="true">Simulação, 12 meses até 13/11/26</button>
+      <button type="button" class="mz-chip" data-periodo="real" aria-pressed="false">Real, desde 13/11/26</button>
+    </div>
+    <div class="mz-graf mz-atr" id="atribuicao" data-draw="atribuicao" data-source="atribuicao"></div>
+    <p class="mz-nota">Quanto cada classe somou ou tirou da diferença entre carteira e régua, em pontos percentuais. Uma classe só pesa quando a carteira tem mais ou menos dela que a régua: o efeito é a diferença de peso vezes quanto a classe rendeu acima ou abaixo da régua, dia a dia.</p>
+  </section>
+
+  <section class="mz-sec" id="liquido-sec">
+    <h2>Antes e depois do imposto</h2>
+    <div class="mz-dois">
+      <div class="mz-tab">
+        <table id="tabela-liquido-real" data-source="liquido" data-row-key="serie">
+          <caption>Real, se resgatado no último dia</caption>
+          <thead><tr><th>Série</th><th>Bruto</th><th>IR estimado</th><th>IOF câmbio</th><th>Líquido</th></tr></thead>
+          <tbody data-draw="liquido-linhas" data-periodo="real"></tbody>
+        </table>
+      </div>
+      <div class="mz-tab">
+        <table id="tabela-liquido-sim" data-source="liquido" data-row-key="serie">
+          <caption>Simulação, 12 meses até 13/11/2026</caption>
+          <thead><tr><th>Série</th><th>Bruto</th><th>IR estimado</th><th>IOF câmbio</th><th>Líquido</th></tr></thead>
+          <tbody data-draw="liquido-linhas" data-periodo="sim12"></tbody>
+        </table>
+      </div>
+    </div>
+    <p class="mz-nota">Estimativa para pessoa física. A LCI/LCA é isenta, o que favorece a carteira contra o CDI tributado. No começo, a alíquota da renda fixa é a maior da tabela (22,5%) e o IOF de 1,1% na compra dos Treasuries pesa sobre poucos dias de retorno.</p>
   </section>
 
   <section class="mz-sec" id="gatilhos">
@@ -172,15 +251,27 @@
     <div class="mz-dois">
       <div class="mz-card" id="gatilho-termo">
         <span class="mz-rot">Juro do prefixado de 2 anos: ~14,0 põe o cenário base no preço; acima de ~15,1, a deterioração</span>
+        <span class="mz-num" data-draw="termo-ult" data-source="termo" data-campo="pre_2a">—</span>
         <div class="mz-mini" data-draw="termo-linha" data-source="termo" role="img" aria-label="Juro do prefixado de 2 anos nos últimos seis meses, com as linhas do cenário base e da deterioração"></div>
         <span class="mz-sub">Tesouro Direto: LTNs de ~1 e ~2 anos, no meio entre compra e venda. Pode diferir alguns décimos da curva da Anbima usada no case (15,24 em 13/11).</span>
       </div>
-      <div class="mz-card" id="gatilho-dolar">
-        <span class="mz-rot">Dólar contra os cenários de fim de 2027</span>
-        <span class="mz-num" data-draw="dolar-num" data-source="monitor" data-where="indicador=Dólar (PTAX)" data-field="valor">—</span>
-        <div class="mz-mini" data-draw="dolar-escala" data-source="monitor" role="img" aria-label="Dólar de hoje numa régua com os cenários de ajuste, base e deterioração"></div>
-        <span class="mz-sub">Ajuste R$ 5,10 · base R$ 5,67 · deterioração R$ 6,80, ou 7,48 com o mundo em aversão (slide de cenários)</span>
+      <div class="mz-card" id="gatilho-termo-1a1a">
+        <span class="mz-rot">Juro de 1 ano daqui a 1 ano, contra a Selic de cada cenário</span>
+        <span class="mz-num" data-draw="termo-ult" data-source="termo" data-campo="fwd_1a1a">—</span>
+        <div class="mz-mini" data-draw="termo-mini" data-source="termo" data-campo="fwd_1a1a" data-refs="12.0:ajuste 12,0|13.5:base 13,5|15.5:deterioração 15,5" role="img" aria-label="Juro a termo de 1 ano daqui a 1 ano nos últimos seis meses, com a Selic de fim de 2027 em cada cenário"></div>
+        <span class="mz-sub">Tesouro Direto: juro a termo entre as LTNs de ~1 e ~2 anos. Inclui prêmio de prazo, por isso tende a ficar acima da Selic esperada.</span>
       </div>
+      <div class="mz-card" id="gatilho-inflacao">
+        <span class="mz-rot">Inflação implícita de 3 anos, contra o IPCA de cada cenário</span>
+        <span class="mz-num" data-draw="termo-ult" data-source="termo" data-campo="infl_impl_3a">—</span>
+        <div class="mz-mini" data-draw="termo-mini" data-source="termo" data-campo="infl_impl_3a" data-refs="4.6:ajuste 4,6|5.5:base 5,5|7.1:deterioração 7,1" role="img" aria-label="Inflação implícita de 3 anos nos últimos seis meses, com o IPCA de 2027 em cada cenário"></div>
+        <span class="mz-sub">Tesouro Direto: prefixado contra IPCA+ no mesmo prazo de 3 anos. Inclui prêmio de risco de inflação, por isso tende a ficar acima do IPCA esperado.</span>
+      </div>
+    </div>
+    <div class="mz-card" id="premissas-card">
+      <span class="mz-rot">Premissas do case contra o Focus</span>
+      <div class="mz-prem-lista" data-draw="premissas" data-source="premissas"></div>
+      <span class="mz-sub"><i class="mz-marca" style="color: var(--serie-0)">●</i> mediana do Focus · faixa dourada: da menor à maior resposta · <i class="mz-marca" style="color: var(--serie-1)">◇</i> o que já aconteceu · traços: os três cenários do case. No dólar, a deterioração com o mundo em aversão chega a R$ 7,48.</span>
     </div>
   </section>
 
@@ -188,10 +279,11 @@
     <h2>As classes</h2>
     <div class="mz-tab">
       <table id="tabela-classes" data-source="classes" data-row-key="classe">
-        <thead><tr><th data-field="classe">Classe</th><th data-field="carteira">Carteira %</th><th data-field="regua">Régua %</th><th data-field="desvio">Desvio</th><th data-field="ret_dia">Último dia (real)</th><th data-field="ret_ativa">Desde 13/11/26 (real)</th><th data-field="ret_12m_sim">12 meses até 13/11/26 (simulação)</th><th data-field="como">Como medimos</th></tr></thead>
+        <thead><tr><th data-field="classe">Classe</th><th data-field="carteira">Carteira %</th><th data-field="peso_hoje">Peso hoje %</th><th data-field="regua">Régua %</th><th data-field="desvio">Desvio</th><th data-field="ret_dia">Último dia (real)</th><th data-field="ret_ativa">Desde 13/11/26 (real)</th><th data-field="ret_12m_sim">12 meses até 13/11/26 (simulação)</th><th data-field="como">Como medimos</th></tr></thead>
         <tbody data-draw="classes-linhas"></tbody>
       </table>
     </div>
+    <p class="mz-nota">Peso hoje: os pesos andam com os preços e voltam ao alvo no primeiro dia útil de cada mês. Nas classes em dólar, o retorno em reais se divide em retorno em dólar e variação do câmbio (PTAX).</p>
   </section>
 
   <section class="mz-sec" id="fontes-sec">
@@ -211,6 +303,10 @@
     <p><b>Períodos curtos.</b> Retorno de menos de um ano não é anualizado. Volatilidade, Sharpe e outras medidas de risco do período real só aparecem com 12 meses de dados reais.</p>
     <p><b>Carteira e régua.</b> A régua é a carteira moderada mediana de C6, Daycoval e Genial; a carteira tem os desvios com tese (mais prefixado curto, crédito e Treasuries de 10 anos; menos bolsa; sem IPCA+ longo). Pesos fixos, rebalanceados no primeiro dia útil de cada mês, sem custo de transação. Taxa livre de risco: CDI.</p>
     <p><b>Como cada classe é medida.</b> CDI e dólar (PTAX de venda) do Banco Central; LCI/LCA a 86,6% do CDI; Treasuries de 2 e de 10 anos pelo juro publicado no FRED, convertidos pela PTAX; para o que é índice da B3 ou da Anbima (Ibovespa, IMA-B, IMA-B 5, IMA-B 5+, IRF-M, crédito) e para a bolsa americana em reais, a cota diária de fundos passivos na CVM. A cota já desconta a taxa de administração e tem erro de aderência ao índice. Taxas do Tesouro Direto para o juro do prefixado de 2 anos.</p>
+    <p><b>Risco e mês a mês.</b> As medidas de risco usam só a simulação, com retornos diários de 13/11/2024 a 13/11/2026: volatilidade anualizada por √252; Sharpe e Sortino contra o CDI, com a margem de erro de Lo (2002); maior queda; VaR histórico de 95% em 1 dia; tracking error e information ratio contra a régua. O IPCA mensal é o do IBGE, pela série 433 do Banco Central.</p>
+    <p><b>Atribuição.</b> Método de Brinson-Fachler: em cada dia, (peso da carteira − peso da régua) × (retorno da classe − retorno da régua), somado no período, com os pesos que andaram com os preços desde o último rebalanceamento. Carteira e régua usam o mesmo índice em cada classe, por isso não há efeito de seleção; o resíduo vem dos juros compostos e do rebalanceamento.</p>
+    <p><b>Imposto.</b> Estimativa de resgate no fim do período, para pessoa física: LCI/LCA isenta; renda fixa tributável e o CDI de comparação pela tabela regressiva (22,5% até 180 dias, 20% até 360, 17,5% até 720 e 15% acima); ações, bolsa americana e Treasuries a 15% sobre o ganho em reais (Lei 14.754/2023 nas aplicações no exterior); IOF de 1,1% no câmbio da compra dos Treasuries. Sem compensação de perdas e sem come-cotas; o imposto efetivo depende de como cada classe é comprada.</p>
+    <p><b>Premissas e termômetros.</b> Focus do Banco Central: mediana, menor e maior resposta para 2027, publicado toda semana. Taxas do Tesouro Direto, no meio entre compra e venda: juro a termo de 1 ano daqui a 1 ano, das LTNs de ~1 e ~2 anos; inflação implícita de 3 anos, do prefixado contra o IPCA+ no mesmo prazo. As duas incluem prêmios de risco e não são previsão pura.</p>
     <p><b>Avisos.</b> Rentabilidade passada não é garantia de rentabilidade futura. A rentabilidade divulgada não é líquida de impostos. A simulação não é desempenho: mostra como os pesos de hoje teriam se comportado.</p>
     <p><b>Licenças.</b> Dados do Banco Central, da CVM e do Tesouro Transparente, abertos. Juro dos Treasuries: FRED, Federal Reserve Bank of St. Louis; este painel não é endossado nem certificado pelo Federal Reserve Bank of St. Louis.</p>
   </details>
@@ -233,10 +329,12 @@
   document.querySelectorAll('.mz-chips .mz-chip').forEach((b) => b.addEventListener('click', () => {
     b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true');
     dash.draw('grafico');
+    dash.draw('queda');
   }));
   document.querySelectorAll('.mz-periodos .mz-chip').forEach((b) => b.addEventListener('click', () => {
     document.querySelectorAll('.mz-periodos .mz-chip').forEach((o) => o.setAttribute('aria-pressed', o === b ? 'true' : 'false'));
     dash.draw('grafico');
+    dash.draw('queda');
   }));
 </script>
 
@@ -465,32 +563,31 @@
 
 <script>
   // ---------- tabelas
-  const linhaTabela = (tb, campos, ppCampo) => {
+  const linhaTabela = (tb, colunas) => {
     const c = dash.data('comparacao');
     tb.replaceChildren();
     if (c.status !== 'ok' || !c.data) return;
     const cdi = c.data.find((x) => x.serie === 'CDI');
+    const f2 = MZR.loc.format(',.2f');
     c.data.forEach((r) => {
       const tr = document.createElement('tr'); if (r.serie === 'Carteira') tr.className = 'eu';
       tr.dataset.key = encodeURIComponent(r.serie);
       const td0 = document.createElement('td'); td0.textContent = r.serie; tr.append(td0);
-      campos.forEach((k) => {
-        const td = document.createElement('td'); td.textContent = MZR.pct(r[k], 2);
-        if (r[k] != null && !k.endsWith('queda')) td.className = r[k] > 0 ? 'mz-pos' : r[k] < 0 ? 'mz-neg' : '';
+      colunas.forEach(([k, tipo]) => {
+        const td = document.createElement('td');
+        let v = r[k];
+        if (tipo === 'pp') v = r.serie === 'CDI' || v == null || !cdi || cdi[k] == null ? null : v - cdi[k];
+        if (tipo === 'pcdi') v = !['Carteira', 'Régua'].includes(r.serie) || v == null || !cdi || !cdi[k] ? null : v / cdi[k] * 100;
+        td.textContent = tipo === 'pct' || tipo === 'queda' ? MZR.pct(v, 2)
+          : v == null ? '—' : tipo === 'pp' ? (v > 0 ? '+' : v < 0 ? '−' : '') + f2(Math.abs(v)) + ' p.p.' : MZR.loc.format(',.0f')(v) + '%';
+        if (v != null && tipo !== 'queda') td.className = tipo === 'pcdi' ? (v >= 100 ? 'mz-pos' : 'mz-neg') : v > 0 ? 'mz-pos' : v < 0 ? 'mz-neg' : '';
         tr.append(td);
       });
-      if (ppCampo) {
-        const td = document.createElement('td');
-        const v = r.serie === 'CDI' || r[ppCampo] == null || !cdi || cdi[ppCampo] == null ? null : r[ppCampo] - cdi[ppCampo];
-        td.textContent = v == null ? '—' : (v > 0 ? '+' : v < 0 ? '−' : '') + MZR.loc.format(',.2f')(Math.abs(v)) + ' p.p.';
-        if (v != null) td.className = v > 0 ? 'mz-pos' : v < 0 ? 'mz-neg' : '';
-        tr.insertBefore(td, ppCampo === 'sim_total' ? tr.lastChild : null);
-      }
       tb.append(tr);
     });
   };
-  dash.draw('tabela-real', (tb) => linhaTabela(tb, ['dia', 'ativa'], 'ativa'));
-  dash.draw('tabela-sim', (tb) => linhaTabela(tb, ['sim_m12', 'sim_total', 'sim_queda'], 'sim_total'));
+  dash.draw('tabela-real', (tb) => linhaTabela(tb, [['dia', 'pct'], ['ativa', 'pct'], ['ativa', 'pp'], ['ativa', 'pcdi']]));
+  dash.draw('tabela-sim', (tb) => linhaTabela(tb, [['sim_m12', 'pct'], ['sim_m12', 'pcdi'], ['sim_total', 'pct'], ['sim_total', 'pp'], ['sim_queda', 'queda']]));
   dash.draw('classes-linhas', (tb) => {
     const c = dash.data('classes');
     tb.replaceChildren();
@@ -500,9 +597,19 @@
       const cel = (t, cls) => { const td = document.createElement('td'); td.textContent = t; if (cls) td.className = cls; tr.append(td); };
       const num = (v) => v == null ? '—' : MZR.loc.format(',.2f')(+v);
       cel(r.classe);
-      cel(num(r.carteira)); cel(num(r.regua));
+      cel(num(r.carteira)); cel(num(r.peso_hoje)); cel(num(r.regua));
       const dv = +r.desvio; cel(dv === 0 ? '—' : (dv > 0 ? '+' : '−') + MZR.loc.format(',.2f')(Math.abs(dv)));
-      ['ret_dia', 'ret_ativa', 'ret_12m_sim'].forEach((k) => cel(MZR.pct(r[k] == null ? null : +r[k], 2), r[k] == null ? '' : (+r[k] > 0 ? 'mz-pos' : +r[k] < 0 ? 'mz-neg' : '')));
+      const fx = { ret_ativa: ['ativa_moeda', 'ativa_cambio'], ret_12m_sim: ['sim12_moeda', 'sim12_cambio'] };
+      ['ret_dia', 'ret_ativa', 'ret_12m_sim'].forEach((k) => {
+        const td = document.createElement('td'); td.textContent = MZR.pct(r[k] == null ? null : +r[k], 2);
+        if (r[k] != null) td.className = +r[k] > 0 ? 'mz-pos' : +r[k] < 0 ? 'mz-neg' : '';
+        if (fx[k] && r[fx[k][0]] != null) {
+          const q = document.createElement('span'); q.className = 'q';
+          [['em dólar ', fx[k][0]], ['câmbio ', fx[k][1]]].forEach(([rot, c]) => { const sp = document.createElement('span'); sp.textContent = rot + MZR.pct(+r[c], 2); q.append(sp); });
+          td.append(q);
+        }
+        tr.append(td);
+      });
       cel(r.como, 'como');
       tb.append(tr);
     });
@@ -512,7 +619,6 @@
 <script>
   // ---------- gatilhos: prefixado de 2 anos e dólar
   const REALIZAR = 14.0, SAIR = 15.1;           // termômetro: o cenário base no preço (~14,0) e o piso da deterioração no preço (15,1); a carteira não vende no meio
-  const CENARIOS = [['Ajuste', 5.10], ['Base', 5.67], ['Deterioração', 6.80]];   // dólar no fim de 2027, slide de cenários
   const linhaMon = (nome) => { const m = dash.data('monitor'); return m.status === 'ok' ? m.data.find((x) => x.indicador === nome) : null; };
   dash.draw('termo-num', (el) => {
     const r = linhaMon('Prefixado de 2 anos');
@@ -541,7 +647,7 @@
       svg.append('text').attr('x', W - m.r + 4).attr('y', y(v) + 4).style('fill', cor).text(rot);
     });
     svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickSize(0).tickFormat((v) => MZR.loc.format(',.0f')(v))).call((g) => g.select('.domain').remove());
-    svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(4).tickFormat(d3.utcFormat('%m/%y')).tickSizeOuter(0)).call((g) => g.select('.domain').style('stroke', 'var(--cds-chart-axis)')).call((g) => g.selectAll('line').remove());
+    svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(d3.utcMonth.every(2)).tickFormat(d3.utcFormat('%m/%y')).tickSizeOuter(0)).call((g) => g.select('.domain').style('stroke', 'var(--cds-chart-axis)')).call((g) => g.selectAll('line').remove());
     svg.append('path').datum(pts).attr('d', d3.line().x((p) => x(p.d)).y((p) => y(p.v))).style('fill', 'none').style('stroke', dash.colors[0]).style('stroke-width', 2);
     const u = pts[pts.length - 1];
     svg.append('circle').attr('cx', x(u.d)).attr('cy', y(u.v)).attr('r', 4).style('fill', dash.colors[0]);
@@ -551,33 +657,309 @@
       .on('pointermove', (ev) => { const p = pts[bis(pts, x.invert(d3.pointer(ev)[0]))]; dica.style('display', null).text(MZR.dataBR(p.d) + ': ' + MZR.loc.format(',.2f')(p.v) + '%').style('left', Math.min(x(p.d) + 8, W - 170) + 'px').style('top', '0px'); })
       .on('pointerleave', () => dica.style('display', 'none'));
   });
-  dash.draw('dolar-num', (el) => {
-    const r = linhaMon('Dólar (PTAX)');
-    el.textContent = r ? 'R$ ' + MZR.loc.format(',.2f')(+r.valor) : '—';
-  });
-  dash.draw('dolar-escala', (el) => {
-    const r = linhaMon('Dólar (PTAX)');
-    el.replaceChildren();
-    if (!r) { el.textContent = '—'; return; }
-    const W = Math.max(240, el.clientWidth), H = 86, m = { l: 44, r: 52 };   // espaço para os rótulos centrados nas pontas
-    const x = d3.scaleLinear().domain([4.9, 7.4]).range([m.l, W - m.r]);
-    const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
-    svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', 30).attr('y2', 30).style('stroke', 'var(--cds-chart-axis)');
-    // rótulos dos cenários: medidos depois de desenhados; o que encostaria no vizinho desce para a 2ª linha, com um fio
-    let fimAnterior = -Infinity;
-    CENARIOS.forEach(([nome, v]) => {
-      svg.append('line').attr('x1', x(v)).attr('x2', x(v)).attr('y1', 24).attr('y2', 36).style('stroke', 'var(--cds-chart-reference)');
-      const t = svg.append('text').attr('x', x(v)).attr('y', 52).attr('text-anchor', 'middle').text(nome + ' ' + MZR.loc.format(',.2f')(v));
-      const larg = t.node().getComputedTextLength() || (nome.length + 5) * 7;
-      if (x(v) - larg / 2 < fimAnterior + 6) {
-        t.attr('y', 72);
-        svg.append('line').attr('x1', x(v)).attr('x2', x(v)).attr('y1', 37).attr('y2', 60).style('stroke', 'var(--cds-chart-reference)').style('stroke-dasharray', '2 2');
-      } else {
-        fimAnterior = x(v) + larg / 2;
+</script>
+
+<script>
+  // ---------- fase 2 (21/11/2026): queda acumulada, mês a mês, risco, atribuição, IR, premissas e termômetros
+  (() => {
+    const L = MZR.loc;
+    const n2 = (v) => { if (v == null || !isFinite(v)) return '—'; const r = Math.round(v * 100) / 100; return (r < 0 ? '−' : '') + L.format(',.2f')(Math.abs(r)); };
+    const sn = (v, suf = '') => { if (v == null || !isFinite(v)) return '—'; const r = Math.round(v * 100) / 100; return (r > 0 ? '+' : r < 0 ? '−' : '') + L.format(',.2f')(Math.abs(r)) + suf; };
+    const cel = (tr, txt, cls) => { const c = document.createElement('td'); c.textContent = txt; if (cls) c.className = cls; tr.append(c); return c; };
+    const dia = (s) => new Date(s + 'T00:00:00Z');
+    const diasPeriodo = () => { const b = [...document.querySelectorAll('.mz-periodos .mz-chip')].find((o) => o.getAttribute('aria-pressed') === 'true'); return b ? +b.dataset.dias : 730; };
+    const empurra = (rot, gap) => { rot.sort((a, b) => a.y - b.y); for (let i = 1; i < rot.length; i++) if (rot[i].y - rot[i - 1].y < gap) rot[i].y = rot[i - 1].y + gap; return rot; };
+
+    // ---- queda acumulada: distância do pico anterior; o pico recomeça em 13/11/2026
+    dash.draw('queda', (el) => {
+      const s = dash.data('serie');
+      el.replaceChildren();
+      if (s.status !== 'ok' || !s.data.length) return;
+      const fim = dia(s.data[s.data.length - 1].data), ini = new Date(fim); ini.setUTCDate(ini.getUTCDate() - diasPeriodo());
+      const ks = ['carteira', 'regua'], pico = {};
+      let fase = null, ant = null;
+      const pts = s.data.filter((x) => dia(x.data) >= ini).map((x) => {
+        const f = x.data <= MZR.ATIVA ? 's' : 'a';
+        if (f !== fase) { ks.forEach((k) => { pico[k] = f === 'a' && ant ? +ant[k] : -Infinity; }); fase = f; }
+        const o = { d: dia(x.data), data: x.data, f };
+        ks.forEach((k) => { pico[k] = Math.max(pico[k], +x[k]); o[k] = (+x[k] / pico[k] - 1) * 100; });
+        ant = x; return o;
+      });
+      if (pts.length < 2) return;
+      const W = Math.max(280, el.clientWidth), H = 132, m = { t: 20, r: 132, b: 22, l: 44 };
+      const x = d3.scaleUtc().domain(d3.extent(pts, (p) => p.d)).range([m.l, W - m.r]);
+      const lo = Math.min(-0.5, d3.min(pts, (p) => Math.min(p.carteira, p.regua)));
+      const y = d3.scaleLinear().domain([lo, 0]).nice().range([H - m.b, m.t]);
+      const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+        .attr('aria-label', 'Quanto a carteira e a régua estão abaixo do pico anterior, em %; o pico recomeça em 13/11/2026');
+      svg.append('text').attr('x', m.l).attr('y', 10).text('Abaixo do pico anterior, em %');
+      svg.append('g').selectAll('line').data(y.ticks(3).filter((v) => v < 0)).join('line')
+        .attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y).style('stroke', 'var(--cds-chart-grid)');
+      svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(3).tickSize(0).tickFormat((v) => n2(v)))
+        .call((g) => g.select('.domain').remove());
+      svg.append('g').attr('transform', `translate(0,${H - m.b})`)
+        .call(d3.axisBottom(x).ticks(Math.max(2, Math.floor(W / 110))).tickFormat(d3.utcFormat('%m/%y')).tickSizeOuter(0))
+        .call((g) => g.select('.domain').remove()).call((g) => g.selectAll('line').remove());
+      svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(0)).attr('y2', y(0)).style('stroke', 'var(--cds-chart-axis)');
+      const ativa = dia(MZR.ATIVA);
+      const sim = pts.filter((p) => p.f === 's'), real = pts.filter((p) => p.f === 'a');
+      if (real.length && sim.length) real.unshift({ d: ativa, carteira: 0, regua: 0 });
+      if (ativa > pts[0].d && ativa <= pts[pts.length - 1].d)
+        svg.append('line').attr('x1', x(ativa)).attr('x2', x(ativa)).attr('y1', m.t).attr('y2', H - m.b).style('stroke', 'var(--cds-chart-reference)').style('stroke-dasharray', '3 3');
+      const area = d3.area().x((p) => x(p.d)).y0(y(0)).y1((p) => y(p.carteira));
+      [sim, real].forEach((seg, j) => {
+        if (seg.length < 2) return;
+        svg.append('path').datum(seg).attr('d', area).style('fill', MZR.cor('carteira')).style('opacity', 0.16);
+        ['regua', 'carteira'].forEach((k) => svg.append('path').datum(seg).attr('d', d3.line().x((p) => x(p.d)).y((p) => y(p[k])))
+          .style('fill', 'none').style('stroke', MZR.cor(k)).style('stroke-width', k === 'carteira' ? 2 : 1.5)
+          .style('stroke-dasharray', j === 0 ? '1.5 3' : null).style('stroke-linecap', 'round'));
+      });
+      const u = pts[pts.length - 1];
+      const rot = empurra(ks.map((k) => ({ k, y: y(u[k]) })), 13);
+      svg.append('g').selectAll('text').data(rot).join('text').attr('x', W - m.r + 6).attr('y', (r) => r.y + 4)
+        .style('fill', (r) => MZR.cor(r.k)).style('font-weight', (r) => r.k === 'carteira' ? 600 : 400)
+        .text((r) => `${MZR.nomes[r.k]} ${n2(u[r.k])}`);
+      const pior = pts.reduce((a, p) => (p.carteira < a.carteira ? p : a), pts[0]);
+      if (pior.carteira < -0.05) {
+        svg.append('circle').attr('cx', x(pior.d)).attr('cy', y(pior.carteira)).attr('r', 3).style('fill', MZR.cor('carteira'));
+        const dir = x(pior.d) > (W - m.r) * 0.7;
+        svg.append('text').attr('x', x(pior.d) + (dir ? -6 : 6)).attr('y', y(pior.carteira) + 4).attr('text-anchor', dir ? 'end' : 'start')
+          .style('fill', 'var(--color-fg)').text('pior ponto da carteira ' + n2(pior.carteira) + '%');
       }
+      const dica = d3.select(el).append('div').attr('class', 'mz-dica').style('display', 'none');
+      const cruz = svg.append('line').attr('y1', m.t).attr('y2', H - m.b).style('stroke', 'var(--cds-chart-axis)').style('display', 'none');
+      const bis = d3.bisector((p) => p.d).center;
+      svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b).style('fill', 'transparent')
+        .on('pointermove', (ev) => {
+          const p = pts[bis(pts, x.invert(d3.pointer(ev)[0]))];
+          cruz.attr('x1', x(p.d)).attr('x2', x(p.d)).style('display', null);
+          dica.style('display', null).selectAll('*').remove();
+          dica.append('div').attr('class', 't').text(MZR.dataBR(p.d) + (p.f === 's' ? ' · simulação' : ' · carteira ativa'));
+          ks.forEach((k) => { const r = dica.append('div'); r.append('span').style('color', MZR.cor(k)).text(MZR.nomes[k]); r.append('span').text(n2(p[k]) + '%'); });
+          dica.style('left', Math.min(x(p.d) + 12, W - 190) + 'px').style('top', '0px');
+        })
+        .on('pointerleave', () => { cruz.style('display', 'none'); dica.style('display', 'none'); });
     });
-    const v = +r.valor;
-    svg.append('circle').attr('cx', x(v)).attr('cy', 30).attr('r', 6).style('fill', dash.colors[0]);
-    svg.append('text').attr('x', x(v)).attr('y', 14).attr('text-anchor', 'middle').style('fill', 'var(--color-fg)').text('hoje ' + MZR.loc.format(',.2f')(v));
-  });
+
+    // ---- 12 meses da simulação acima do IPCA (nov/25 a out/26, os 12 meses cheios mais próximos)
+    dash.draw('real-ipca', (el) => {
+      const m = dash.data('mensal'), c = dash.data('comparacao');
+      if (m.status !== 'ok' || c.status !== 'ok') { el.textContent = '—'; return; }
+      const meses = m.data.filter((x) => x.mes >= '2025-11' && x.mes <= '2026-10' && x.ipca != null);
+      const car = c.data.find((x) => x.serie === 'Carteira');
+      if (meses.length !== 12 || !car || car.sim_m12 == null) { el.textContent = '—'; return; }
+      const ipca = meses.reduce((a, x) => a * (1 + x.ipca / 100), 1);
+      el.textContent = MZR.pct(((1 + car.sim_m12 / 100) / ipca - 1) * 100, 2);
+    });
+
+    // ---- mês a mês: Carteira, CDI e % do CDI por ano; novembro de 2026 partido em simulação e real
+    dash.draw('mensal-linhas', (tb) => {
+      const m = dash.data('mensal');
+      tb.replaceChildren();
+      if (m.status !== 'ok' || !m.data.length) return;
+      const acum = (k, xs) => (xs.reduce((a, x) => a * (1 + x[k] / 100), 1) - 1) * 100;
+      const pcdi = (c, d) => (d ? c / d * 100 : null);
+      const fmtPc = (v) => (v == null ? '—' : L.format(',.0f')(v) + '%');
+      [...new Set(m.data.map((x) => x.mes.slice(0, 4)))].forEach((ano) => {
+        const doAno = m.data.filter((x) => x.mes.startsWith(ano)), simAno = doAno.filter((x) => x.fase === 'simulada');
+        const aC = acum('carteira', simAno), aD = acum('cdi', simAno);
+        [['Carteira', 'carteira'], ['CDI', 'cdi'], ['% do CDI', null]].forEach(([rot, k], j) => {
+          const tr = document.createElement('tr'); tr.dataset.key = ano + '-' + rot;
+          tr.className = j === 0 ? 'ano-ini eu' : j === 2 ? 'pc' : '';
+          if (j === 0) { const th = document.createElement('th'); th.scope = 'row'; th.rowSpan = 3; th.textContent = ano; tr.append(th); }
+          cel(tr, rot, 'serie');
+          for (let i = 1; i <= 12; i++) {
+            const xs = doAno.filter((x) => x.mes === ano + '-' + String(i).padStart(2, '0'));
+            const c = cel(tr, '');
+            xs.forEach((x) => {
+              const v = k ? x[k] : pcdi(x.carteira, x.cdi);
+              const sp = document.createElement('span');
+              sp.className = 'v' + (x.fase === 'ativa' ? ' real' : '') + (k ? '' : v == null ? '' : Math.round(v) >= 100 ? ' acima' : ' abaixo');
+              sp.textContent = k ? n2(v) : fmtPc(v);
+              sp.title = (x.fase === 'ativa' ? 'Real' : 'Simulação') + ', ' + MZR.dataBR(dia(x.de)) + ' a ' + MZR.dataBR(dia(x.ate));
+              c.append(sp);
+            });
+          }
+          const v = k === 'carteira' ? aC : k === 'cdi' ? aD : pcdi(aC, aD);
+          const c = cel(tr, '', 'ano');
+          const sp = document.createElement('span'); sp.className = 'v' + (k ? '' : v == null ? '' : Math.round(v) >= 100 ? ' acima' : ' abaixo');
+          sp.textContent = simAno.length ? (k ? n2(v) : fmtPc(v)) : '—';
+          sp.title = simAno.length ? 'Simulação, ' + MZR.dataBR(dia(simAno[0].de)) + ' a ' + MZR.dataBR(dia(simAno[simAno.length - 1].ate)) : '';
+          c.append(sp);
+          tb.append(tr);
+        });
+      });
+    });
+
+    // ---- risco da simulação
+    const FMT_R = { vol: 'pct', sharpe: 'num', sortino: 'num', queda: 'pct', acerto: 'pct0', var95: 'pct', te: 'pct', ir: 'num' };
+    dash.draw('risco-linhas', (tb) => {
+      const r = dash.data('risco');
+      tb.replaceChildren();
+      if (r.status !== 'ok') return;
+      const ep = r.data.find((x) => x.chave === 'sharpe_ep');
+      r.data.filter((x) => x.chave !== 'sharpe_ep').forEach((x) => {
+        const tr = document.createElement('tr'); tr.dataset.key = x.chave;
+        cel(tr, x.medida);
+        ['carteira', 'regua', 'cdi'].forEach((k) => {
+          const v = x[k], f = FMT_R[x.chave];
+          let txt = v == null ? '—' : f === 'pct' ? n2(v) + '%' : f === 'pct0' ? L.format(',.0f')(v) + '%' : n2(v);
+          if (x.chave === 'sharpe' && v != null && ep && ep[k] != null) txt += ' ± ' + n2(ep[k]);
+          cel(tr, txt);
+        });
+        cel(tr, x.formula, 'como');
+        tb.append(tr);
+      });
+    });
+
+    // ---- atribuição contra a régua
+    const NOME_ATR = { 'Juros compostos e rebalanceamento': 'Resíduo (juros compostos)', 'Total: carteira menos régua': 'Carteira menos régua' };
+    document.querySelectorAll('#atr-periodos .mz-chip').forEach((b) => b.addEventListener('click', () => {
+      document.querySelectorAll('#atr-periodos .mz-chip').forEach((o) => o.setAttribute('aria-pressed', o === b ? 'true' : 'false'));
+      dash.draw('atribuicao');
+    }));
+    dash.draw('atribuicao', (el) => {
+      const a = dash.data('atribuicao'), cl = dash.data('classes');
+      el.replaceChildren();
+      if (a.status !== 'ok') return;
+      const btn = document.querySelector('#atr-periodos .mz-chip[aria-pressed="true"]');
+      const rows = a.data.filter((x) => x.periodo === (btn ? btn.dataset.periodo : 'sim12'));
+      if (!rows.length) { el.textContent = 'O período real começa a contar com o fechamento de 13/11/2026.'; return; }
+      const pesos = cl.status === 'ok' ? Object.fromEntries(cl.data.map((c) => [c.classe, c])) : {};
+      const W = Math.max(280, el.clientWidth), estreito = W < 520, lh = estreito ? 40 : 24, m = { t: 4, r: 12, b: 4, l: estreito ? 8 : Math.min(190, W * 0.42) };
+      const yBarra = estreito ? 20 : 5;
+      const H = m.t + m.b + rows.length * lh + 10;
+      const mx = d3.max(rows, (r) => Math.abs(r.efeito)) || 0.01;
+      const x = d3.scaleLinear().domain([-mx * 1.55, mx * 1.55]).range([m.l, W - m.r]);
+      const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+        .attr('aria-label', 'Efeito de cada classe na diferença entre carteira e régua, em pontos percentuais');
+      svg.append('line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', m.t).attr('y2', H - m.b).style('stroke', 'var(--cds-chart-axis)');
+      const dica = d3.select(el).append('div').attr('class', 'mz-dica').style('display', 'none');
+      rows.forEach((r, i) => {
+        const tot = r.classe.startsWith('Total'), v = r.efeito;
+        const yy = m.t + i * lh + (tot ? 10 : 0);
+        if (tot) svg.append('line').attr('x1', 0).attr('x2', W).attr('y1', yy - 3).attr('y2', yy - 3).style('stroke', 'var(--color-border-line)');
+        svg.append('text').attr('x', estreito ? 0 : m.l - 8).attr('y', estreito ? yy + 13 : yy + lh / 2 + 4).attr('text-anchor', estreito ? 'start' : 'end')
+          .style('fill', tot ? 'var(--color-fg)' : null).style('font-weight', tot ? 600 : null).text(NOME_ATR[r.classe] || r.classe);
+        svg.append('rect').attr('x', Math.min(x(0), x(v))).attr('width', Math.max(1, Math.abs(x(v) - x(0)))).attr('y', yy + yBarra).attr('height', 14).attr('rx', 2)
+          .style('fill', v >= 0 ? 'var(--color-ok)' : 'var(--color-bad)').style('opacity', tot ? 1 : 0.85);
+        svg.append('text').attr('x', x(v) + (v >= 0 ? 5 : -5)).attr('y', yy + yBarra + 11).attr('text-anchor', v >= 0 ? 'start' : 'end')
+          .style('fill', 'var(--color-fg)').style('font-weight', tot ? 600 : null).text(sn(v, ' p.p.'));
+        const p = pesos[r.classe];
+        svg.append('rect').attr('x', 0).attr('y', yy).attr('width', W).attr('height', lh).style('fill', 'transparent')
+          .on('pointerenter', () => {
+            dica.style('display', null).selectAll('*').remove();
+            dica.append('div').attr('class', 't').text(NOME_ATR[r.classe] || r.classe);
+            if (p) [['Peso na carteira', n2(+p.carteira) + '%'], ['Peso na régua', n2(+p.regua) + '%']].forEach(([a1, b1]) => { const d = dica.append('div'); d.append('span').text(a1); d.append('span').text(b1); });
+            const d = dica.append('div'); d.append('span').text('Efeito'); d.append('span').text(sn(v, ' p.p.'));
+            dica.style('left', Math.min(m.l + 8, W - 190) + 'px').style('top', (yy + lh) + 'px');
+          })
+          .on('pointerleave', () => dica.style('display', 'none'));
+      });
+    });
+
+    // ---- antes e depois do imposto
+    dash.draw('liquido-linhas', (tb) => {
+      const l = dash.data('liquido');
+      tb.replaceChildren();
+      if (l.status !== 'ok') return;
+      const rows = l.data.filter((x) => x.periodo === tb.dataset.periodo);
+      if (!rows.length) { const tr = document.createElement('tr'); cel(tr, 'Começa a contar com o fechamento de 13/11/2026', 'falta').colSpan = 5; tb.append(tr); return; }
+      const linha = (nome, bruto, ir, iof, liq, eu) => {
+        const tr = document.createElement('tr'); tr.dataset.key = nome; if (eu) tr.className = 'eu';
+        cel(tr, nome); cel(tr, MZR.pct(bruto, 2)); cel(tr, MZR.pct(ir, 2)); cel(tr, iof ? MZR.pct(iof, 2) : '—');
+        cel(tr, MZR.pct(liq, 2), liq > 0 ? 'mz-pos' : liq < 0 ? 'mz-neg' : '');
+        tb.append(tr);
+      };
+      rows.forEach((x) => linha(x.serie, x.bruto, x.imposto, x.iof, x.liquido, x.serie === 'Carteira'));
+      const c0 = rows[0];
+      linha('CDI', c0.cdi_bruto, c0.cdi_liquido - c0.cdi_bruto, 0, c0.cdi_liquido, false);
+    });
+
+    // ---- premissas do case contra o Focus
+    const NOMES_P = { Selic: 'Selic no fim de 2027', IPCA: 'IPCA de 2027', 'Câmbio': 'Dólar no fim de 2027' };
+    dash.draw('premissas', (el) => {
+      const p = dash.data('premissas'), fz = dash.data('focus');
+      el.replaceChildren();
+      if (p.status !== 'ok' || !p.data.length) { el.textContent = '—'; return; }
+      const caixas = p.data.map((r) => {
+        const box = document.createElement('div'); box.className = 'mz-prem';
+        const tit = document.createElement('span'); tit.className = 'mz-rot'; tit.textContent = NOMES_P[r.indicador] || r.indicador;
+        const esc = document.createElement('div'); esc.className = 'mz-prem-esc';
+        const sub = document.createElement('span'); sub.className = 'mz-sub';
+        box.append(tit, esc, sub); el.append(box);
+        return [r, esc, sub];
+      });
+      caixas.forEach(([r, esc, sub]) => {
+        const dol = r.indicador === 'Câmbio';
+        const fv = (v) => (dol ? 'R$ ' : '') + L.format(',.2f')(v) + (dol ? '' : '%');
+        const W = Math.max(240, esc.clientWidth), H = 96, mm = { l: 40, r: 40 }, yb = 36;
+        const vals = [r.ajuste, r.base, r.deterioracao, r.focus_min, r.focus_max, r.mercado];
+        const lo = d3.min(vals), hi = d3.max(vals), pad = (hi - lo) * 0.04;
+        const x = d3.scaleLinear().domain([lo - pad, hi + pad]).range([mm.l, W - mm.r]);
+        const svg = d3.select(esc).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+          .attr('aria-label', `${NOMES_P[r.indicador]}: Focus ${fv(r.focus)}, cenários ${fv(r.ajuste)}, ${fv(r.base)} e ${fv(r.deterioracao)}`);
+        svg.append('line').attr('x1', mm.l - 10).attr('x2', W - mm.r + 10).attr('y1', yb).attr('y2', yb).style('stroke', 'var(--cds-chart-axis)');
+        svg.append('rect').attr('x', x(r.focus_min)).attr('width', Math.max(2, x(r.focus_max) - x(r.focus_min))).attr('y', yb - 5).attr('height', 10).attr('rx', 5)
+          .style('fill', 'var(--serie-0)').style('opacity', 0.22);
+        let fimAnterior = -Infinity;
+        [['Ajuste', r.ajuste], ['Base', r.base], ['Deterioração', r.deterioracao]].forEach(([nome, v]) => {
+          svg.append('line').attr('x1', x(v)).attr('x2', x(v)).attr('y1', yb - 9).attr('y2', yb + 9).style('stroke', 'var(--cds-chart-reference)').style('stroke-width', 1.5);
+          const tx = svg.append('text').attr('x', x(v)).attr('y', yb + 24).attr('text-anchor', 'middle').text(nome + ' ' + L.format(',.2f')(v));
+          const larg = tx.node().getComputedTextLength() || (nome.length + 5) * 7;
+          if (x(v) + larg / 2 > W) tx.attr('x', W).attr('text-anchor', 'end');
+          if (x(v) - larg / 2 < 0) tx.attr('x', 0).attr('text-anchor', 'start');
+          if (x(v) - larg / 2 < fimAnterior + 6) {
+            tx.attr('y', yb + 44);
+            svg.append('line').attr('x1', x(v)).attr('x2', x(v)).attr('y1', yb + 10).attr('y2', yb + 32).style('stroke', 'var(--cds-chart-reference)').style('stroke-dasharray', '2 2');
+          } else fimAnterior = x(v) + larg / 2;
+        });
+        const xm = x(r.mercado);
+        svg.append('path').attr('d', `M${xm},${yb - 6}L${xm + 6},${yb}L${xm},${yb + 6}L${xm - 6},${yb}Z`)
+          .style('fill', 'var(--color-panel)').style('stroke', 'var(--serie-1)').style('stroke-width', 1.8);
+        svg.append('circle').attr('cx', x(r.focus)).attr('cy', yb).attr('r', 6).style('fill', 'var(--serie-0)');
+        svg.append('text').attr('x', x(r.focus)).attr('y', yb - 14).attr('text-anchor', 'middle').style('fill', 'var(--color-fg)').text('Focus ' + L.format(',.2f')(r.focus));
+        const hist = fz.status === 'ok' ? fz.data.filter((h) => h.indicador === r.indicador).sort((a, b) => (a.data < b.data ? -1 : 1)) : [];
+        const lim = new Date(dia(r.focus_data)); lim.setUTCDate(lim.getUTCDate() - 84);
+        const antes = hist.filter((h) => dia(h.data) <= lim).pop();
+        sub.textContent = `Mediana de ${MZR.dataBR(dia(r.focus_data))}, ${r.respondentes} respostas, de ${fv(r.focus_min)} a ${fv(r.focus_max)}`
+          + (antes ? `; em ${MZR.dataBR(dia(antes.data)).slice(0, 5)}, ${fv(antes.mediana)}` : '') + `. ${r.mercado_rotulo}: ${fv(r.mercado)}.`;
+      });
+    });
+
+    // ---- termômetros da curva do Tesouro Direto
+    dash.draw('termo-ult', (el) => {
+      const t = dash.data('termo');
+      if (t.status !== 'ok') { el.textContent = '—'; return; }
+      const u = [...t.data].reverse().find((x) => x[el.dataset.campo] != null);
+      el.textContent = u ? L.format(',.2f')(u[el.dataset.campo]) + '%' : '—';
+    });
+    dash.draw('termo-mini', (el) => {
+      const t = dash.data('termo');
+      el.replaceChildren();
+      if (t.status !== 'ok') return;
+      const campo = el.dataset.campo;
+      const pts = t.data.filter((x) => x[campo] != null).map((x) => ({ d: dia(x.data), v: +x[campo] }));
+      if (pts.length < 2) { el.textContent = '—'; return; }
+      const cores = ['var(--color-ok)', 'var(--cds-chart-reference)', 'var(--color-bad)'];
+      const refs = el.dataset.refs.split('|').map((s, i) => { const [v, rot] = s.split(':'); return { v: +v, rot, cor: cores[i] }; });
+      const W = Math.max(240, el.clientWidth), H = 130, m = { t: 8, r: 112, b: 20, l: 34 };
+      const x = d3.scaleUtc().domain(d3.extent(pts, (p) => p.d)).range([m.l, W - m.r]);
+      const y = d3.scaleLinear().domain(d3.extent(pts.map((p) => p.v).concat(refs.map((r) => r.v)))).nice().range([H - m.b, m.t]);
+      const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
+      refs.forEach((r) => svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(r.v)).attr('y2', y(r.v)).style('stroke', r.cor).style('stroke-dasharray', '4 3'));
+      empurra(refs.map((r) => ({ ...r, y: y(r.v) })), 12).forEach((r) => svg.append('text').attr('x', W - m.r + 4).attr('y', r.y + 4).style('fill', r.cor).text(r.rot));
+      svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickSize(0).tickFormat((v) => L.format(',.0f')(v))).call((g) => g.select('.domain').remove());
+      svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(d3.utcMonth.every(2)).tickFormat(d3.utcFormat('%m/%y')).tickSizeOuter(0))
+        .call((g) => g.select('.domain').style('stroke', 'var(--cds-chart-axis)')).call((g) => g.selectAll('line').remove());
+      svg.append('path').datum(pts).attr('d', d3.line().x((p) => x(p.d)).y((p) => y(p.v))).style('fill', 'none').style('stroke', dash.colors[0]).style('stroke-width', 2);
+      const u = pts[pts.length - 1];
+      svg.append('circle').attr('cx', x(u.d)).attr('cy', y(u.v)).attr('r', 4).style('fill', dash.colors[0]);
+      const dica = d3.select(el).append('div').attr('class', 'mz-dica').style('display', 'none');
+      const bis = d3.bisector((p) => p.d).center;
+      svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b).style('fill', 'transparent')
+        .on('pointermove', (ev) => { const p = pts[bis(pts, x.invert(d3.pointer(ev)[0]))]; dica.style('display', null).text(MZR.dataBR(p.d) + ': ' + L.format(',.2f')(p.v) + '%').style('left', Math.min(x(p.d) + 8, W - 170) + 'px').style('top', '0px'); })
+        .on('pointerleave', () => dica.style('display', 'none'));
+    });
+  })();
 </script>
