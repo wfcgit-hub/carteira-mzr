@@ -41,11 +41,17 @@ jobs:
       - name: Gerar a página
         run: python -I -X utf8 coletor/site_estatico.py . .
 
+      - name: Gerar o PDF da página (plano B para a apresentação)
+        continue-on-error: true
+        run: |
+          google-chrome --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=1280,1800             --virtual-time-budget=20000 --no-pdf-header-footer --print-to-pdf=painel.pdf "file://$PWD/index.html"
+
       - name: Publicar se mudou
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html .nojekyll dados
+          [ -f painel.pdf ] && git add painel.pdf
           if git diff --cached --quiet; then
             echo "Nada mudou."
           else

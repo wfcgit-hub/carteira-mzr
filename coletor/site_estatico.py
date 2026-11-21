@@ -42,7 +42,8 @@ CABECA = """<!doctype html>
     --cds-gap-xs: 4px; --cds-gap-sm: 8px; --cds-gap-md: 14px; --cds-gap-lg: 20px; --cds-gap-xl: 32px;
     --cds-pad-sm: 8px; --cds-pad-md: 12px; --cds-pad-lg: 18px; --cds-radius: 10px;
   }
-  @media (prefers-color-scheme: dark) { :root {
+  /* escuro: pelo sistema, a menos que o visitante escolha o claro; ou pelo botão de tema */
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
     color-scheme: dark;
     --color-bg: #0A1727; --color-panel: #12213A; --color-fg: #EEF2F7; --color-fg-muted: #A9B8CA; --color-border-line: #263A57;
     --color-ok: #5FBF91; --color-warn: #E0A84B; --color-bad: #E57A66;
@@ -50,11 +51,27 @@ CABECA = """<!doctype html>
     --cds-chart-grid: #1B2D47; --cds-chart-axis: #3A4E6A; --cds-chart-reference: #6F829C; --cds-text-secondary: #A9B8CA;
     --cds-surface-popover: #14263F; --cds-border: #2C4262; --cds-shadow-popover: 0 6px 24px rgba(0,0,0,.4);
   } }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --color-bg: #0A1727; --color-panel: #12213A; --color-fg: #EEF2F7; --color-fg-muted: #A9B8CA; --color-border-line: #263A57;
+    --color-ok: #5FBF91; --color-warn: #E0A84B; --color-bad: #E57A66;
+    --serie-0: #D2AE73; --serie-1: #8FB3E0; --serie-2: #A49E92; --serie-3: #5E9CDB; --serie-4: #B5D3EE; --serie-5: #7FB79C; --serie-6: #C39AD6;
+    --cds-chart-grid: #1B2D47; --cds-chart-axis: #3A4E6A; --cds-chart-reference: #6F829C; --cds-text-secondary: #A9B8CA;
+    --cds-surface-popover: #14263F; --cds-border: #2C4262; --cds-shadow-popover: 0 6px 24px rgba(0,0,0,.4);
+  }
   html, body { margin: 0; background: var(--color-bg); color: var(--color-fg); font-family: var(--font-anthropic-sans); font-size: 14px; }
   .publico { max-width: 1120px; margin: 0 auto; padding-block: 28px 40px;
              padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
   .publico-rodape { margin-top: 32px; padding-top: 14px; border-top: 1px solid var(--color-border-line); color: var(--color-fg-muted); font-size: 12px; line-height: 1.6; }
 </style>
+<script>
+/* tema escolhido antes do primeiro desenho: ?tema=claro|escuro (projetor) ou a escolha guardada */
+(function () {
+  let tema = { claro: 'light', escuro: 'dark' }[new URLSearchParams(location.search).get('tema')];
+  try { tema = tema || localStorage.getItem('mzr-tema'); } catch (e) { /* sem armazenamento */ }
+  if (tema === 'light' || tema === 'dark') document.documentElement.dataset.theme = tema;
+})();
+</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script>
 /* um "dash" mínimo: o mesmo contrato que a página usa no claude.ai */

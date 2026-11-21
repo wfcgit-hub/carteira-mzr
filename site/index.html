@@ -85,15 +85,50 @@
   .mz-tab td .q span { display: block; }
   #tabela-classes th { white-space: normal; vertical-align: bottom; min-width: 64px; }
   #tabela-classes td.como { min-width: 200px; }
+  .mz-titulo { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm) var(--cds-gap-md); align-items: center; justify-content: space-between; }
+  .mz-controles { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); }
+  a.mz-chip { text-decoration: none; }
+  .mz-comentario { margin: var(--cds-gap-md) 0 0; max-width: 80ch; font-size: var(--cds-font-size-body); line-height: 1.55; color: var(--color-fg); border-left: 3px solid var(--serie-0); padding-left: var(--cds-pad-md); }
+  .mz-comentario .rot { display: block; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin-bottom: 2px; }
+  .mz-msg { margin: 0; font-size: 15px; line-height: 1.5; max-width: 85ch; color: var(--color-fg); }
+  .mz-estresse td:nth-child(2) { font-weight: var(--cds-font-weight-medium); }
+  .mz-tab td.cl { text-align: left; white-space: normal; min-width: 120px; }
+  .mz-tab tr.comb td { border-top: 1px solid var(--color-fg-muted); }
+  .mz-sinais, .mz-liq { min-height: 0; }
+  #liquidez-sec .mz-card { align-content: start; }
+  .mz-cal { list-style: none; margin: 0; padding: 0; }
+  .mz-cal li { display: grid; grid-template-columns: 118px 1fr; gap: var(--cds-gap-md); padding: 8px 0; border-bottom: 1px solid var(--color-border-line); font-size: var(--cds-font-size-body); line-height: 1.4; }
+  .mz-cal time { color: var(--color-fg-muted); font-variant-numeric: tabular-nums; font-size: var(--cds-font-size-caption); padding-top: 2px; }
+  .mz-topo, .mz-sec { scroll-margin-top: 16px; }
+  #mz-apres { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 10; display: flex; gap: 4px; align-items: center; background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: 999px; padding: 4px 8px; box-shadow: var(--cds-shadow-popover); font-size: var(--cds-font-size-body); }
+  #mz-apres button, #mz-apres a { font: inherit; font-size: 18px; border: none; background: none; color: var(--color-fg); cursor: pointer; padding: 2px 10px; text-decoration: none; }
+  #mz-apres a { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  #mz-apres span { font-variant-numeric: tabular-nums; min-width: 22ch; text-align: center; }
+  .mz-apres .mz-foco { outline: 2px solid var(--serie-0); outline-offset: 10px; border-radius: 4px; }
+  .mz-apres .mz { padding-bottom: 90px; }
+  @media print {
+    .mz-controles, .mz-periodos, .mz-alterna, #mz-apres, .mz-alerta { display: none !important; }
+    .mz-card, .mz-tab, .mz-graf, .mz-prem, .mz-msg { break-inside: avoid; }
+    .mz-tab { overflow: visible; }
+    .mz-sec h2, .mz-msg, caption { break-after: avoid; }
+  }
 </style>
 
 <div class="mz">
   <header class="mz-topo" id="topo">
-    <h1>Carteira MZR</h1>
+    <div class="mz-titulo">
+      <h1>Carteira MZR</h1>
+      <div class="mz-controles">
+        <a class="mz-chip" href="?apresentacao=1" id="link-apresentacao">Modo apresentação</a>
+        <button type="button" class="mz-chip" id="botao-tema">Tema</button>
+        <a class="mz-chip" href="painel.pdf" id="link-pdf">PDF</a>
+      </div>
+    </div>
     <p id="frase-ativa" hidden>Desde 13/11/2026, quando a carteira passou a existir, ela rende <b data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="ativa">—</b>, contra <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="ativa">—</b> da régua e <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="ativa">—</b> do CDI.</p>
     <p id="frase-simulada">A carteira passa a existir em 13/11/2026, a data de corte do case. Antes disso, simulada com os pesos de hoje, ela teria rendido <b data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="sim_total">—</b> em 24 meses, contra <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="sim_total">—</b> da régua e <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="sim_total">—</b> do CDI, com maior queda de <b data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="sim_queda">—</b>.</p>
     <span data-draw="frase"></span>
     <p class="mz-frescor" data-draw="frescor-topo" data-source="fontes">—</p>
+    <p class="mz-comentario" data-draw="comentario" data-source="classes" style="display:none"></p>
   </header>
   <div class="mz-alerta" id="alerta-frescor" data-draw="frescor-alerta" data-source="fontes" style="display:none"></div>
 
@@ -148,6 +183,7 @@
 
   <section class="mz-sec" id="evolucao">
     <h2>Carteira contra a régua e os principais índices</h2>
+    <p class="mz-msg" data-draw="msg" data-msg="evolucao" style="display:none"></p>
     <div class="mz-barra">
       <div class="mz-chips" role="group" aria-label="Séries no gráfico">
         <button type="button" class="mz-chip" id="chip-carteira" data-serie="carteira" aria-pressed="true"><i data-cor="0"></i>Carteira</button>
@@ -184,6 +220,26 @@
     <p class="mz-nota">Na simulação, a carteira rendeu menos que o CDI, por isso o Sharpe é negativo. A margem de erro tem o tamanho do próprio Sharpe: dois anos de dados não bastam para separar carteira, régua e CDI com confiança. A escolha dos pesos se apoia nos cenários do case, não neste passado.</p>
   </section>
 
+  <section class="mz-sec" id="estresse-sec">
+    <h2>Em momentos de estresse <span class="mz-selo">simulação e choques hipotéticos</span></h2>
+    <p class="mz-msg" data-draw="msg" data-msg="estresse" style="display:none"></p>
+    <div class="mz-tab">
+      <table class="mz-estresse" id="tabela-episodios" data-source="episodios" data-row-key="nome">
+        <caption>Episódios dentro da simulação (pesos de hoje aplicados ao passado)</caption>
+        <thead><tr><th>Episódio</th><th>Carteira</th><th>Régua</th><th>CDI</th><th>Ibovespa</th><th>Dólar</th><th>Prefixado 2 anos</th><th>O que mais tirou</th><th>O que mais somou</th></tr></thead>
+        <tbody data-draw="episodios-linhas"></tbody>
+      </table>
+    </div>
+    <div class="mz-tab">
+      <table class="mz-estresse" id="tabela-choques" data-source="choques" data-row-key="nome">
+        <caption>Choques hipotéticos instantâneos, efeito no valor (aproximação linear)</caption>
+        <thead><tr><th>Choque</th><th>Carteira</th><th>Régua</th><th>Diferença</th><th>Classe que mais pesa na carteira</th></tr></thead>
+        <tbody data-draw="choques-linhas"></tbody>
+      </table>
+    </div>
+    <p class="mz-nota">Episódios: o retorno de cada série no período; "o que mais tirou" e "o que mais somou" são as classes de maior contribuição na carteira (peso vezes retorno). As piores quinzenas são as três janelas de 10 dias úteis em que a carteira mais caiu. Choques: duration de hoje vezes a variação do juro, beta 1 nas bolsas e câmbio sem hedge; sem carrego, convexidade nem correlação. Os combinados somam os choques simples e servem de ilustração.</p>
+  </section>
+
   <section class="mz-sec" id="comparacao-sec">
     <h2>Retorno por período</h2>
     <div class="mz-tab">
@@ -206,6 +262,7 @@
 
   <section class="mz-sec" id="mensal-sec">
     <h2>Mês a mês</h2>
+    <p class="mz-msg" data-draw="msg" data-msg="mensal" style="display:none"></p>
     <div class="mz-tab">
       <table class="mz-mes" id="tabela-mensal" data-source="mensal" data-row-key="linha">
         <thead><tr><th>Ano</th><th></th><th>Jan</th><th>Fev</th><th>Mar</th><th>Abr</th><th>Mai</th><th>Jun</th><th>Jul</th><th>Ago</th><th>Set</th><th>Out</th><th>Nov</th><th>Dez</th><th class="ano">No ano</th></tr></thead>
@@ -217,6 +274,7 @@
 
   <section class="mz-sec" id="atribuicao-sec">
     <h2>De onde vem a diferença para a régua</h2>
+    <p class="mz-msg" data-draw="msg" data-msg="atribuicao" style="display:none"></p>
     <div class="mz-alterna" id="atr-periodos" role="group" aria-label="Período da atribuição">
       <button type="button" class="mz-chip" data-periodo="sim12" aria-pressed="true">Simulação, 12 meses até 13/11/26</button>
       <button type="button" class="mz-chip" data-periodo="real" aria-pressed="false">Real, desde 13/11/26</button>
@@ -244,10 +302,17 @@
       </div>
     </div>
     <p class="mz-nota">Estimativa para pessoa física. A LCI/LCA é isenta, o que favorece a carteira contra o CDI tributado. No começo, a alíquota da renda fixa é a maior da tabela (22,5%) e o IOF de 1,1% na compra dos Treasuries pesa sobre poucos dias de retorno.</p>
+    <p class="mz-nota" data-draw="pl-lci" data-source="classes"></p>
   </section>
 
   <section class="mz-sec" id="gatilhos">
     <h2>Em que cenário o mercado está</h2>
+    <p class="mz-msg" data-draw="msg" data-msg="gatilhos" style="display:none"></p>
+    <div class="mz-card" id="sinais-card">
+      <span class="mz-rot">Onde cada sinal está entre os três cenários do case</span>
+      <div class="mz-graf mz-sinais" id="sinais" data-draw="sinais" data-source="premissas"></div>
+      <span class="mz-sub">Cada linha põe o valor de hoje na escala do case: Selic, IPCA e dólar de cada cenário (o dólar hoje contra o de fim de 2027). Mostra a distância de cada cenário; não é probabilidade.</span>
+    </div>
     <div class="mz-dois">
       <div class="mz-card" id="gatilho-termo">
         <span class="mz-rot">Juro do prefixado de 2 anos: ~14,0 põe o cenário base no preço; acima de ~15,1, a deterioração</span>
@@ -272,6 +337,22 @@
       <span class="mz-rot">Premissas do case contra o Focus</span>
       <div class="mz-prem-lista" data-draw="premissas" data-source="premissas"></div>
       <span class="mz-sub"><i class="mz-marca" style="color: var(--serie-0)">●</i> mediana do Focus · faixa dourada: da menor à maior resposta · <i class="mz-marca" style="color: var(--serie-1)">◇</i> o que já aconteceu · traços: os três cenários do case. No dólar, a deterioração com o mundo em aversão chega a R$ 7,48.</span>
+    </div>
+  </section>
+
+  <section class="mz-sec" id="liquidez-sec">
+    <h2>Liquidez e próximos eventos</h2>
+    <div class="mz-dois">
+      <div class="mz-card">
+        <span class="mz-rot">Em quanto tempo cada parte vira caixa</span>
+        <div class="mz-graf mz-liq" id="liquidez" data-draw="liquidez" data-source="classes"></div>
+        <span class="mz-sub">Até 2 dias úteis: Tesouro Direto (recompra diária pelo Tesouro, a preço de mercado), ações (D+2) e Treasuries (D+1, mais o câmbio). Até 30 dias: crédito e bolsa global por fundo, conforme o regulamento de cada um. Depois da carência: LCI/LCA pós-fixadas, com prazo mínimo de 6 meses (Resolução CMN 5.215/2025) e resgate só no vencimento ou depois da carência.</span>
+      </div>
+      <div class="mz-card">
+        <span class="mz-rot">Próximos eventos que mexem com a carteira</span>
+        <ol class="mz-cal" data-draw="calendario"></ol>
+        <span class="mz-sub">As reuniões do Copom e do FOMC de 2027 entram quando os calendários forem confirmados.</span>
+      </div>
     </div>
   </section>
 
@@ -307,6 +388,9 @@
     <p><b>Atribuição.</b> Método de Brinson-Fachler: em cada dia, (peso da carteira − peso da régua) × (retorno da classe − retorno da régua), somado no período, com os pesos que andaram com os preços desde o último rebalanceamento. Carteira e régua usam o mesmo índice em cada classe, por isso não há efeito de seleção; o resíduo vem dos juros compostos e do rebalanceamento.</p>
     <p><b>Imposto.</b> Estimativa de resgate no fim do período, para pessoa física: LCI/LCA isenta; renda fixa tributável e o CDI de comparação pela tabela regressiva (22,5% até 180 dias, 20% até 360, 17,5% até 720 e 15% acima); ações, bolsa americana e Treasuries a 15% sobre o ganho em reais (Lei 14.754/2023 nas aplicações no exterior); IOF de 1,1% no câmbio da compra dos Treasuries. Sem compensação de perdas e sem come-cotas; o imposto efetivo depende de como cada classe é comprada.</p>
     <p><b>Premissas e termômetros.</b> Focus do Banco Central: mediana, menor e maior resposta para 2027, publicado toda semana. Taxas do Tesouro Direto, no meio entre compra e venda: juro a termo de 1 ano daqui a 1 ano, das LTNs de ~1 e ~2 anos; inflação implícita de 3 anos, do prefixado contra o IPCA+ no mesmo prazo. As duas incluem prêmios de risco e não são previsão pura.</p>
+    <p><b>Estresse.</b> Os episódios usam a série diária da simulação: o pacote fiscal (26/11 a 18/12/2024), a eleição (02 a 26/10/2026) e as três piores quinzenas da carteira. Os choques são instantâneos e lineares: duration modificada de hoje (LTN de 2 anos e NTN-B de ~3 e ~10 anos pelo Tesouro Direto; Treasuries ao par pelo FRED), beta 1 nas bolsas e câmbio sem hedge. Não somam carrego, convexidade nem a correlação entre os choques.</p>
+    <p><b>Sinais e cenários.</b> O mapa dos sinais compara cada valor de hoje com os três cenários do case, numa escala em que ajuste, base e deterioração ficam igualmente espaçados. Não atribui probabilidade aos cenários: mostra só de qual cenário cada sinal está mais perto.</p>
+    <p><b>Comentário e mensagens.</b> O comentário do topo e as frases sob os títulos são gerados por regra a partir dos dados do dia, sem edição manual.</p>
     <p><b>Avisos.</b> Rentabilidade passada não é garantia de rentabilidade futura. A rentabilidade divulgada não é líquida de impostos. A simulação não é desempenho: mostra como os pesos de hoje teriam se comportado.</p>
     <p><b>Licenças.</b> Dados do Banco Central, da CVM e do Tesouro Transparente, abertos. Juro dos Treasuries: FRED, Federal Reserve Bank of St. Louis; este painel não é endossado nem certificado pelo Federal Reserve Bank of St. Louis.</p>
   </details>
@@ -470,6 +554,13 @@
       svg.append('line').attr('x1', x(ativa)).attr('x2', x(ativa)).attr('y1', m.t).attr('y2', H - m.b).style('stroke', 'var(--cds-chart-reference)').style('stroke-dasharray', '3 3');
       svg.append('text').attr('x', x(ativa) - 4).attr('y', m.t + 10).attr('text-anchor', 'end').text('carteira ativa →');
     }
+    // eventos: o pacote fiscal (27/11/2024) e os dois turnos da eleição (04 e 25/10/2026)
+    [['2024-11-27', 'pacote fiscal', 'start'], ['2026-10-04', 'eleição', 'end'], ['2026-10-25', null, null]].forEach(([d0, rot, lado]) => {
+      const d = new Date(d0 + 'T00:00:00Z');
+      if (d < pts[0].d || d > pts[pts.length - 1].d) return;
+      svg.append('line').attr('x1', x(d)).attr('x2', x(d)).attr('y1', H - m.b - 16).attr('y2', H - m.b).style('stroke', 'var(--cds-chart-reference)');
+      if (rot) svg.append('text').attr('x', x(d) + (lado === 'start' ? 4 : -4)).attr('y', H - m.b - 6).attr('text-anchor', lado).text(rot);
+    });
     const ln = (k) => d3.line().x((p) => x(p.d)).y((p) => y(p[k]));
     const sim = pts.filter((p) => p.d <= ativa), viva = pts.filter((p) => p.d >= ativa);
     const ordemDesenho = visiveis.slice().sort((a, b) => (a === 'carteira') - (b === 'carteira'));
@@ -906,10 +997,10 @@
         [['Ajuste', r.ajuste], ['Base', r.base], ['Deterioração', r.deterioracao]].forEach(([nome, v]) => {
           svg.append('line').attr('x1', x(v)).attr('x2', x(v)).attr('y1', yb - 9).attr('y2', yb + 9).style('stroke', 'var(--cds-chart-reference)').style('stroke-width', 1.5);
           const tx = svg.append('text').attr('x', x(v)).attr('y', yb + 24).attr('text-anchor', 'middle').text(nome + ' ' + L.format(',.2f')(v));
-          const larg = tx.node().getComputedTextLength() || (nome.length + 5) * 7;
+          const larg = Math.max(tx.node().getComputedTextLength() || 0, (nome.length + 5) * 6.6);
           if (x(v) + larg / 2 > W) tx.attr('x', W).attr('text-anchor', 'end');
           if (x(v) - larg / 2 < 0) tx.attr('x', 0).attr('text-anchor', 'start');
-          if (x(v) - larg / 2 < fimAnterior + 6) {
+          if (x(v) - larg / 2 < fimAnterior + 10) {
             tx.attr('y', yb + 44);
             svg.append('line').attr('x1', x(v)).attr('x2', x(v)).attr('y1', yb + 10).attr('y2', yb + 32).style('stroke', 'var(--cds-chart-reference)').style('stroke-dasharray', '2 2');
           } else fimAnterior = x(v) + larg / 2;
@@ -949,7 +1040,7 @@
       const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
       refs.forEach((r) => svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(r.v)).attr('y2', y(r.v)).style('stroke', r.cor).style('stroke-dasharray', '4 3'));
       empurra(refs.map((r) => ({ ...r, y: y(r.v) })), 12).forEach((r) => svg.append('text').attr('x', W - m.r + 4).attr('y', r.y + 4).style('fill', r.cor).text(r.rot));
-      svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickSize(0).tickFormat((v) => L.format(',.0f')(v))).call((g) => g.select('.domain').remove());
+      svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickSize(0).tickFormat((v) => L.format(',.1~f')(v))).call((g) => g.select('.domain').remove());
       svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(d3.utcMonth.every(2)).tickFormat(d3.utcFormat('%m/%y')).tickSizeOuter(0))
         .call((g) => g.select('.domain').style('stroke', 'var(--cds-chart-axis)')).call((g) => g.selectAll('line').remove());
       svg.append('path').datum(pts).attr('d', d3.line().x((p) => x(p.d)).y((p) => y(p.v))).style('fill', 'none').style('stroke', dash.colors[0]).style('stroke-width', 2);
@@ -961,5 +1052,278 @@
         .on('pointermove', (ev) => { const p = pts[bis(pts, x.invert(d3.pointer(ev)[0]))]; dica.style('display', null).text(MZR.dataBR(p.d) + ': ' + L.format(',.2f')(p.v) + '%').style('left', Math.min(x(p.d) + 8, W - 170) + 'px').style('top', '0px'); })
         .on('pointerleave', () => dica.style('display', 'none'));
     });
+  })();
+</script>
+
+<script>
+  // ---------- fase 3 (21/11/2026): estresse, sinais, PL das LCI/LCA, liquidez, calendário, comentário, apresentação e tema
+  (() => {
+    const L = MZR.loc;
+    const n2 = (v) => { if (v == null || !isFinite(v)) return '—'; const r = Math.round(v * 100) / 100; return (r < 0 ? '−' : '') + L.format(',.2f')(Math.abs(r)); };
+    const sn = (v, suf = '') => { if (v == null || !isFinite(v)) return '—'; const r = Math.round(v * 100) / 100; return (r > 0 ? '+' : r < 0 ? '−' : '') + L.format(',.2f')(Math.abs(r)) + suf; };
+    const tom = (v) => (v == null ? '' : Math.round(v * 100) > 0 ? 'mz-pos' : Math.round(v * 100) < 0 ? 'mz-neg' : '');
+    const cel = (tr, txt, cls) => { const c = document.createElement('td'); c.textContent = txt; if (cls) c.className = cls; tr.append(c); return c; };
+    const sub = (td, txt) => { const q = document.createElement('span'); q.className = 'q'; q.textContent = txt; td.append(q); };
+    const dia = (s) => new Date(s + 'T00:00:00Z');
+    const dm = (s) => MZR.dataBR(dia(s)).slice(0, 5);
+    const dmy = (s) => { const t = MZR.dataBR(dia(s)); return t.slice(0, 6) + t.slice(8); };
+    const linha = (fonte, chave, valor) => { const d = dash.data(fonte); return d.status === 'ok' ? d.data.find((x) => x[chave] === valor) : null; };
+
+    // ---- estresse: episódios da simulação
+    dash.draw('episodios-linhas', (tb) => {
+      const e = dash.data('episodios');
+      tb.replaceChildren();
+      if (e.status !== 'ok') return;
+      e.data.forEach((r) => {
+        const tr = document.createElement('tr'); tr.dataset.key = r.nome;
+        sub(cel(tr, r.nome), dmy(r.de) + ' a ' + dmy(r.ate) + ' · ' + r.dias_uteis + ' dias úteis');
+        ['carteira', 'regua', 'cdi', 'ibovespa', 'dolar'].forEach((k) => cel(tr, MZR.pct(r[k], 2), tom(r[k])));
+        cel(tr, r.pre_2a == null ? '—' : sn(r.pre_2a, ' p.p.'));
+        sub(cel(tr, r.pior, 'cl'), sn(r.pior_pp, ' p.p.'));
+        sub(cel(tr, r.melhor, 'cl'), sn(r.melhor_pp, ' p.p.'));
+        tb.append(tr);
+      });
+    });
+
+    // ---- estresse: choques hipotéticos
+    dash.draw('choques-linhas', (tb) => {
+      const c = dash.data('choques');
+      tb.replaceChildren();
+      if (c.status !== 'ok') return;
+      c.data.forEach((r, i) => {
+        const tr = document.createElement('tr'); tr.dataset.key = r.nome;
+        if (r.tipo === 'combinado' && (i === 0 || c.data[i - 1].tipo !== 'combinado')) tr.className = 'comb';
+        sub(cel(tr, r.nome), r.como);
+        cel(tr, sn(r.carteira, ' p.p.'), tom(r.carteira));
+        cel(tr, sn(r.regua, ' p.p.'), tom(r.regua));
+        cel(tr, sn(r.carteira - r.regua, ' p.p.'), tom(r.carteira - r.regua));
+        sub(cel(tr, r.maior, 'cl'), sn(r.maior_pp, ' p.p.'));
+        tb.append(tr);
+      });
+    });
+
+    // ---- PL 5.853/2026: quanto custaria na carteira, com o rendimento da LCI nos 12 meses da simulação
+    dash.draw('pl-lci', (el) => {
+      const r = linha('classes', 'classe', 'LCI/LCA');
+      el.replaceChildren();
+      const txt = (t, b) => { const n = document.createElement(b ? 'b' : 'span'); n.textContent = t; el.append(n); };
+      txt('Em tramitação: o PL 5.853/2026, protocolado em 13/11/2026, cria IR de 7,5% na fonte sobre o rendimento de LCI e LCA. Sem efeito hoje. ');
+      if (r && r.ret_12m_sim != null) {
+        txt('Se valesse para a posição da carteira (' + L.format(',.0f')(+r.carteira) + '% em LCI/LCA), com o rendimento dos últimos 12 meses da simulação, o custo seria de ');
+        txt(n2(0.075 * (+r.carteira / 100) * +r.ret_12m_sim) + ' p.p.', true);
+        txt(' ao ano. ');
+      }
+      txt('A MP 1.303/2025, que propunha 5%, caducou em outubro de 2025.');
+    });
+
+    // ---- onde cada sinal está entre os três cenários (0 = ajuste, 1 = base, 2 = deterioração; sem probabilidade)
+    const NOMES_CEN = ['ajuste', 'base', 'deterioração'];
+    const sinais = () => {
+      const p = dash.data('premissas'), t = dash.data('termo');
+      if (p.status !== 'ok' || t.status !== 'ok') return [];
+      const pr = Object.fromEntries(p.data.map((r) => [r.indicador, r]));
+      const ult = (campo) => { const u = [...t.data].reverse().find((x) => x[campo] != null); return u ? +u[campo] : null; };
+      const cen = (ind) => (pr[ind] ? [+pr[ind].ajuste, +pr[ind].base, +pr[ind].deterioracao] : null);
+      const ptax = linha('monitor', 'indicador', 'Dólar (PTAX)');
+      return [
+        ['Focus: Selic no fim de 2027', pr.Selic ? +pr.Selic.focus : null, cen('Selic'), false],
+        ['Juro de 1 ano daqui a 1 ano', ult('fwd_1a1a'), cen('Selic'), false],
+        ['Focus: IPCA de 2027', pr.IPCA ? +pr.IPCA.focus : null, cen('IPCA'), false],
+        ['Inflação implícita de 3 anos', ult('infl_impl_3a'), cen('IPCA'), false],
+        ['Focus: dólar no fim de 2027', pr['Câmbio'] ? +pr['Câmbio'].focus : null, cen('Câmbio'), true],
+        ['Dólar hoje (PTAX)', ptax ? +ptax.valor : null, cen('Câmbio'), true],
+      ].filter((s) => s[1] != null && s[2]).map(([nome, v, [a, b, c], dol]) => {
+        const pos = v <= b ? (v - b) / (b - a) + 1 : (v - b) / (c - b) + 1;
+        return { nome, v, dol, pos, perto: Math.max(0, Math.min(2, Math.round(pos))) };
+      });
+    };
+    dash.draw('sinais', (el) => {
+      const ss = sinais();
+      el.replaceChildren();
+      if (!ss.length) return;
+      const W = Math.max(280, el.clientWidth), estreito = W < 560, lh = estreito ? 46 : 30;
+      const m = { t: 22, r: 18, b: 6, l: estreito ? 18 : Math.min(330, W * 0.42) };
+      const H = m.t + m.b + ss.length * lh;
+      const x = d3.scaleLinear().domain([-0.5, 2.5]).range([m.l, W - m.r]);
+      const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+        .attr('aria-label', 'Posição de cada sinal de mercado entre os cenários de ajuste, base e deterioração do case');
+      const cores = ['var(--color-ok)', 'var(--cds-chart-reference)', 'var(--color-bad)'];
+      ['Ajuste', 'Base', 'Deterioração'].forEach((n, i) => {
+        svg.append('text').attr('x', x(i)).attr('y', 12).attr('text-anchor', 'middle').style('fill', cores[i]).style('font-weight', 600).text(n);
+        svg.append('line').attr('x1', x(i)).attr('x2', x(i)).attr('y1', m.t - 4).attr('y2', H - m.b).style('stroke', cores[i]).style('stroke-dasharray', '2 3').style('opacity', 0.7);
+      });
+      ss.forEach((s, i) => {
+        const yy = m.t + i * lh, yb = estreito ? yy + 32 : yy + lh / 2;
+        const val = (s.dol ? 'R$ ' : '') + L.format(',.2f')(s.v) + (s.dol ? '' : '%');
+        svg.append('text').attr('x', estreito ? 0 : m.l - 12).attr('y', estreito ? yy + 14 : yb + 4).attr('text-anchor', estreito ? 'start' : 'end')
+          .style('fill', 'var(--color-fg)').text(s.nome + ' · ' + val);
+        svg.append('line').attr('x1', x(-0.5)).attr('x2', x(2.5)).attr('y1', yb).attr('y2', yb).style('stroke', 'var(--cds-chart-grid)').style('stroke-width', 6).style('stroke-linecap', 'round');
+        const p = Math.max(-0.45, Math.min(2.45, s.pos));
+        svg.append('circle').attr('cx', x(p)).attr('cy', yb).attr('r', 6).style('fill', 'var(--serie-0)');
+        if (p !== s.pos) svg.append('text').attr('x', x(p) + (s.pos > 0 ? 9 : -9)).attr('y', yb + 4).attr('text-anchor', s.pos > 0 ? 'start' : 'end').style('fill', 'var(--color-fg)').text(s.pos > 0 ? '›' : '‹');
+      });
+    });
+
+    // ---- liquidez: em quanto tempo cada parte da carteira vira caixa
+    const BALDE = { 'Tesouro Selic': 0, 'Prefixado': 0, 'IPCA+ curto': 0, 'IPCA+ longo': 0, 'Ações Brasil': 0, 'Treasury 2 anos': 0, 'Treasury 10 anos': 0,
+      'Crédito high grade': 1, 'Bolsa global sem hedge': 1, 'LCI/LCA': 2 };
+    const BALDES = ['Até 2 dias úteis', 'Até 30 dias', 'Depois da carência'];
+    dash.draw('liquidez', (el) => {
+      const c = dash.data('classes');
+      el.replaceChildren();
+      if (c.status !== 'ok') return;
+      const soma = (col) => BALDES.map((_, b) => d3.sum(c.data.filter((r) => BALDE[r.classe] === b), (r) => +r[col]));
+      const barras = [['Carteira', soma('carteira')], ['Régua', soma('regua')]];
+      const W = Math.max(260, el.clientWidth), m = { l: 70, r: 4 }, H = 2 * 34 + 30;
+      const x = d3.scaleLinear().domain([0, 100]).range([m.l, W - m.r]);
+      const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+        .attr('aria-label', 'Parte da carteira e da régua que vira caixa em até 2 dias úteis, até 30 dias e depois da carência');
+      const op = [1, 0.6, 0.3];
+      barras.forEach(([nome, v], i) => {
+        const yy = 4 + i * 34;
+        svg.append('text').attr('x', 0).attr('y', yy + 16).style('fill', 'var(--color-fg)').style('font-weight', i ? 400 : 600).text(nome);
+        let acc = 0;
+        v.forEach((w, b) => {
+          if (w <= 0) return;
+          svg.append('rect').attr('x', x(acc) + (acc ? 1 : 0)).attr('width', Math.max(0, x(acc + w) - x(acc) - (acc ? 1 : 0))).attr('y', yy).attr('height', 22).attr('rx', 3)
+            .style('fill', 'var(--serie-1)').style('opacity', op[b]);
+          if (x(acc + w) - x(acc) > 40) svg.append('text').attr('x', x(acc) + 6).attr('y', yy + 15).style('fill', b === 0 ? 'var(--color-panel)' : 'var(--color-fg)').style('font-weight', 600).text(L.format(',.1f')(w) + '%');
+          acc += w;
+        });
+      });
+      const lg = svg.append('g').attr('transform', `translate(${m.l},${H - 8})`);
+      let lx = 0;
+      BALDES.forEach((n, b) => {
+        lg.append('rect').attr('x', lx).attr('y', -9).attr('width', 10).attr('height', 10).attr('rx', 2).style('fill', 'var(--serie-1)').style('opacity', op[b]);
+        const t = lg.append('text').attr('x', lx + 14).attr('y', 0).text(n);
+        lx += 14 + (t.node().getComputedTextLength() || n.length * 6.5) + 14;
+      });
+    });
+
+    // ---- próximos eventos
+    const hojeBR = () => new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);
+    const FERIADOS = ['2026-11-20', '2026-12-25', '2027-01-01', '2027-02-08', '2027-02-09', '2027-03-26', '2027-04-21', '2027-05-01'];
+    const util = (d) => d.getUTCDay() % 6 !== 0 && !FERIADOS.includes(d.toISOString().slice(0, 10));
+    dash.draw('calendario', (el) => {
+      const hoje = hojeBR(), ev = [['2026-12-09', 'Decisão do Copom (reunião de 8 e 9/12)'], ['2026-12-09', 'Decisão do FOMC, nos EUA (reunião de 8 e 9/12)'],
+        ['2026-11-30', 'Come-cotas dos fundos de renda fixa e de crédito (último dia útil de novembro)'], ['2027-05-31', 'Come-cotas dos fundos (último dia útil de maio)']];
+      const d = dia(hoje);
+      for (let k = 0; k < 8; k++) { const t = new Date(d); t.setUTCDate(t.getUTCDate() + k); if (t.getUTCDay() === 1 && t.toISOString().slice(0, 10) > hoje) { ev.push([t.toISOString().slice(0, 10), 'Boletim Focus (toda segunda-feira)']); break; } }
+      for (let mes = 1; mes <= 2; mes++) {
+        const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + mes, 1));
+        while (!util(t)) t.setUTCDate(t.getUTCDate() + 1);
+        ev.push([t.toISOString().slice(0, 10), 'Rebalanceamento da carteira aos pesos-alvo (1º dia útil do mês)']);
+      }
+      el.replaceChildren();
+      const sem = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+      ev.filter(([dd]) => dd >= hoje).sort((a, b) => (a[0] < b[0] ? -1 : 1)).slice(0, 7).forEach(([dd, txt]) => {
+        const li = document.createElement('li');
+        const tm = document.createElement('time'); tm.dateTime = dd; tm.textContent = MZR.dataBR(dia(dd)) + ' · ' + sem[dia(dd).getUTCDay()];
+        const sp = document.createElement('span'); sp.textContent = txt;
+        li.append(tm, sp); el.append(li);
+      });
+    });
+
+    // ---- comentário automático do último dia
+    dash.draw('comentario', (el) => {
+      const s = dash.data('serie'), c = dash.data('classes'), cmp = dash.data('comparacao');
+      if (s.status !== 'ok' || c.status !== 'ok' || cmp.status !== 'ok' || !s.data.length) { el.style.display = 'none'; return; }
+      const d = s.data[s.data.length - 1].data;
+      if (d <= MZR.ATIVA) { el.style.display = 'none'; return; }
+      const v = (n) => { const r = cmp.data.find((x) => x.serie === n); return r ? r.dia : null; };
+      const contrib = c.data.filter((r) => r.ret_dia != null).map((r) => ({ c: r.classe, v: +r.peso_hoje / 100 * +r.ret_dia }));
+      const mais = contrib.reduce((a, b) => (b.v > a.v ? b : a)), menos = contrib.reduce((a, b) => (b.v < a.v ? b : a));
+      const pre = linha('monitor', 'indicador', 'Prefixado de 2 anos'), ptax = linha('monitor', 'indicador', 'Dólar (PTAX)');
+      el.replaceChildren();
+      const rot = document.createElement('span'); rot.className = 'rot'; rot.textContent = 'Comentário automático, gerado por regra a partir dos dados de ' + MZR.dataBR(dia(d));
+      el.append(rot, document.createTextNode('No dia, a carteira rendeu ' + MZR.pct(v('Carteira'), 2) + ', a régua ' + MZR.pct(v('Régua'), 2) + ' e o CDI ' + MZR.pct(v('CDI'), 2) + '. '
+        + 'O que mais somou foi ' + mais.c + ' (' + sn(mais.v, ' p.p.') + '); o que mais tirou, ' + menos.c + ' (' + sn(menos.v, ' p.p.') + '). '
+        + (ptax ? 'Dólar a R$ ' + L.format(',.2f')(+ptax.valor) : '') + (pre ? '; prefixado de 2 anos a ' + L.format(',.2f')(+pre.valor) + '%.' : '.')));
+      el.style.display = '';
+    });
+
+    // ---- títulos-mensagem: a conclusão de cada bloco, calculada dos dados
+    dash.draw('msg', (el) => {
+      const cmp = dash.data('comparacao');
+      const r = (n) => (cmp.status === 'ok' ? cmp.data.find((x) => x.serie === n) : null);
+      let t = '';
+      if (el.dataset.msg === 'evolucao') {
+        const a = r('Carteira'), b = r('Régua');
+        if (a && b) t = (a.ativa != null ? 'Desde 13/11/2026, a carteira está ' + sn(a.ativa - b.ativa, ' p.p.') + ' contra a régua. ' : '')
+          + 'Na simulação de 24 meses, ficou ' + sn(a.sim_total - b.sim_total, ' p.p.') + ' contra a régua, com maior queda de ' + n2(a.sim_queda) + '%, contra ' + n2(b.sim_queda) + '% da régua.';
+      } else if (el.dataset.msg === 'mensal') {
+        const m = dash.data('mensal');
+        if (m.status === 'ok') {
+          const ch = m.data.filter((x) => x.fase === 'simulada' && !x.parcial);
+          t = 'Na simulação, a carteira rendeu mais que o CDI em ' + ch.filter((x) => x.carteira > x.cdi).length + ' de ' + ch.length + ' meses cheios; a régua, em ' + ch.filter((x) => x.regua > x.cdi).length + '.';
+        }
+      } else if (el.dataset.msg === 'atribuicao') {
+        const a = dash.data('atribuicao');
+        if (a.status === 'ok') {
+          const cl = a.data.filter((x) => x.periodo === 'sim12' && !x.classe.startsWith('Total') && !x.classe.startsWith('Juros'));
+          const tot = a.data.find((x) => x.periodo === 'sim12' && x.classe.startsWith('Total'));
+          if (cl.length && tot) {
+            const lo = cl.reduce((p, q) => (q.efeito < p.efeito ? q : p)), hi = cl.reduce((p, q) => (q.efeito > p.efeito ? q : p));
+            t = 'Em 12 meses de simulação, a carteira ficou ' + sn(tot.efeito, ' p.p.') + ' contra a régua. O que mais tirou foi ' + lo.classe + ' (' + sn(lo.efeito, ' p.p.') + '); o que mais somou, ' + hi.classe + ' (' + sn(hi.efeito, ' p.p.') + ').';
+          }
+        }
+      } else if (el.dataset.msg === 'estresse') {
+        const e = dash.data('episodios');
+        if (e.status === 'ok') {
+          const nom = e.data.filter((x) => !x.nome.startsWith('Pior'));
+          if (nom.length) t = (nom.every((x) => x.carteira > x.regua) ? 'Nos episódios de estresse da simulação, a carteira ficou acima da régua: ' : 'Nos episódios de estresse da simulação: ')
+            + nom.map((x) => x.nome.split(':')[0].toLowerCase() + ', ' + MZR.pct(x.carteira, 2) + ' contra ' + MZR.pct(x.regua, 2)).join('; ') + '.';
+        }
+      } else if (el.dataset.msg === 'gatilhos') {
+        const ss = sinais();
+        if (ss.length) {
+          const n = [0, 1, 2].map((k) => ss.filter((s) => s.perto === k).length);
+          t = 'Dos ' + ss.length + ' sinais, ' + [2, 1, 0].filter((k) => n[k]).map((k) => n[k] + ' ' + (n[k] === 1 ? 'está' : 'estão') + ' mais perto ' + (k === 1 ? 'da base' : k === 2 ? 'da deterioração' : 'do ajuste')).join(', ') + '. Os sinais do Tesouro incluem prêmio de risco; os do Focus, não.';
+        }
+      }
+      el.textContent = t;
+      el.style.display = t ? '' : 'none';
+    });
+
+    // ---- modo apresentação: ?apresentacao=1, quatro paradas; setas ou espaço avançam, Esc sai
+    const PARADAS = [['topo', 'Frescor e mandato'], ['evolucao', 'Resultado'], ['risco', 'Risco e estresse'], ['gatilhos', 'Cenários e premissas']];
+    if (new URLSearchParams(location.search).has('apresentacao')) {
+      document.body.classList.add('mz-apres');
+      const nav = document.createElement('nav'); nav.id = 'mz-apres'; nav.setAttribute('aria-label', 'Modo apresentação');
+      const ant = document.createElement('button'); ant.type = 'button'; ant.textContent = '‹'; ant.setAttribute('aria-label', 'Parada anterior');
+      const rot = document.createElement('span');
+      const prox = document.createElement('button'); prox.type = 'button'; prox.textContent = '›'; prox.setAttribute('aria-label', 'Próxima parada');
+      const sair = document.createElement('a'); sair.href = location.pathname; sair.textContent = 'Sair';
+      nav.append(ant, rot, prox, sair); document.body.append(nav);
+      let k = 0;
+      const ir = (n) => {
+        k = Math.max(0, Math.min(PARADAS.length - 1, n));
+        document.querySelectorAll('.mz-foco').forEach((e) => e.classList.remove('mz-foco'));
+        const alvo = document.getElementById(PARADAS[k][0]);
+        if (alvo) { alvo.classList.add('mz-foco'); alvo.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+        rot.textContent = (k + 1) + '/' + PARADAS.length + ' · ' + PARADAS[k][1];
+      };
+      ant.addEventListener('click', () => ir(k - 1)); prox.addEventListener('click', () => ir(k + 1));
+      document.addEventListener('keydown', (ev) => {
+        if (['ArrowRight', 'PageDown', ' '].includes(ev.key)) { ev.preventDefault(); ir(k + 1); }
+        else if (['ArrowLeft', 'PageUp'].includes(ev.key)) { ev.preventDefault(); ir(k - 1); }
+        else if (ev.key === 'Escape') location.href = location.pathname;
+      });
+      setTimeout(() => ir(0), 300);
+    }
+
+    // ---- tema claro ou escuro, para o projetor
+    const botao = document.getElementById('botao-tema');
+    if (botao) {
+      const atual = () => document.documentElement.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      const rotular = () => { botao.textContent = atual() === 'dark' ? 'Tema claro' : 'Tema escuro'; };
+      rotular();
+      botao.addEventListener('click', () => {
+        const novo = atual() === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = novo;
+        try { localStorage.setItem('mzr-tema', novo); } catch (e) { /* sem armazenamento: vale só nesta visita */ }
+        rotular();
+      });
+    }
   })();
 </script>

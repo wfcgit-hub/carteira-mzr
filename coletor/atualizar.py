@@ -154,14 +154,14 @@ def tesouro():
         if l[0] not in ('Tesouro Prefixado', 'Tesouro IPCA+'):
             continue
         base = dt.datetime.strptime(l[2], '%d/%m/%Y').date()
-        if base < HOJE - dt.timedelta(days=400):
+        if base < HOJE - dt.timedelta(days=800):
             continue
         venc = dt.datetime.strptime(l[1], '%d/%m/%Y').date()
         tc, tv = num(l[3]), num(l[4])
         taxa = (tc + tv) / 2 if (tc and tv) else (tc or tv)   # meio entre a compra e a venda do investidor
         if taxa:
             (por_dia if l[0] == 'Tesouro Prefixado' else reais).setdefault(base, []).append(((venc - base).days / 365.25, taxa))
-    termo, pre2, inf3 = {}, {}, {}
+    termo, pre2, inf3, real = {}, {}, {}, {}
     for d, pts in por_dia.items():
         pts.sort()
 
@@ -181,7 +181,10 @@ def tesouro():
         q3 = next((a0 + (a1 - a0) * (3.0 - t0) / (t1 - t0) for (t0, a0), (t1, a1) in zip(rr, rr[1:]) if t0 <= 3.0 <= t1), None)
         if p3 and q3:
             inf3[d] = ((1 + p3 / 100) / (1 + q3 / 100) - 1) * 100
-    return termo, pre2, inf3
+        q10 = next((a0 + (a1 - a0) * (10.0 - t0) / (t1 - t0) for (t0, a0), (t1, a1) in zip(rr, rr[1:]) if t0 <= 10.0 <= t1), None)
+        if q3 and q10:
+            real[d] = (q3, q10)
+    return termo, pre2, inf3, real
 
 
 # ------------------------------------------------------------------ cálculo
@@ -218,7 +221,7 @@ def main():
     cdi, ptax = sgs(12), sgs(1)
     y2, y10 = fred('DGS2'), fred('DGS10')
     cotas = cvm()
-    termo, pre2, inf3 = tesouro()
+    termo, pre2, inf3, juro_real = tesouro()
     dias = sorted(d for d in cdi if d >= INICIO)
     # o último dia é o último em que todas as séries existem (os fundos chegam à CVM com 1–2 dias de atraso)
     # e cada fundo tem de ter a cota daquele dia mesmo: repetir a anterior daria variação zero falsa no fim da série
@@ -428,6 +431,65 @@ def main():
             sem[dt.date.fromisoformat(x['Data']).isocalendar()[:2]] = x
         focus_hist += [dict(indicador=ind, data=x['Data'], mediana=x['Mediana']) for x in sem.values()]
 
+    # ---------------------------------------------------------------- estresse (21/11/2026)
+    def idx(d):
+        return max(i for i, x in enumerate(dias) if x <= d)
+
+    def episodio(nome, i0, i1):
+        contrib = {c: PESOS[c][0] / 100 * (math.prod(1 + r for r in ret[FONTE[c]][i0:i1]) - 1) * 100 for c in PESOS}
+        p0, p1 = ultimo(pre2, dias[i0]), ultimo(pre2, dias[i1])
+        pior, melhor = min(contrib, key=contrib.get), max(contrib, key=contrib.get)
+        return dict(nome=nome, de=dias[i0].isoformat(), ate=dias[i1].isoformat(), dias_uteis=i1 - i0,
+                    **{k: round((s[k][i1] / s[k][i0] - 1) * 100, 3) for k in ('carteira', 'regua', 'cdi', 'ibovespa', 'dolar')},
+                    pre_2a=round(p1 - p0, 2) if p0 and p1 else None,
+                    pior=pior, pior_pp=round(contrib[pior], 3), melhor=melhor, melhor_pp=round(contrib[melhor], 3))
+    NOMEADOS = [('Pacote fiscal e alta do dólar', dt.date(2024, 11, 26), dt.date(2024, 12, 18)),
+                ('Eleição: do 1º ao 2º turno', dt.date(2026, 10, 2), dt.date(2026, 10, 26))]
+    janelas = [(idx(a), idx(b), nome) for nome, a, b in NOMEADOS if dias[0] <= a and b <= ATIVA]
+    N = 10   # as piores janelas de 10 dias úteis da carteira, sem sobrepor as outras
+    candidatas = sorted(range(0, i_corte - N + 1), key=lambda i: s['carteira'][i + N] / s['carteira'][i])
+    piores = []
+    for i in candidatas:
+        if len(piores) == 3:
+            break
+        if all(i + N <= a or i >= b for a, b, _ in janelas + piores):
+            piores.append((i, i + N, None))
+    episodios = [episodio(nome, a, b) for a, b, nome in janelas]
+    episodios += [episodio(f'Pior quinzena nº {k + 1} da carteira', a, b) for k, (a, b, _) in enumerate(sorted(piores, key=lambda p: s['carteira'][p[1]] / s['carteira'][p[0]]))]
+
+    # choques hipotéticos, lineares pela duration de hoje (e beta 1 nas bolsas)
+    def dmod_par(y, prazo):
+        y = y / 100
+        return (1 - (1 + y / 2) ** (-2 * prazo)) / y
+    y_pre = pre2[max(pre2)]
+    r3, r10 = juro_real[max(juro_real)]
+    D = {'Prefixado': 2 / (1 + y_pre / 100), 'IPCA+ curto': 3 / (1 + r3 / 100), 'IPCA+ longo': 10 / (1 + r10 / 100),
+         'Treasury 2 anos': dmod_par(y2[max(y2)], 2), 'Treasury 10 anos': dmod_par(y10[max(y10)], 10)}
+    USD = ('Bolsa global sem hedge', 'Treasury 2 anos', 'Treasury 10 anos')
+
+    def choque(local, cambio=0.0):
+        imp = {c: ((1 + local.get(c, 0.0) / 100) * (1 + (cambio if c in USD else 0.0) / 100) - 1) * 100 for c in PESOS}
+        cart = {c: PESOS[c][0] / 100 * imp[c] for c in PESOS}
+        maior = max(cart, key=lambda c: abs(cart[c]))
+        return dict(carteira=round(sum(cart.values()), 3), regua=round(sum(PESOS[c][1] / 100 * imp[c] for c in PESOS), 3),
+                    maior=maior, maior_pp=round(cart[maior], 3))
+    pre_up = {'Prefixado': -D['Prefixado'] * 2}
+    real_up = {'IPCA+ curto': -D['IPCA+ curto'] * 1, 'IPCA+ longo': -D['IPCA+ longo'] * 1}
+    tsy = lambda dp: {'Treasury 2 anos': -D['Treasury 2 anos'] * dp, 'Treasury 10 anos': -D['Treasury 10 anos'] * dp}  # noqa: E731
+    f2 = lambda v: f'{v:.2f}'.replace('.', ',')  # noqa: E731
+    choques = [
+        dict(nome='Juro prefixado +2 p.p.', tipo='simples', como=f'LTN de 2 anos, duration {f2(D["Prefixado"])}', **choque(pre_up)),
+        dict(nome='Juro real (IPCA+) +1 p.p.', tipo='simples', como=f'NTN-B de ~3 e ~10 anos, durations {f2(D["IPCA+ curto"])} e {f2(D["IPCA+ longo"])}', **choque(real_up)),
+        dict(nome='Dólar +10%', tipo='simples', como='bolsa global e Treasuries, sem hedge', **choque({}, 10)),
+        dict(nome='Ibovespa −15%', tipo='simples', como='beta 1', **choque({'Ações Brasil': -15})),
+        dict(nome='Bolsa americana −15% em dólar', tipo='simples', como='beta 1, em dólar', **choque({'Bolsa global sem hedge': -15})),
+        dict(nome='Juro dos Treasuries +1 p.p.', tipo='simples', como=f'durations {f2(D["Treasury 2 anos"])} e {f2(D["Treasury 10 anos"])}', **choque(tsy(1))),
+        dict(nome='Combinado: estresse doméstico', tipo='combinado', como='juro prefixado +2 p.p., juro real +1 p.p., dólar +10%, Ibovespa −15%',
+             **choque({**pre_up, **real_up, 'Ações Brasil': -15}, 10)),
+        dict(nome='Combinado: aversão global', tipo='combinado', como='bolsa americana −15%, Treasuries −0,5 p.p., dólar +10%, Ibovespa −15%',
+             **choque({'Bolsa global sem hedge': -15, 'Ações Brasil': -15, **tsy(-0.5)}, 10)),
+    ]
+
     # monitor: juro do prefixado de 2 anos (Tesouro Direto) e dólar
     t_dias = sorted(pre2)
     monitor = [dict(indicador='Prefixado de 2 anos', unidade='% a.a.', valor=round(pre2[t_dias[-1]], 2),
@@ -465,7 +527,7 @@ def main():
     DADOS.mkdir(parents=True, exist_ok=True)
     for nome, rows in (('serie', linhas), ('classes', classes), ('monitor', monitor), ('termo', termo_linhas), ('fontes', fontes),
                        ('mensal', mensal), ('risco', risco_linhas), ('atribuicao', atrib), ('liquido', liq),
-                       ('premissas', premissas), ('focus', focus_hist)):
+                       ('premissas', premissas), ('focus', focus_hist), ('episodios', episodios), ('choques', choques)):
         (DADOS / f'{nome}.json').write_text(json.dumps({'rows': rows, 'meta': comum}, ensure_ascii=False), 'utf-8')
     fim = linhas[-1]
     print(f"ok: {len(linhas)} dias, de {linhas[0]['data']} a {fim['data']} | carteira {fim['carteira']:.2f} régua {fim['regua']:.2f} "
