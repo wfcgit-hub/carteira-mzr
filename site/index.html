@@ -58,7 +58,7 @@
   .mz-tab caption { caption-side: top; text-align: left; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); padding-bottom: 6px; }
   .mz-fontes td { text-align: left; }
   .mz-fontes .atrasado { color: var(--color-warn); font-weight: var(--cds-font-weight-medium); }
-  .mz-queda { min-height: 132px; }
+  .mz-queda { min-height: 210px; }
   .mz-atr { min-height: 0; }
   .mz-alterna { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); }
   .mz-mes { font-size: var(--cds-font-size-caption); }
@@ -112,87 +112,120 @@
     .mz-tab { overflow: visible; }
     .mz-sec h2, .mz-msg, caption { break-after: avoid; }
   }
+  /* ---------- versão 2: resumo + quatro blocos */
+  .mz { gap: 40px; }
+  .mz-nav { position: sticky; top: 0; z-index: 5; display: flex; gap: var(--cds-gap-md); align-items: center; justify-content: space-between;
+            background: var(--color-bg); border-bottom: 1px solid var(--color-border-line); padding: 8px 0; margin-bottom: -16px; }
+  .mz-nav-links { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+  .mz-nav-links::-webkit-scrollbar { display: none; }
+  .mz-nav-links a { color: var(--color-fg-muted); text-decoration: none; font-size: 13px; padding: 6px 10px; border-radius: 6px; white-space: nowrap; }
+  .mz-nav-links a:hover, .mz-nav-links a[aria-current="true"] { color: var(--color-fg); background: var(--color-panel); }
+  .mz-nav-links a:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 1px; }
+  .mz-sobre { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); letter-spacing: .02em; }
+  .mz-topo h1 { margin-top: 6px; }
+  .mz-veredito { font-family: var(--font-anthropic-serif); font-size: 20px; line-height: 1.5; max-width: 64ch; margin: 12px 0 0; color: var(--color-fg); text-wrap: pretty; }
+  .mz-numeros { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 24px; border-top: 1px solid var(--color-border-line); border-bottom: 1px solid var(--color-border-line); }
+  .mz-n { display: grid; gap: 4px; padding: 16px 20px; align-content: start; min-width: 0; }
+  .mz-n:first-child { padding-left: 0; }
+  .mz-n + .mz-n { border-left: 1px solid var(--color-border-line); }
+  .mz-n .mz-num { font-size: 2.1rem; }
+  .mz-tag { font-style: normal; font-size: 11px; border-radius: 999px; padding: 0 7px; margin-left: 4px; white-space: nowrap; letter-spacing: 0; }
+  .mz-tag.real { color: var(--serie-0); border: 1px solid var(--serie-0); }
+  .mz-tag.sim { color: var(--color-fg-muted); border: 1px dashed var(--color-fg-muted); }
+  .mz-bloco { border-top: 1px solid var(--color-border-line); padding-top: 28px; }
+  .mz-sec h2 { font-size: 21px; }
+  .mz-sec h3 { font-size: 15px; font-weight: var(--cds-font-weight-medium); margin: 12px 0 0; }
+  .mz-msg { font-size: 16px; }
+  .mz details.mz-mais { color: var(--color-fg); font-size: inherit; max-width: none; line-height: normal; }
+  .mz-mais > summary { list-style: none; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px; font-weight: var(--cds-font-weight-medium);
+                       color: var(--color-fg); border: 1px solid var(--color-border-line); border-radius: 999px; padding: 7px 14px; background: var(--color-panel); }
+  .mz-mais > summary::-webkit-details-marker { display: none; }
+  .mz-mais > summary::after { content: '▾'; color: var(--color-fg-muted); }
+  .mz-mais[open] > summary::after { content: '▴'; }
+  .mz-mais > summary:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+  .mz-mais-corpo { display: grid; gap: var(--cds-gap-md); margin-top: var(--cds-gap-lg); min-width: 0; }
+  .mz-rodape { gap: 0; }
+  .mz-rodape h2 { margin-bottom: 8px; }
+  .mz details.mz-dobra { border-top: 1px solid var(--color-border-line); padding: 12px 0; max-width: none; }
+  .mz details.mz-dobra > summary { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); }
+  .mz details.mz-dobra > p, .mz details.mz-dobra > dl { max-width: 80ch; }
+  .mz-glossario { margin: 8px 0 0; }
+  .mz-glossario dt { font-weight: var(--cds-font-weight-medium); color: var(--color-fg); margin-top: 10px; }
+  .mz-glossario dd { margin: 2px 0 0; }
+  .mz-comentario { margin: 0; }
+  @media (max-width: 720px) {
+    .mz-controles { display: none; }
+    .mz-numeros { grid-template-columns: 1fr; }
+    .mz-n, .mz-n:first-child { padding: 14px 0; }
+    .mz-n + .mz-n { border-left: none; border-top: 1px solid var(--color-border-line); }
+    .mz-veredito { font-size: 18px; }
+    .mz-tab th:first-child, .mz-tab td:first-child { position: sticky; left: 0; background: var(--color-bg); z-index: 1; }
+  }
+  @media print {
+    .mz-nav { display: none !important; } .mz-mais > summary { display: none; }
+    /* o Chrome sobrepõe conteúdo ao quebrar página dentro de grid: na impressão, blocos simples */
+    .mz, .mz-sec, .mz-mais-corpo, .mz-topo { display: block !important; }
+    .mz > * + *, .mz-sec > * + *, .mz-mais-corpo > * + * { margin-top: 14px; }
+    .mz > .mz-bloco { margin-top: 32px; }
+  }
 </style>
 
 <div class="mz">
+  <nav class="mz-nav" aria-label="Seções do painel">
+    <div class="mz-nav-links">
+      <a href="#topo">Resumo</a>
+      <a href="#desempenho">Desempenho</a>
+      <a href="#risco">Risco</a>
+      <a href="#diferenca">Contra a régua</a>
+      <a href="#cenarios">Cenários</a>
+      <a href="#dados">Dados e método</a>
+    </div>
+    <div class="mz-controles">
+      <a class="mz-chip" href="?apresentacao=1" id="link-apresentacao">Apresentar</a>
+      <button type="button" class="mz-chip" id="botao-tema">Tema</button>
+      <a class="mz-chip" href="painel.pdf" id="link-pdf">PDF</a>
+    </div>
+  </nav>
+
+  <!-- 1. RESUMO: a resposta em uma frase e três números -->
   <header class="mz-topo" id="topo">
-    <div class="mz-titulo">
-      <h1>Carteira MZR</h1>
-      <div class="mz-controles">
-        <a class="mz-chip" href="?apresentacao=1" id="link-apresentacao">Modo apresentação</a>
-        <button type="button" class="mz-chip" id="botao-tema">Tema</button>
-        <a class="mz-chip" href="painel.pdf" id="link-pdf">PDF</a>
+    <span class="mz-sobre">Case MZR Family Office · carteira moderada de uma família, em reais, para 12 meses</span>
+    <h1>Carteira MZR</h1>
+    <p class="mz-veredito" data-draw="veredito" data-source="comparacao">—</p>
+    <div class="mz-numeros">
+      <div class="mz-n">
+        <span class="mz-rot">Desde 13/11/2026 <i class="mz-tag real">real</i></span>
+        <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="ativa">—</span>
+        <span class="mz-sub">Régua <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="ativa">—</b> · CDI <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="ativa">—</b></span>
+      </div>
+      <div class="mz-n">
+        <span class="mz-rot">12 meses até 13/11/2026 <i class="mz-tag sim">simulação</i></span>
+        <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="sim_m12">—</span>
+        <span class="mz-sub">Régua <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="sim_m12">—</b> · CDI <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="sim_m12">—</b></span>
+      </div>
+      <div class="mz-n">
+        <span class="mz-rot">Cenário mais perto do mercado hoje</span>
+        <span class="mz-num" data-draw="cenario-num" data-source="premissas">—</span>
+        <span class="mz-sub" data-draw="cenario-sub" data-source="premissas">—</span>
       </div>
     </div>
-    <p id="frase-ativa" hidden>Desde 13/11/2026, quando a carteira passou a existir, ela rende <b data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="ativa">—</b>, contra <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="ativa">—</b> da régua e <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="ativa">—</b> do CDI.</p>
-    <p id="frase-simulada">A carteira passa a existir em 13/11/2026, a data de corte do case. Antes disso, simulada com os pesos de hoje, ela teria rendido <b data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="sim_total">—</b> em 24 meses, contra <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="sim_total">—</b> da régua e <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="sim_total">—</b> do CDI, com maior queda de <b data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="sim_queda">—</b>.</p>
-    <span data-draw="frase"></span>
     <p class="mz-frescor" data-draw="frescor-topo" data-source="fontes">—</p>
-    <p class="mz-comentario" data-draw="comentario" data-source="classes" style="display:none"></p>
   </header>
   <div class="mz-alerta" id="alerta-frescor" data-draw="frescor-alerta" data-source="fontes" style="display:none"></div>
 
-  <section class="mz-grupo" id="resumo-real" aria-label="Resultado real">
-    <span class="mz-grupo-rot">Real <em>· desde 13/11/2026, quando a carteira passou a existir</em></span>
-    <div class="mz-cards">
-      <div class="mz-card" id="card-ativa">
-        <span class="mz-rot">Carteira desde 13/11/2026</span>
-        <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="ativa">—</span>
-        <span class="mz-sub" id="ativa-cdi" hidden>Régua <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="ativa">—</b> · CDI <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="ativa">—</b> · <b data-draw="pp-cdi" data-source="comparacao" data-field="ativa">—</b> contra o CDI</span>
-        <span class="mz-sub" id="ativa-espera">Começa a contar com o fechamento de 13/11/2026</span>
-      </div>
-      <div class="mz-card" id="card-dia">
-        <span class="mz-rot" data-draw="rot-dia" data-source="serie">Último dia</span>
-        <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="dia">—</span>
-        <span class="mz-sub">Régua <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="dia">—</b> · CDI <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="dia">—</b></span>
-      </div>
-      <div class="mz-card" id="card-risco-real">
-        <span class="mz-rot">Volatilidade, Sharpe e retorno anualizado do real</span>
-        <span class="mz-num">—</span>
-        <span class="mz-sub">Só com 12 meses de dados reais: período curto não se anualiza nem mede risco</span>
-      </div>
-      <div class="mz-card" id="card-termo">
-        <span class="mz-rot">Prefixado 2 anos: taxa contra os cenários</span>
-        <span class="mz-num" data-draw="termo-num" data-source="monitor" data-where="indicador=Prefixado de 2 anos" data-field="valor">—</span>
-        <span class="mz-pill" data-draw="termo-status">—</span>
-      </div>
-    </div>
-  </section>
-
-  <section class="mz-grupo" id="resumo-sim" aria-label="Simulação">
-    <span class="mz-grupo-rot">Simulação <em>· 13/11/2024 a 13/11/2026, pesos de hoje aplicados ao passado; informação suplementar</em></span>
-    <div class="mz-cards">
-      <div class="mz-card mz-sim" id="card-12m">
-        <span class="mz-rot">12 meses até 13/11/2026</span>
-        <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="sim_m12">—</span>
-        <span class="mz-sub">Régua <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="sim_m12">—</b> · CDI <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="sim_m12">—</b> · <b data-draw="pp-cdi" data-source="comparacao" data-field="sim_m12">—</b> contra o CDI</span>
-        <span class="mz-sub">Acima do IPCA (nov/25 a out/26): <b data-draw="real-ipca" data-source="mensal">—</b></span>
-      </div>
-      <div class="mz-card mz-sim" id="card-24m">
-        <span class="mz-rot">24 meses até 13/11/2026</span>
-        <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="sim_total">—</span>
-        <span class="mz-sub">Régua <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="sim_total">—</b> · CDI <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="sim_total">—</b> · <b data-draw="pp-cdi" data-source="comparacao" data-field="sim_total">—</b> contra o CDI</span>
-      </div>
-      <div class="mz-card mz-sim" id="card-queda">
-        <span class="mz-rot">Maior queda na simulação</span>
-        <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="sim_queda">—</span>
-        <span class="mz-sub">Régua <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="sim_queda">—</b> · Ibovespa <b data-draw="kpi" data-source="comparacao" data-where="serie=Ibovespa" data-field="sim_queda">—</b></span>
-      </div>
-    </div>
-  </section>
-
-  <section class="mz-sec" id="evolucao">
-    <h2>Carteira contra a régua e os principais índices</h2>
+  <!-- 2. DESEMPENHO -->
+  <section class="mz-sec mz-bloco" id="desempenho">
+    <h2>Como a carteira está indo</h2>
     <p class="mz-msg" data-draw="msg" data-msg="evolucao" style="display:none"></p>
     <div class="mz-barra">
       <div class="mz-chips" role="group" aria-label="Séries no gráfico">
         <button type="button" class="mz-chip" id="chip-carteira" data-serie="carteira" aria-pressed="true"><i data-cor="0"></i>Carteira</button>
         <button type="button" class="mz-chip" id="chip-regua" data-serie="regua" aria-pressed="true"><i data-cor="1"></i>Régua</button>
         <button type="button" class="mz-chip" id="chip-cdi" data-serie="cdi" aria-pressed="true"><i data-cor="2"></i>CDI</button>
-        <button type="button" class="mz-chip" id="chip-ibovespa" data-serie="ibovespa" aria-pressed="true"><i data-cor="3"></i>Ibovespa</button>
+        <button type="button" class="mz-chip" id="chip-ibovespa" data-serie="ibovespa" aria-pressed="false"><i data-cor="3"></i>Ibovespa</button>
         <button type="button" class="mz-chip" id="chip-imab" data-serie="imab" aria-pressed="false"><i data-cor="4"></i>IMA-B</button>
         <button type="button" class="mz-chip" id="chip-dolar" data-serie="dolar" aria-pressed="false"><i data-cor="5"></i>Dólar</button>
-        <button type="button" class="mz-chip" id="chip-sp500" data-serie="sp500_reais" aria-pressed="false"><i data-cor="6"></i>Bolsa americana em reais</button>
+        <button type="button" class="mz-chip" id="chip-sp500" data-serie="sp500_reais" aria-pressed="false"><i data-cor="6"></i>Bolsa americana</button>
       </div>
       <div class="mz-periodos" role="group" aria-label="Período">
         <button type="button" class="mz-chip" id="per-24" data-dias="730" aria-pressed="true">24 meses</button>
@@ -201,186 +234,188 @@
       </div>
     </div>
     <div class="mz-graf" id="grafico" data-draw="grafico" data-source="serie"></div>
+    <div class="mz-legenda" aria-hidden="true"><span><i class="p"></i>Simulação: pesos de hoje aplicados ao passado</span><span><i></i>Real, desde 13/11/2026</span></div>
+    <p class="mz-nota">Base 100 no início do período. Retornos antes do imposto.</p>
+
+    <details class="mz-mais">
+      <summary>Ver detalhes: retorno por período, mês a mês e imposto</summary>
+      <div class="mz-mais-corpo">
+        <p class="mz-comentario" data-draw="comentario" data-source="classes" style="display:none"></p>
+        <div class="mz-tab">
+          <table id="tabela-real" data-source="comparacao" data-row-key="serie">
+            <caption>Real, desde 13/11/2026</caption>
+            <thead><tr><th>Série</th><th>Último dia</th><th>Desde 13/11/26</th><th>Contra o CDI</th><th>% do CDI</th></tr></thead>
+            <tbody data-draw="tabela-real"></tbody>
+          </table>
+        </div>
+        <div class="mz-tab">
+          <table id="tabela-sim" data-source="comparacao" data-row-key="serie">
+            <caption>Simulação, até 13/11/2026</caption>
+            <thead><tr><th>Série</th><th>12 meses</th><th>% do CDI em 12 meses</th><th>24 meses</th><th>Contra o CDI (24 meses)</th><th>Maior queda do pico</th></tr></thead>
+            <tbody data-draw="tabela-sim"></tbody>
+          </table>
+        </div>
+        <p class="mz-nota">Nos 12 meses da simulação, a carteira rendeu <b data-draw="real-ipca" data-source="mensal">—</b> acima do IPCA (nov/25 a out/26). Período real curto não se anualiza: volatilidade e Sharpe do real só com 12 meses de dados.</p>
+
+        <h3>Mês a mês</h3>
+        <p class="mz-msg" data-draw="msg" data-msg="mensal" style="display:none"></p>
+        <div class="mz-tab">
+          <table class="mz-mes" id="tabela-mensal" data-source="mensal" data-row-key="linha">
+            <thead><tr><th>Ano</th><th></th><th>Jan</th><th>Fev</th><th>Mar</th><th>Abr</th><th>Mai</th><th>Jun</th><th>Jul</th><th>Ago</th><th>Set</th><th>Out</th><th>Nov</th><th>Dez</th><th class="ano">No ano</th></tr></thead>
+            <tbody data-draw="mensal-linhas"></tbody>
+          </table>
+        </div>
+        <p class="mz-nota">Retorno de cada mês, em %. Verde: a carteira rendeu mais que o CDI; vermelho: menos. Contorno dourado: real. Novembro de 2026 aparece partido em simulação e real.</p>
+
+        <h3>Antes e depois do imposto</h3>
+        <div class="mz-dois">
+          <div class="mz-tab">
+            <table id="tabela-liquido-real" data-source="liquido" data-row-key="serie">
+              <caption>Real, se resgatado no último dia</caption>
+              <thead><tr><th>Série</th><th>Bruto</th><th>IR estimado</th><th>IOF câmbio</th><th>Líquido</th></tr></thead>
+              <tbody data-draw="liquido-linhas" data-periodo="real"></tbody>
+            </table>
+          </div>
+          <div class="mz-tab">
+            <table id="tabela-liquido-sim" data-source="liquido" data-row-key="serie">
+              <caption>Simulação, 12 meses até 13/11/2026</caption>
+              <thead><tr><th>Série</th><th>Bruto</th><th>IR estimado</th><th>IOF câmbio</th><th>Líquido</th></tr></thead>
+              <tbody data-draw="liquido-linhas" data-periodo="sim12"></tbody>
+            </table>
+          </div>
+        </div>
+        <p class="mz-nota">Estimativa para pessoa física. A LCI/LCA é isenta, o que favorece a carteira contra o CDI tributado.</p>
+        <p class="mz-nota" data-draw="pl-lci" data-source="classes"></p>
+        <p class="mz-nota" data-draw="ate" data-source="serie">—</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 3. RISCO -->
+  <section class="mz-sec mz-bloco" id="risco">
+    <h2>Quanto risco a carteira correu</h2>
+    <p class="mz-msg" data-draw="msg-risco" data-source="comparacao" style="display:none"></p>
     <div class="mz-graf mz-queda" id="queda" data-draw="queda" data-source="serie"></div>
-    <div class="mz-legenda" aria-hidden="true"><span><i class="p"></i>Simulação, antes de a carteira existir</span><span><i></i>Carteira ativa, desde 13/11/2026</span></div>
-    <p class="mz-nota">Base 100 no início do período. Até 13/11/2026 a carteira não existia: o trecho pontilhado aplica os pesos de hoje ao passado. Retornos antes do IR. Embaixo, quanto cada uma está abaixo do seu pico anterior; o pico recomeça em 13/11/2026, para que a queda real não herde a da simulação.</p>
+    <p class="mz-nota">Quanto a carteira e a régua estiveram abaixo do seu último pico. O pico recomeça em 13/11/2026, quando a carteira passou a existir. Segue o período escolhido no gráfico de desempenho.</p>
+
+    <details class="mz-mais">
+      <summary>Ver detalhes: retorno contra queda, medidas de risco e estresse</summary>
+      <div class="mz-mais-corpo">
+        <h3>Retorno contra queda, 24 meses <i class="mz-tag sim">simulação</i></h3>
+        <div class="mz-graf mz-disp" id="dispersao" data-draw="dispersao" data-source="comparacao"></div>
+        <p class="mz-nota">Mais para cima e para a esquerda é melhor: mais retorno com menos queda.</p>
+
+        <h3>Medidas de risco <i class="mz-tag sim">simulação</i></h3>
+        <div class="mz-tab">
+          <table class="mz-risco" id="tabela-risco" data-source="risco" data-row-key="chave">
+            <thead><tr><th>Medida</th><th>Carteira</th><th>Régua</th><th>CDI</th><th>Como se calcula</th></tr></thead>
+            <tbody data-draw="risco-linhas"></tbody>
+          </table>
+        </div>
+        <p class="mz-nota">O Sharpe é negativo porque, na simulação, a carteira rendeu menos que o CDI. A margem de erro tem o tamanho do próprio número: dois anos não bastam para separar carteira, régua e CDI.</p>
+
+        <h3>Em momentos de estresse</h3>
+        <p class="mz-msg" data-draw="msg" data-msg="estresse" style="display:none"></p>
+        <div class="mz-tab">
+          <table class="mz-estresse" id="tabela-episodios" data-source="episodios" data-row-key="nome">
+            <caption>Episódios dentro da simulação</caption>
+            <thead><tr><th>Episódio</th><th>Carteira</th><th>Régua</th><th>CDI</th><th>Ibovespa</th><th>Dólar</th><th>Prefixado 2 anos</th><th>O que mais tirou</th><th>O que mais somou</th></tr></thead>
+            <tbody data-draw="episodios-linhas"></tbody>
+          </table>
+        </div>
+        <div class="mz-tab">
+          <table class="mz-estresse" id="tabela-choques" data-source="choques" data-row-key="nome">
+            <caption>Choques hipotéticos, efeito imediato no valor</caption>
+            <thead><tr><th>Choque</th><th>Carteira</th><th>Régua</th><th>Diferença</th><th>Classe que mais pesa</th></tr></thead>
+            <tbody data-draw="choques-linhas"></tbody>
+          </table>
+        </div>
+        <p class="mz-nota">Choques calculados pela duration de hoje, beta 1 nas bolsas e câmbio sem hedge. Aproximação linear: sem carrego nem correlação.</p>
+      </div>
+    </details>
   </section>
 
-  <section class="mz-sec" id="risco">
-    <h2>Quanto rendeu e quanto caiu no caminho <span class="mz-selo">simulação · 13/11/2024 a 13/11/2026</span></h2>
-    <div class="mz-graf mz-disp" id="dispersao" data-draw="dispersao" data-source="comparacao"></div>
-    <p class="mz-nota">Cada ponto é uma série nos 24 meses até 13/11/2026: no eixo horizontal, a maior queda do pico ao fundo; no vertical, o retorno acumulado. Quanto mais para cima e para a esquerda, melhor. A carteira e a régua são simulação: os pesos de hoje aplicados ao passado.</p>
-    <div class="mz-tab">
-      <table class="mz-risco" id="tabela-risco" data-source="risco" data-row-key="chave">
-        <caption>Risco na simulação, retornos diários de 13/11/2024 a 13/11/2026</caption>
-        <thead><tr><th>Medida</th><th>Carteira</th><th>Régua</th><th>CDI</th><th>Como se calcula</th></tr></thead>
-        <tbody data-draw="risco-linhas"></tbody>
-      </table>
-    </div>
-    <p class="mz-nota">Na simulação, a carteira rendeu menos que o CDI, por isso o Sharpe é negativo. A margem de erro tem o tamanho do próprio Sharpe: dois anos de dados não bastam para separar carteira, régua e CDI com confiança. A escolha dos pesos se apoia nos cenários do case, não neste passado.</p>
-  </section>
-
-  <section class="mz-sec" id="estresse-sec">
-    <h2>Em momentos de estresse <span class="mz-selo">simulação e choques hipotéticos</span></h2>
-    <p class="mz-msg" data-draw="msg" data-msg="estresse" style="display:none"></p>
-    <div class="mz-tab">
-      <table class="mz-estresse" id="tabela-episodios" data-source="episodios" data-row-key="nome">
-        <caption>Episódios dentro da simulação (pesos de hoje aplicados ao passado)</caption>
-        <thead><tr><th>Episódio</th><th>Carteira</th><th>Régua</th><th>CDI</th><th>Ibovespa</th><th>Dólar</th><th>Prefixado 2 anos</th><th>O que mais tirou</th><th>O que mais somou</th></tr></thead>
-        <tbody data-draw="episodios-linhas"></tbody>
-      </table>
-    </div>
-    <div class="mz-tab">
-      <table class="mz-estresse" id="tabela-choques" data-source="choques" data-row-key="nome">
-        <caption>Choques hipotéticos instantâneos, efeito no valor (aproximação linear)</caption>
-        <thead><tr><th>Choque</th><th>Carteira</th><th>Régua</th><th>Diferença</th><th>Classe que mais pesa na carteira</th></tr></thead>
-        <tbody data-draw="choques-linhas"></tbody>
-      </table>
-    </div>
-    <p class="mz-nota">Episódios: o retorno de cada série no período; "o que mais tirou" e "o que mais somou" são as classes de maior contribuição na carteira (peso vezes retorno). As piores quinzenas são as três janelas de 10 dias úteis em que a carteira mais caiu. Choques: duration de hoje vezes a variação do juro, beta 1 nas bolsas e câmbio sem hedge; sem carrego, convexidade nem correlação. Os combinados somam os choques simples e servem de ilustração.</p>
-  </section>
-
-  <section class="mz-sec" id="comparacao-sec">
-    <h2>Retorno por período</h2>
-    <div class="mz-tab">
-      <table id="tabela-real" data-source="comparacao" data-row-key="serie">
-        <caption>Real, desde 13/11/2026</caption>
-        <thead><tr><th>Série</th><th>Último dia</th><th>Desde 13/11/26</th><th>Contra o CDI</th><th>% do CDI</th></tr></thead>
-        <tbody data-draw="tabela-real"></tbody>
-      </table>
-    </div>
-    <p class="mz-nota">Volatilidade, Sharpe e retorno anualizado do período real aparecem quando houver 12 meses de dados reais.</p>
-    <div class="mz-tab">
-      <table id="tabela-sim" data-source="comparacao" data-row-key="serie">
-        <caption>Simulação, 13/11/2024 a 13/11/2026 (pesos de hoje aplicados ao passado; informação suplementar)</caption>
-        <thead><tr><th>Série</th><th>12 meses até 13/11/26</th><th>% do CDI em 12 meses</th><th>24 meses</th><th>Contra o CDI (24 meses)</th><th>Maior queda</th></tr></thead>
-        <tbody data-draw="tabela-sim"></tbody>
-      </table>
-    </div>
-    <p class="mz-nota" data-draw="ate" data-source="serie">—</p>
-  </section>
-
-  <section class="mz-sec" id="mensal-sec">
-    <h2>Mês a mês</h2>
-    <p class="mz-msg" data-draw="msg" data-msg="mensal" style="display:none"></p>
-    <div class="mz-tab">
-      <table class="mz-mes" id="tabela-mensal" data-source="mensal" data-row-key="linha">
-        <thead><tr><th>Ano</th><th></th><th>Jan</th><th>Fev</th><th>Mar</th><th>Abr</th><th>Mai</th><th>Jun</th><th>Jul</th><th>Ago</th><th>Set</th><th>Out</th><th>Nov</th><th>Dez</th><th class="ano">No ano</th></tr></thead>
-        <tbody data-draw="mensal-linhas"></tbody>
-      </table>
-    </div>
-    <p class="mz-nota">Retorno de cada mês, em %. Na linha "% do CDI", verde quando a carteira rendeu mais que o CDI e vermelho quando rendeu menos. Tudo até 13/11/2026 é simulação; o contorno dourado marca o real. Novembro de 2026 aparece partido: até 13/11 (simulação) e depois (real). O primeiro mês começa em 13/11/2024 e o último vai até o dado mais recente. "No ano" soma só a simulação.</p>
-  </section>
-
-  <section class="mz-sec" id="atribuicao-sec">
+  <!-- 4. CONTRA A RÉGUA -->
+  <section class="mz-sec mz-bloco" id="diferenca">
     <h2>De onde vem a diferença para a régua</h2>
     <p class="mz-msg" data-draw="msg" data-msg="atribuicao" style="display:none"></p>
-    <div class="mz-alterna" id="atr-periodos" role="group" aria-label="Período da atribuição">
-      <button type="button" class="mz-chip" data-periodo="sim12" aria-pressed="true">Simulação, 12 meses até 13/11/26</button>
-      <button type="button" class="mz-chip" data-periodo="real" aria-pressed="false">Real, desde 13/11/26</button>
+    <div class="mz-alterna" id="atr-periodos" role="group" aria-label="Período">
+      <button type="button" class="mz-chip" data-periodo="sim12" aria-pressed="true">12 meses até 13/11/26 · simulação</button>
+      <button type="button" class="mz-chip" data-periodo="real" aria-pressed="false">Desde 13/11/26 · real</button>
     </div>
     <div class="mz-graf mz-atr" id="atribuicao" data-draw="atribuicao" data-source="atribuicao"></div>
-    <p class="mz-nota">Quanto cada classe somou ou tirou da diferença entre carteira e régua, em pontos percentuais. Uma classe só pesa quando a carteira tem mais ou menos dela que a régua: o efeito é a diferença de peso vezes quanto a classe rendeu acima ou abaixo da régua, dia a dia.</p>
+    <p class="mz-nota">Em pontos percentuais. Uma classe só pesa quando a carteira tem mais ou menos dela que a régua.</p>
+
+    <details class="mz-mais">
+      <summary>Ver detalhes: as classes e a liquidez</summary>
+      <div class="mz-mais-corpo">
+        <div class="mz-tab">
+          <table id="tabela-classes" data-source="classes" data-row-key="classe">
+            <thead><tr><th data-field="classe">Classe</th><th data-field="carteira">Carteira %</th><th data-field="peso_hoje">Peso hoje %</th><th data-field="regua">Régua %</th><th data-field="desvio">Desvio</th><th data-field="ret_dia">Último dia (real)</th><th data-field="ret_ativa">Desde 13/11/26 (real)</th><th data-field="ret_12m_sim">12 meses até 13/11/26 (simulação)</th><th data-field="como">Como medimos</th></tr></thead>
+            <tbody data-draw="classes-linhas"></tbody>
+          </table>
+        </div>
+        <p class="mz-nota">Os pesos andam com os preços e voltam ao alvo no 1º dia útil de cada mês. Nas classes em dólar, o retorno em reais aparece dividido em retorno em dólar e câmbio.</p>
+        <h3>Em quanto tempo cada parte vira caixa</h3>
+        <div class="mz-graf mz-liq" id="liquidez" data-draw="liquidez" data-source="classes"></div>
+        <p class="mz-nota">Até 2 dias úteis: Tesouro Direto, ações e Treasuries. Até 30 dias: crédito e bolsa global, por fundo. Depois da carência de 6 meses: LCI/LCA (Resolução CMN 5.215/2025).</p>
+      </div>
+    </details>
   </section>
 
-  <section class="mz-sec" id="liquido-sec">
-    <h2>Antes e depois do imposto</h2>
-    <div class="mz-dois">
-      <div class="mz-tab">
-        <table id="tabela-liquido-real" data-source="liquido" data-row-key="serie">
-          <caption>Real, se resgatado no último dia</caption>
-          <thead><tr><th>Série</th><th>Bruto</th><th>IR estimado</th><th>IOF câmbio</th><th>Líquido</th></tr></thead>
-          <tbody data-draw="liquido-linhas" data-periodo="real"></tbody>
-        </table>
-      </div>
-      <div class="mz-tab">
-        <table id="tabela-liquido-sim" data-source="liquido" data-row-key="serie">
-          <caption>Simulação, 12 meses até 13/11/2026</caption>
-          <thead><tr><th>Série</th><th>Bruto</th><th>IR estimado</th><th>IOF câmbio</th><th>Líquido</th></tr></thead>
-          <tbody data-draw="liquido-linhas" data-periodo="sim12"></tbody>
-        </table>
-      </div>
-    </div>
-    <p class="mz-nota">Estimativa para pessoa física. A LCI/LCA é isenta, o que favorece a carteira contra o CDI tributado. No começo, a alíquota da renda fixa é a maior da tabela (22,5%) e o IOF de 1,1% na compra dos Treasuries pesa sobre poucos dias de retorno.</p>
-    <p class="mz-nota" data-draw="pl-lci" data-source="classes"></p>
-  </section>
-
-  <section class="mz-sec" id="gatilhos">
+  <!-- 5. CENÁRIOS -->
+  <section class="mz-sec mz-bloco" id="cenarios">
     <h2>Em que cenário o mercado está</h2>
     <p class="mz-msg" data-draw="msg" data-msg="gatilhos" style="display:none"></p>
-    <div class="mz-card" id="sinais-card">
-      <span class="mz-rot">Onde cada sinal está entre os três cenários do case</span>
-      <div class="mz-graf mz-sinais" id="sinais" data-draw="sinais" data-source="premissas"></div>
-      <span class="mz-sub">Cada linha põe o valor de hoje na escala do case: Selic, IPCA e dólar de cada cenário (o dólar hoje contra o de fim de 2027). Mostra a distância de cada cenário; não é probabilidade.</span>
-    </div>
-    <div class="mz-dois">
-      <div class="mz-card" id="gatilho-termo">
-        <span class="mz-rot">Juro do prefixado de 2 anos: ~14,0 põe o cenário base no preço; acima de ~15,1, a deterioração</span>
-        <span class="mz-num" data-draw="termo-ult" data-source="termo" data-campo="pre_2a">—</span>
-        <div class="mz-mini" data-draw="termo-linha" data-source="termo" role="img" aria-label="Juro do prefixado de 2 anos nos últimos seis meses, com as linhas do cenário base e da deterioração"></div>
-        <span class="mz-sub">Tesouro Direto: LTNs de ~1 e ~2 anos, no meio entre compra e venda. Pode diferir alguns décimos da curva da Anbima usada no case (15,24 em 13/11).</span>
-      </div>
-      <div class="mz-card" id="gatilho-termo-1a1a">
-        <span class="mz-rot">Juro de 1 ano daqui a 1 ano, contra a Selic de cada cenário</span>
-        <span class="mz-num" data-draw="termo-ult" data-source="termo" data-campo="fwd_1a1a">—</span>
-        <div class="mz-mini" data-draw="termo-mini" data-source="termo" data-campo="fwd_1a1a" data-refs="12.0:ajuste 12,0|13.5:base 13,5|15.5:deterioração 15,5" role="img" aria-label="Juro a termo de 1 ano daqui a 1 ano nos últimos seis meses, com a Selic de fim de 2027 em cada cenário"></div>
-        <span class="mz-sub">Tesouro Direto: juro a termo entre as LTNs de ~1 e ~2 anos. Inclui prêmio de prazo, por isso tende a ficar acima da Selic esperada.</span>
-      </div>
-      <div class="mz-card" id="gatilho-inflacao">
-        <span class="mz-rot">Inflação implícita de 3 anos, contra o IPCA de cada cenário</span>
-        <span class="mz-num" data-draw="termo-ult" data-source="termo" data-campo="infl_impl_3a">—</span>
-        <div class="mz-mini" data-draw="termo-mini" data-source="termo" data-campo="infl_impl_3a" data-refs="4.6:ajuste 4,6|5.5:base 5,5|7.1:deterioração 7,1" role="img" aria-label="Inflação implícita de 3 anos nos últimos seis meses, com o IPCA de 2027 em cada cenário"></div>
-        <span class="mz-sub">Tesouro Direto: prefixado contra IPCA+ no mesmo prazo de 3 anos. Inclui prêmio de risco de inflação, por isso tende a ficar acima do IPCA esperado.</span>
-      </div>
-    </div>
-    <div class="mz-card" id="premissas-card">
-      <span class="mz-rot">Premissas do case contra o Focus</span>
-      <div class="mz-prem-lista" data-draw="premissas" data-source="premissas"></div>
-      <span class="mz-sub"><i class="mz-marca" style="color: var(--serie-0)">●</i> mediana do Focus · faixa dourada: da menor à maior resposta · <i class="mz-marca" style="color: var(--serie-1)">◇</i> o que já aconteceu · traços: os três cenários do case. No dólar, a deterioração com o mundo em aversão chega a R$ 7,48.</span>
-    </div>
-  </section>
+    <div class="mz-graf mz-sinais" id="sinais" data-draw="sinais" data-source="premissas"></div>
+    <p class="mz-nota">Cada linha põe um sinal de hoje na escala dos três cenários do case. Mostra distância, não probabilidade.</p>
 
-  <section class="mz-sec" id="liquidez-sec">
-    <h2>Liquidez e próximos eventos</h2>
-    <div class="mz-dois">
-      <div class="mz-card">
-        <span class="mz-rot">Em quanto tempo cada parte vira caixa</span>
-        <div class="mz-graf mz-liq" id="liquidez" data-draw="liquidez" data-source="classes"></div>
-        <span class="mz-sub">Até 2 dias úteis: Tesouro Direto (recompra diária pelo Tesouro, a preço de mercado), ações (D+2) e Treasuries (D+1, mais o câmbio). Até 30 dias: crédito e bolsa global por fundo, conforme o regulamento de cada um. Depois da carência: LCI/LCA pós-fixadas, com prazo mínimo de 6 meses (Resolução CMN 5.215/2025) e resgate só no vencimento ou depois da carência.</span>
-      </div>
-      <div class="mz-card">
-        <span class="mz-rot">Próximos eventos que mexem com a carteira</span>
+    <details class="mz-mais">
+      <summary>Ver detalhes: curva de juros, Focus e próximos eventos</summary>
+      <div class="mz-mais-corpo">
+        <div class="mz-dois">
+          <div class="mz-card" id="gatilho-termo">
+            <span class="mz-rot">Juro do prefixado de 2 anos: ~14,0 põe o cenário base no preço; acima de ~15,1, a deterioração</span>
+            <span class="mz-num" data-draw="termo-ult" data-source="termo" data-campo="pre_2a">—</span>
+            <div class="mz-mini" data-draw="termo-linha" data-source="termo" role="img" aria-label="Juro do prefixado de 2 anos nos últimos seis meses, com as linhas do cenário base e da deterioração"></div>
+          </div>
+          <div class="mz-card" id="gatilho-termo-1a1a">
+            <span class="mz-rot">Juro de 1 ano daqui a 1 ano, contra a Selic de cada cenário</span>
+            <span class="mz-num" data-draw="termo-ult" data-source="termo" data-campo="fwd_1a1a">—</span>
+            <div class="mz-mini" data-draw="termo-mini" data-source="termo" data-campo="fwd_1a1a" data-refs="12.0:ajuste 12,0|13.5:base 13,5|15.5:deterioração 15,5" role="img" aria-label="Juro a termo de 1 ano daqui a 1 ano nos últimos seis meses"></div>
+          </div>
+          <div class="mz-card" id="gatilho-inflacao">
+            <span class="mz-rot">Inflação implícita de 3 anos, contra o IPCA de cada cenário</span>
+            <span class="mz-num" data-draw="termo-ult" data-source="termo" data-campo="infl_impl_3a">—</span>
+            <div class="mz-mini" data-draw="termo-mini" data-source="termo" data-campo="infl_impl_3a" data-refs="4.6:ajuste 4,6|5.5:base 5,5|7.1:deterioração 7,1" role="img" aria-label="Inflação implícita de 3 anos nos últimos seis meses"></div>
+          </div>
+        </div>
+        <p class="mz-nota">Taxas do Tesouro Direto. O juro a termo e a inflação implícita incluem prêmio de risco, por isso tendem a ficar acima do que se espera.</p>
+        <h3>Premissas do case contra o Focus</h3>
+        <div class="mz-prem-lista" data-draw="premissas" data-source="premissas"></div>
+        <p class="mz-nota"><i class="mz-marca" style="color: var(--serie-0)">●</i> mediana do Focus · faixa dourada: da menor à maior resposta · <i class="mz-marca" style="color: var(--serie-1)">◇</i> o que já aconteceu · traços: os cenários do case. No dólar, a deterioração com o mundo em aversão chega a R$ 7,48.</p>
+        <h3>Próximos eventos</h3>
         <ol class="mz-cal" data-draw="calendario"></ol>
-        <span class="mz-sub">As reuniões do Copom e do FOMC de 2027 entram quando os calendários forem confirmados.</span>
       </div>
-    </div>
+    </details>
   </section>
 
-  <section class="mz-sec" id="classes-sec">
-    <h2>As classes</h2>
-    <div class="mz-tab">
-      <table id="tabela-classes" data-source="classes" data-row-key="classe">
-        <thead><tr><th data-field="classe">Classe</th><th data-field="carteira">Carteira %</th><th data-field="peso_hoje">Peso hoje %</th><th data-field="regua">Régua %</th><th data-field="desvio">Desvio</th><th data-field="ret_dia">Último dia (real)</th><th data-field="ret_ativa">Desde 13/11/26 (real)</th><th data-field="ret_12m_sim">12 meses até 13/11/26 (simulação)</th><th data-field="como">Como medimos</th></tr></thead>
-        <tbody data-draw="classes-linhas"></tbody>
-      </table>
-    </div>
-    <p class="mz-nota">Peso hoje: os pesos andam com os preços e voltam ao alvo no primeiro dia útil de cada mês. Nas classes em dólar, o retorno em reais se divide em retorno em dólar e variação do câmbio (PTAX).</p>
-  </section>
-
-  <section class="mz-sec" id="fontes-sec">
-    <h2>De quando são os dados</h2>
-    <div class="mz-tab">
-      <table class="mz-fontes" id="tabela-fontes" data-source="fontes" data-row-key="dado">
-        <thead><tr><th>Fonte</th><th>Dado</th><th>Último dado</th><th>Situação</th></tr></thead>
-        <tbody data-draw="fontes-linhas"></tbody>
-      </table>
-    </div>
-    <p class="mz-nota">O gráfico e as tabelas vão até o último dia em que todas as fontes publicaram. Cada fonte tem um atraso normal (a CVM publica as cotas com um a três dias úteis de atraso); acima dele, a linha fica em destaque e um aviso aparece no topo.</p>
-  </section>
-
-  <details id="metodo" open>
-    <summary>Como o painel é feito</summary>
-    <p><b>Real e simulação.</b> A carteira passou a existir em 13/11/2026, a data de corte do case. O que vem antes é simulação: os pesos de hoje, definidos em 16/11/2026, aplicados aos 24 meses anteriores. Escolher os pesos conhecendo o passado favorece a simulação; por isso ela é informação suplementar. Nenhum número do painel junta os dois períodos: o real é medido só desde 13/11/2026, e a simulação, só até 13/11/2026. O gráfico mostra os dois na mesma linha, pontilhada na simulação, com uma marca na data de corte.</p>
+  <!-- 6. DADOS E MÉTODO -->
+  <section class="mz-sec mz-bloco mz-rodape" id="dados">
+    <h2>Dados e método</h2>
+    <details class="mz-dobra">
+      <summary>De quando são os dados</summary>
+      <div class="mz-tab">
+        <table class="mz-fontes" id="tabela-fontes" data-source="fontes" data-row-key="dado">
+          <thead><tr><th>Fonte</th><th>Dado</th><th>Último dado</th><th>Situação</th></tr></thead>
+          <tbody data-draw="fontes-linhas"></tbody>
+        </table>
+      </div>
+      <p>Cada fonte tem um atraso normal (a CVM publica as cotas com um a três dias úteis de atraso); acima dele, um aviso aparece no topo.</p>
+    </details>
+    <details class="mz-dobra" id="metodo">
+      <summary>Como o painel é feito</summary>
+      <p><b>Real e simulação.</b> A carteira passou a existir em 13/11/2026, a data de corte do case. O que vem antes é simulação: os pesos de hoje, definidos em 16/11/2026, aplicados aos 24 meses anteriores. Escolher os pesos conhecendo o passado favorece a simulação; por isso ela é informação suplementar. Nenhum número do painel junta os dois períodos: o real é medido só desde 13/11/2026, e a simulação, só até 13/11/2026. O gráfico mostra os dois na mesma linha, pontilhada na simulação, com uma marca na data de corte.</p>
     <p><b>Períodos curtos.</b> Retorno de menos de um ano não é anualizado. Volatilidade, Sharpe e outras medidas de risco do período real só aparecem com 12 meses de dados reais.</p>
     <p><b>Carteira e régua.</b> A régua é a carteira moderada mediana de C6, Daycoval e Genial; a carteira tem os desvios com tese (mais prefixado curto, crédito e Treasuries de 10 anos; menos bolsa; sem IPCA+ longo). Pesos fixos, rebalanceados no primeiro dia útil de cada mês, sem custo de transação. Taxa livre de risco: CDI.</p>
     <p><b>Como cada classe é medida.</b> CDI e dólar (PTAX de venda) do Banco Central; LCI/LCA a 86,6% do CDI; Treasuries de 2 e de 10 anos pelo juro publicado no FRED, convertidos pela PTAX; para o que é índice da B3 ou da Anbima (Ibovespa, IMA-B, IMA-B 5, IMA-B 5+, IRF-M, crédito) e para a bolsa americana em reais, a cota diária de fundos passivos na CVM. A cota já desconta a taxa de administração e tem erro de aderência ao índice. Taxas do Tesouro Direto para o juro do prefixado de 2 anos.</p>
@@ -393,7 +428,27 @@
     <p><b>Comentário e mensagens.</b> O comentário do topo e as frases sob os títulos são gerados por regra a partir dos dados do dia, sem edição manual.</p>
     <p><b>Avisos.</b> Rentabilidade passada não é garantia de rentabilidade futura. A rentabilidade divulgada não é líquida de impostos. A simulação não é desempenho: mostra como os pesos de hoje teriam se comportado.</p>
     <p><b>Licenças.</b> Dados do Banco Central, da CVM e do Tesouro Transparente, abertos. Juro dos Treasuries: FRED, Federal Reserve Bank of St. Louis; este painel não é endossado nem certificado pelo Federal Reserve Bank of St. Louis.</p>
-  </details>
+    </details>
+    <details class="mz-dobra" id="glossario">
+      <summary>Glossário</summary>
+      <dl class="mz-glossario">
+        <dt>Régua</dt><dd>A carteira moderada mediana de C6, Daycoval e Genial. É o padrão de comparação da carteira.</dd>
+        <dt>Real e simulação</dt><dd>A carteira passou a existir em 13/11/2026; o que vem depois é real. Antes disso, simulação: os pesos de hoje aplicados ao passado. Os dois nunca se somam.</dd>
+        <dt>p.p. (ponto percentual)</dt><dd>A diferença entre dois percentuais: +0,43% contra +0,15% é +0,28 p.p.</dd>
+        <dt>% do CDI</dt><dd>O retorno dividido pelo do CDI no mesmo período: 100% é empatar com o CDI.</dd>
+        <dt>Maior queda do pico</dt><dd>A maior perda entre um pico e o ponto mais baixo depois dele (em inglês, drawdown).</dd>
+        <dt>Volatilidade</dt><dd>Quanto o retorno oscila de um dia para o outro, em termos anuais.</dd>
+        <dt>Sharpe</dt><dd>Retorno acima do CDI para cada unidade de oscilação. Negativo quando a série rende menos que o CDI.</dd>
+        <dt>Tracking error</dt><dd>Quanto a carteira se afasta da régua, dia a dia, em termos anuais.</dd>
+        <dt>Duration</dt><dd>Quanto um título perde, em %, para cada 1 p.p. de alta do juro.</dd>
+        <dt>Focus</dt><dd>Pesquisa semanal do Banco Central com as projeções de cerca de 150 instituições.</dd>
+        <dt>Juro a termo</dt><dd>O juro de um período futuro que já está no preço dos títulos de hoje.</dd>
+        <dt>Inflação implícita</dt><dd>A inflação que iguala o prefixado ao IPCA+ no mesmo prazo.</dd>
+        <dt>PTAX</dt><dd>A cotação oficial do dólar, calculada pelo Banco Central.</dd>
+        <dt>Come-cotas</dt><dd>A antecipação do IR dos fundos, cobrada no último dia útil de maio e de novembro.</dd>
+      </dl>
+    </details>
+  </section>
 </div>
 
 <script>
@@ -777,7 +832,7 @@
         ant = x; return o;
       });
       if (pts.length < 2) return;
-      const W = Math.max(280, el.clientWidth), H = 132, m = { t: 20, r: 132, b: 22, l: 44 };
+      const W = Math.max(280, el.clientWidth), H = 210, m = { t: 20, r: 132, b: 22, l: 44 };
       const x = d3.scaleUtc().domain(d3.extent(pts, (p) => p.d)).range([m.l, W - m.r]);
       const lo = Math.min(-0.5, d3.min(pts, (p) => Math.min(p.carteira, p.regua)));
       const y = d3.scaleLinear().domain([lo, 0]).nice().range([H - m.b, m.t]);
@@ -1137,6 +1192,7 @@
         return { nome, v, dol, pos, perto: Math.max(0, Math.min(2, Math.round(pos))) };
       });
     };
+    MZR.sinais = sinais;
     dash.draw('sinais', (el) => {
       const ss = sinais();
       el.replaceChildren();
@@ -1249,8 +1305,7 @@
       let t = '';
       if (el.dataset.msg === 'evolucao') {
         const a = r('Carteira'), b = r('Régua');
-        if (a && b) t = (a.ativa != null ? 'Desde 13/11/2026, a carteira está ' + sn(a.ativa - b.ativa, ' p.p.') + ' contra a régua. ' : '')
-          + 'Na simulação de 24 meses, ficou ' + sn(a.sim_total - b.sim_total, ' p.p.') + ' contra a régua, com maior queda de ' + n2(a.sim_queda) + '%, contra ' + n2(b.sim_queda) + '% da régua.';
+        if (a && b) t = 'Nos 24 meses do gráfico, simulação até 13/11/2026, a carteira rendeu ' + MZR.pct(a.sim_total, 2) + ', contra ' + MZR.pct(b.sim_total, 2) + ' da régua e ' + MZR.pct((r('CDI') || {}).sim_total, 2) + ' do CDI.';
       } else if (el.dataset.msg === 'mensal') {
         const m = dash.data('mensal');
         if (m.status === 'ok') {
@@ -1264,7 +1319,10 @@
           const tot = a.data.find((x) => x.periodo === 'sim12' && x.classe.startsWith('Total'));
           if (cl.length && tot) {
             const lo = cl.reduce((p, q) => (q.efeito < p.efeito ? q : p)), hi = cl.reduce((p, q) => (q.efeito > p.efeito ? q : p));
-            t = 'Em 12 meses de simulação, a carteira ficou ' + sn(tot.efeito, ' p.p.') + ' contra a régua. O que mais tirou foi ' + lo.classe + ' (' + sn(lo.efeito, ' p.p.') + '); o que mais somou, ' + hi.classe + ' (' + sn(hi.efeito, ' p.p.') + ').';
+            const cl2 = dash.data('classes');
+            const dv = (c) => { const x = cl2.status === 'ok' ? cl2.data.find((y) => y.classe === c) : null; return x ? +x.desvio : 0; };
+            const ter = (c) => (dv(c) > 0 ? 'ter ' + L.format(',.1f')(dv(c)) + ' p.p. a mais de ' : dv(c) < 0 ? 'ter ' + L.format(',.1f')(-dv(c)) + ' p.p. a menos de ' : '') + c;
+            t = 'Em 12 meses de simulação, a carteira ficou ' + sn(tot.efeito, ' p.p.') + ' contra a régua. O que mais tirou foi ' + ter(lo.classe) + ' (' + sn(lo.efeito, ' p.p.') + '); o que mais somou, ' + ter(hi.classe) + ' (' + sn(hi.efeito, ' p.p.') + ').';
           }
         }
       } else if (el.dataset.msg === 'estresse') {
@@ -1278,7 +1336,10 @@
         const ss = sinais();
         if (ss.length) {
           const n = [0, 1, 2].map((k) => ss.filter((s) => s.perto === k).length);
-          t = 'Dos ' + ss.length + ' sinais, ' + [2, 1, 0].filter((k) => n[k]).map((k) => n[k] + ' ' + (n[k] === 1 ? 'está' : 'estão') + ' mais perto ' + (k === 1 ? 'da base' : k === 2 ? 'da deterioração' : 'do ajuste')).join(', ') + '. Os sinais do Tesouro incluem prêmio de risco; os do Focus, não.';
+          const nomes = ['do ajuste', 'da base', 'da deterioração'];
+          const ordem = [0, 1, 2].filter((k) => n[k]).sort((p, q) => n[q] - n[p]);
+          const partes = ordem.map((k, j) => (j === 0 ? n[k] + ' dos ' + ss.length + ' sinais ' + (n[k] === 1 ? 'está' : 'estão') + ' mais perto ' : n[k] + ' ') + nomes[k]);
+          t = partes.slice(0, -1).join(', ') + (partes.length > 1 ? ' e ' : '') + partes[partes.length - 1] + '. Os sinais do Tesouro incluem prêmio de risco; os do Focus, não.';
         }
       }
       el.textContent = t;
@@ -1286,7 +1347,7 @@
     });
 
     // ---- modo apresentação: ?apresentacao=1, quatro paradas; setas ou espaço avançam, Esc sai
-    const PARADAS = [['topo', 'Frescor e mandato'], ['evolucao', 'Resultado'], ['risco', 'Risco e estresse'], ['gatilhos', 'Cenários e premissas']];
+    const PARADAS = [['topo', 'Resumo'], ['desempenho', 'Desempenho'], ['risco', 'Risco'], ['diferenca', 'Contra a régua'], ['cenarios', 'Cenários']];
     if (new URLSearchParams(location.search).has('apresentacao')) {
       document.body.classList.add('mz-apres');
       const nav = document.createElement('nav'); nav.id = 'mz-apres'; nav.setAttribute('aria-label', 'Modo apresentação');
@@ -1324,6 +1385,84 @@
         try { localStorage.setItem('mzr-tema', novo); } catch (e) { /* sem armazenamento: vale só nesta visita */ }
         rotular();
       });
+    }
+  })();
+</script>
+
+<script>
+  // ---------- versão 2 (21/11/2026): veredito, cenário do topo, risco em uma frase, detalhes recolhidos, navegação e PDF
+  (() => {
+    const L = MZR.loc;
+    const pct = (v) => MZR.pct(v, 2);
+    const n2 = (v) => { if (v == null || !isFinite(v)) return '—'; const r = Math.round(v * 100) / 100; return (r < 0 ? '−' : '') + L.format(',.2f')(Math.abs(r)); };
+
+    // ---- veredito: a resposta em até três frases curtas, calculada dos dados
+    const rel = (v, ref, nome, art) => {
+      const d = Math.round((v - ref) * 100);
+      const de = art === 'a' ? 'da' : 'do', com = art === 'a' ? 'com a' : 'com o';
+      return (d > 0 ? 'à frente ' + de : d < 0 ? 'atrás ' + de : 'empatada ' + com) + ' ' + nome + ' (' + pct(ref) + ')';
+    };
+    const sinal = (v, ref) => Math.sign(Math.round((v - ref) * 100));
+    const duas = (v, b, d) => {
+      const x = sinal(v, b), y = sinal(v, d);
+      if (x !== y) return rel(v, b, 'régua', 'a') + ' e ' + rel(v, d, 'CDI', 'o');
+      if (x === 0) return 'empatada com a régua (' + pct(b) + ') e com o CDI (' + pct(d) + ')';
+      return (x > 0 ? 'à frente' : 'atrás') + ' da régua (' + pct(b) + ') e do CDI (' + pct(d) + ')';
+    };
+    dash.draw('veredito', (el) => {
+      const c = dash.data('comparacao'), s = dash.data('serie'), e = dash.data('episodios');
+      if (c.status !== 'ok' || s.status !== 'ok' || !c.data.length) { el.textContent = '—'; return; }
+      const r = (n) => c.data.find((x) => x.serie === n);
+      const a = r('Carteira'), b = r('Régua'), d = r('CDI');
+      const uteis = s.data.filter((x) => x.data > MZR.ATIVA).length;
+      const fr = [];
+      if (a.ativa != null) {
+        fr.push('Desde 13/11/2026, quando passou a existir, a carteira rende ' + pct(a.ativa) + ', ' + duas(a.ativa, b.ativa, d.ativa) + '.');
+        if (uteis < 21) fr.push('São ' + uteis + (uteis === 1 ? ' dia útil' : ' dias úteis') + ': ainda cedo para conclusões.');
+      } else fr.push('A carteira passa a existir em 13/11/2026; até lá, os números são simulação.');
+      fr.push('Na simulação dos 12 meses anteriores, com os pesos de hoje, teria rendido ' + pct(a.sim_m12) + ', ' + duas(a.sim_m12, b.sim_m12, d.sim_m12) + '.');
+      el.textContent = fr.join(' ');
+    });
+
+    // ---- cenário do topo: de qual cenário a maioria dos sinais está mais perto
+    const NOMES = ['Ajuste', 'Base', 'Deterioração'];
+    const contagem = () => { const ss = MZR.sinais ? MZR.sinais() : []; return { ss, n: [0, 1, 2].map((k) => ss.filter((x) => x.perto === k).length) }; };
+    dash.draw('cenario-num', (el) => {
+      const { ss, n } = contagem();
+      if (!ss.length) { el.textContent = '—'; return; }
+      const max = Math.max(...n), lider = [0, 1, 2].filter((k) => n[k] === max);
+      el.textContent = lider.length === 1 ? NOMES[lider[0]] : 'Entre ' + lider.map((k) => NOMES[k].toLowerCase()).join(' e ');
+    });
+    dash.draw('cenario-sub', (el) => {
+      const { ss, n } = contagem();
+      el.textContent = ss.length ? 'Sinais mais perto de cada cenário: ajuste ' + n[0] + ' · base ' + n[1] + ' · deterioração ' + n[2] : '—';
+    });
+
+    // ---- risco em uma frase
+    dash.draw('msg-risco', (el) => {
+      const c = dash.data('comparacao');
+      const r = (n) => (c.status === 'ok' ? c.data.find((x) => x.serie === n) : null);
+      const a = r('Carteira'), b = r('Régua'), i = r('Ibovespa');
+      if (!a || !b) { el.style.display = 'none'; return; }
+      el.textContent = 'Na simulação de 24 meses, a maior queda do pico foi de ' + n2(a.sim_queda) + '% na carteira, contra ' + n2(b.sim_queda) + '% na régua'
+        + (i ? ' e ' + n2(i.sim_queda) + '% no Ibovespa.' : '.');
+      el.style.display = '';
+    });
+
+    // ---- detalhes recolhidos: desenhar ao abrir (fechado, o bloco não tem largura); PDF e impressão abrem tudo
+    const redesenha = (raiz) => { new Set([...raiz.querySelectorAll('[data-draw]')].map((x) => x.dataset.draw)).forEach((n) => dash.draw(n)); };
+    document.querySelectorAll('.mz details').forEach((d) => d.addEventListener('toggle', () => { if (d.open) redesenha(d); }));
+    const abrirTudo = () => { document.querySelectorAll('.mz details').forEach((d) => { d.open = true; }); };
+    if (new URLSearchParams(location.search).has('pdf')) { abrirTudo(); setTimeout(() => redesenha(document), 50); }
+    window.addEventListener('beforeprint', () => { abrirTudo(); redesenha(document); });
+
+    // ---- navegação: marca a seção visível
+    const links = [...document.querySelectorAll('.mz-nav-links a')];
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((ents) => ents.forEach((en) => {
+        if (en.isIntersecting) links.forEach((l) => l.setAttribute('aria-current', l.getAttribute('href') === '#' + en.target.id ? 'true' : 'false'));
+      }), { rootMargin: '-30% 0px -60% 0px' });
+      links.forEach((l) => { const alvo = document.querySelector(l.getAttribute('href')); if (alvo) io.observe(alvo); });
     }
   })();
 </script>
