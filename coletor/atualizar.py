@@ -532,7 +532,7 @@ def main():
         dict(nome='Juro dos Treasuries +1 p.p.', tipo='simples', como=f'durations {f2(D["Treasury 2 anos"])} e {f2(D["Treasury 10 anos"])}', **choque(tsy(1))),
         dict(nome='Combinado: estresse doméstico', tipo='combinado', como='juro prefixado +2 p.p., juro real +1 p.p., dólar +10%, Ibovespa −15%',
              **choque({**pre_up, **real_up, 'Bolsa Brasil': -15}, 10)),
-        dict(nome='Combinado: aversão global', tipo='combinado', como='bolsa americana −15%, Treasuries −0,5 p.p., dólar +10%, Ibovespa −15%',
+        dict(nome='Combinado: aversão global', tipo='combinado', como='bolsa americana −15%, juro dos Treasuries −0,5 p.p., dólar +10%, Ibovespa −15%',
              **choque({'Bolsa global sem hedge': -15, 'Bolsa Brasil': -15, **tsy(-0.5)}, 10)),
     ]
 

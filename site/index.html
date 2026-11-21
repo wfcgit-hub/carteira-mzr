@@ -297,7 +297,7 @@
       <div class="mz-mais-corpo">
         <div class="mz-dois">
           <div class="mz-card" id="gatilho-termo">
-            <span class="mz-rot">Juro do prefixado de 2 anos: ~14,0 põe o cenário mais provável no preço; acima de ~15,1, a deterioração</span>
+            <span class="mz-rot">Juro do prefixado de 2 anos: em ~14,0, o preço bate com o cenário mais provável sem prêmio; acima de ~15,1, só bate com a deterioração</span>
             <span class="mz-num" data-draw="termo-ult" data-source="termo" data-campo="pre_2a">—</span>
             <div class="mz-mini" data-draw="termo-linha" data-source="termo" role="img" aria-label="Juro do prefixado de 2 anos nos últimos seis meses"></div>
           </div>
@@ -311,13 +311,13 @@
             <span class="mz-rot">Inflação implícita de 3 anos: o preço do mercado, contra o IPCA esperado pelo case</span>
             <span class="mz-num" data-draw="termo-ult" data-source="termo" data-campo="infl_impl_3a">—</span>
             <div class="mz-mini" data-draw="termo-mini" data-source="termo" data-campo="infl_impl_3a" data-refs="5.5:esperado 5,5:ref" role="img" aria-label="Inflação implícita de 3 anos nos últimos seis meses, contra o IPCA esperado pelo case"></div>
-            <span class="mz-sub">Inclui prêmio de risco de inflação: é o preço que o mercado cobra, não a inflação que ele espera.</span>
+            <span class="mz-sub">Inclui prêmio de risco de inflação: é o preço que o mercado cobra, não a inflação que ele espera. É a média de 3 anos; o IPCA do case é o de 2027.</span>
           </div>
         </div>
         <p class="mz-nota">Taxas do Tesouro Direto. O prefixado de 2 anos é o termômetro do slide de gatilhos do deck; o juro a termo e a inflação implícita são preços, comparados com o que o case espera.</p>
         <h3>Premissas do case contra o Focus</h3>
         <div class="mz-prem-lista" data-draw="premissas" data-source="premissas"></div>
-        <p class="mz-nota"><i class="mz-marca" style="color: var(--serie-0)">●</i> mediana do Focus · faixa dourada: da menor à maior resposta · <i class="mz-marca" style="color: var(--serie-1)">◇</i> o que já aconteceu · traços: os cenários do case.</p>
+        <p class="mz-nota"><i class="mz-marca" style="color: var(--serie-0)">●</i> mediana do Focus · faixa dourada: da menor à maior resposta · traços: os cenários do case. O dólar dos cenários é o de nov/27; o do Focus, o de fim de 2027.</p>
         <h3>Próximos eventos</h3>
         <ol class="mz-cal" data-draw="calendario"></ol>
       </div>
@@ -490,7 +490,7 @@
         <h3>Crises dentro dos 24 meses</h3>
         <div class="mz-tab">
           <table class="mz-estresse" id="tabela-episodios" data-source="episodios" data-row-key="nome">
-            <thead><tr><th>Episódio</th><th>Carteira</th><th>Régua</th><th>CDI</th><th>Ibovespa</th><th>Dólar</th><th>Prefixado 2 anos</th><th>O que mais tirou</th><th>O que mais somou</th></tr></thead>
+            <thead><tr><th>Episódio</th><th>Carteira</th><th>Régua</th><th>CDI</th><th>Ibovespa</th><th>Dólar</th><th>Juro do prefixado 2 anos</th><th>O que mais tirou</th><th>O que mais somou</th></tr></thead>
             <tbody data-draw="episodios-linhas"></tbody>
           </table>
         </div>
@@ -542,6 +542,7 @@
         <dt>Duration</dt><dd>Quanto um título perde, em %, para cada 1 p.p. de alta do juro.</dd>
         <dt>Focus</dt><dd>Pesquisa semanal do Banco Central com as projeções de cerca de 150 instituições.</dd>
         <dt>Juro a termo</dt><dd>O juro de um período futuro que já está no preço dos títulos de hoje.</dd>
+        <dt>Prêmio</dt><dd>A diferença entre o preço de mercado e o que se espera: o juro a termo acima do juro esperado é o ganho de quem compra o prefixado.</dd>
         <dt>Inflação implícita</dt><dd>A inflação que iguala o prefixado ao IPCA+ no mesmo prazo.</dd>
         <dt>PTAX</dt><dd>A cotação oficial do dólar, calculada pelo Banco Central.</dd>
         <dt>Come-cotas</dt><dd>A antecipação do IR dos fundos, cobrada no último dia útil de maio e de novembro.</dd>
@@ -1138,7 +1139,7 @@
         const dol = r.indicador === 'Câmbio';
         const fv = (v) => (dol ? 'R$ ' : '') + L.format(',.2f')(v) + (dol ? '' : '%');
         const W = Math.max(240, esc.clientWidth), H = 96, mm = { l: 40, r: 40 }, yb = 36;
-        const vals = [r.ajuste, r.base, r.deterioracao, r.focus_min, r.focus_max, r.mercado];
+        const vals = [r.ajuste, r.base, r.deterioracao, r.focus_min, r.focus_max];
         const lo = d3.min(vals), hi = d3.max(vals), pad = (hi - lo) * 0.04;
         const x = d3.scaleLinear().domain([lo - pad, hi + pad]).range([mm.l, W - mm.r]);
         const svg = d3.select(esc).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
@@ -1158,16 +1159,13 @@
             svg.append('line').attr('x1', x(v)).attr('x2', x(v)).attr('y1', yb + 10).attr('y2', yb + 32).style('stroke', 'var(--cds-chart-reference)').style('stroke-dasharray', '2 2');
           } else fimAnterior = x(v) + larg / 2;
         });
-        const xm = x(r.mercado);
-        svg.append('path').attr('d', `M${xm},${yb - 6}L${xm + 6},${yb}L${xm},${yb + 6}L${xm - 6},${yb}Z`)
-          .style('fill', 'var(--color-panel)').style('stroke', 'var(--serie-1)').style('stroke-width', 1.8);
         svg.append('circle').attr('cx', x(r.focus)).attr('cy', yb).attr('r', 6).style('fill', 'var(--serie-0)');
         svg.append('text').attr('x', x(r.focus)).attr('y', yb - 14).attr('text-anchor', 'middle').style('fill', 'var(--color-fg)').text('Focus ' + L.format(',.2f')(r.focus));
         const hist = fz.status === 'ok' ? fz.data.filter((h) => h.indicador === r.indicador).sort((a, b) => (a.data < b.data ? -1 : 1)) : [];
         const lim = new Date(dia(r.focus_data)); lim.setUTCDate(lim.getUTCDate() - 84);
         const antes = hist.filter((h) => dia(h.data) <= lim).pop();
         sub.textContent = `Mediana de ${MZR.dataBR(dia(r.focus_data))}, ${r.respondentes} respostas, de ${fv(r.focus_min)} a ${fv(r.focus_max)}`
-          + (antes ? `; em ${MZR.dataBR(dia(antes.data)).slice(0, 5)}, ${fv(antes.mediana)}` : '') + `. ${r.mercado_rotulo}: ${fv(r.mercado)}.`;
+          + (antes ? `; em ${MZR.dataBR(dia(antes.data)).slice(0, 5)}, ${fv(antes.mediana)}` : '') + `. Referência, não previsão: ${r.mercado_rotulo}, ${fv(r.mercado)}.`;
       });
     });
 
@@ -1655,7 +1653,7 @@
       if (!T) return;
       const fatos = [
         ['Depois do IR', p1(T.media.carteira_liq), 'contra ' + p1(T.media.selic_liq) + ' do Tesouro Selic e ' + p1(T.media.regua_liq) + ' da régua'],
-        ['Chance de perder do CDI', '~' + T.perde_cdi_chance + '%', 'no ajuste crível ou com inflação alta nos EUA'],
+        ['Chance de perder do CDI', '~' + T.perde_cdi_chance + '%', 'antes do IR: no ajuste crível e no já apresentado com inflação alta nos EUA'],
         ['Maior queda em 10 anos', p1(T.historia.carteira.perda_max), 'contra ' + p1(T.historia.regua.perda_max) + ' da régua, com os pesos de hoje'],
       ];
       fatos.forEach(([rot, num, sub]) => {
@@ -1753,7 +1751,11 @@
       document.querySelectorAll('#trilha-zoom .mz-chip').forEach((o) => o.setAttribute('aria-pressed', o === b ? 'true' : 'false'));
       dash.draw('trilha');
     }));
-    const esperado = (taxa, d) => (Math.pow(1 + taxa / 100, (d - dia(MZR.ATIVA)) / (365 * 864e5)) - 1) * 100;
+    // juro brasileiro rende por dia útil (base 252): conta segunda a sexta, menos os feriados bancários nacionais
+    const FER = new Set(['2026-11-20', '2026-12-25', '2027-01-01', '2027-02-08', '2027-02-09', '2027-03-26', '2027-04-21', '2027-05-27',
+      '2027-09-07', '2027-10-12', '2027-11-02', '2027-11-15', '2027-11-20']);
+    const duAte = (d) => { let n = 0; const x = dia(MZR.ATIVA); while (x < d) { x.setUTCDate(x.getUTCDate() + 1); if (x.getUTCDay() % 6 !== 0 && !FER.has(x.toISOString().slice(0, 10))) n++; } return n; };
+    const esperado = (taxa, d) => (Math.pow(1 + taxa / 100, duAte(d) / 252) - 1) * 100;
     dash.draw('trilha', (el) => {
       const s = dash.data('serie'), T = tese();
       el.replaceChildren();
@@ -1859,7 +1861,7 @@
       const c = dash.data('choques'), T = tese();
       if (c.status !== 'ok' || !T) { el.style.display = 'none'; return; }
       const pior = c.data.filter((r) => r.carteira < r.regua - 0.005);
-      el.textContent = 'No choque de 26/10/2026, a carteira caiu ' + MZR.pct(T.choque_2610.carteira, 2) + ', e a régua, ' + MZR.pct(T.choque_2610.regua, 2) + '. '
+      el.textContent = 'No choque de 26/10/2026, com os pesos de hoje, a carteira teria caído ' + MZR.pct(T.choque_2610.carteira, 2) + ', e a régua, ' + MZR.pct(T.choque_2610.regua, 2) + '. '
         + 'Nos ' + c.data.length + ' choques hipotéticos, a carteira se sai melhor que a régua em ' + (c.data.length - pior.length)
         + (pior.length ? '; perde mais em ' + pior.map((r) => r.nome.charAt(0).toLowerCase() + r.nome.slice(1)).join(' e ').replace(/\.$/, '') + '.' : '.');
       el.style.display = '';
@@ -1890,8 +1892,9 @@
       if (!T || !a) { el.style.display = 'none'; return; }
       const h = T.historia;
       el.textContent = 'Com os pesos de hoje, a carteira teria rendido ' + p1(h.carteira.retorno_anual) + ' ao ano em 10 anos, contra ' + p1(h.cdi_anual) + ' do CDI e '
-        + p1(h.regua.retorno_anual) + ' da régua, com cerca de metade da queda. Nos últimos 24 meses, de real forte e bolsa em alta, teria rendido '
-        + MZR.pct(a.sim_total, 1) + ', contra ' + MZR.pct(b.sim_total, 1) + ' da régua e ' + MZR.pct(d.sim_total, 1) + ' do CDI: o seguro custou.';
+        + p1(h.regua.retorno_anual) + ' da régua, com cerca de metade da queda. Nos últimos 24 meses, com o Ibovespa ' + MZR.pct(r('Ibovespa').sim_total, 1)
+        + ' e o dólar ' + MZR.pct(r('Dólar').sim_total, 1) + ', teria rendido '
+        + MZR.pct(a.sim_total, 1) + ', contra ' + MZR.pct(b.sim_total, 1) + ' da régua e ' + MZR.pct(d.sim_total, 1) + ' do CDI: com a bolsa em alta, o seguro em Treasuries custou.';
       el.style.display = '';
     });
   })();
