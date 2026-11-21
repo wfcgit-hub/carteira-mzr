@@ -12,9 +12,10 @@ from pathlib import Path
 
 PASTA, SAIDA = Path(sys.argv[1]).resolve(), Path(sys.argv[2]).resolve()
 pagina = (PASTA / 'site' / 'index.html').read_text('utf-8').replace('<meta name="dash-one-writer">', '')
-dados = {n: json.loads((PASTA / 'dados' / f'{n}.json').read_text('utf-8'))['rows'] for n in ('serie', 'classes', 'monitor', 'termo')}
+dados = {n: json.loads((PASTA / 'dados' / f'{n}.json').read_text('utf-8'))['rows'] for n in ('serie', 'classes', 'monitor', 'termo', 'fontes')
+         if (PASTA / 'dados' / f'{n}.json').exists()}
 ultimo = dados['serie'][-1]['data']
-agora = dt.datetime.now().strftime('%d/%m/%Y %H:%M')
+agora = dt.datetime.now(dt.timezone(dt.timedelta(hours=-3))).strftime('%d/%m/%Y %H:%M')
 dados_js = json.dumps(dados, ensure_ascii=False).replace('</', '<\\/')
 
 CABECA = """<!doctype html>
@@ -96,9 +97,9 @@ CABECA = """<!doctype html>
 """
 RODAPE = f"""
 <footer class="publico-rodape">
-  Atualizado em {agora}, com dados até {dt.date.fromisoformat(ultimo):%d/%m/%Y}. Fontes públicas: Banco Central (CDI e PTAX), FRED (S&amp;P 500 e Fed Funds),
-  CVM (cotas diárias de fundos passivos, no lugar dos índices) e Tesouro Direto. Case MZR Family Office, Summer 2026/2.
-  Antes de 13/11/2026, simulação com os pesos de hoje; não é desempenho passado.
+  Atualizado em {agora} (Brasília), com dados até {dt.date.fromisoformat(ultimo):%d/%m/%Y}. Fontes públicas: Banco Central (CDI e PTAX), CVM (cotas diárias de fundos passivos, no lugar dos índices),
+  Tesouro Direto e FRED (juro dos Treasuries; este painel não é endossado nem certificado pelo Federal Reserve Bank of St. Louis). Case MZR Family Office, Summer 2026/2.
+  Antes de 13/11/2026, simulação com os pesos de hoje, informação suplementar; não é desempenho passado. Rentabilidade passada não é garantia de rentabilidade futura; a rentabilidade divulgada não é líquida de impostos.
 </footer>
 </main>
 </body>

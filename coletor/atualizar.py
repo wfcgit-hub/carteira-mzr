@@ -5,8 +5,8 @@ Uso: python -I -X utf8 atualizar.py <pasta do painel>
 
 Fontes, todas públicas e automáticas (nada da B3, da Anbima, do MSCI, da CME, da ICE ou do Yahoo):
 - Banco Central, SGS: CDI diário (série 12) e dólar PTAX de venda (série 1);
-- FRED (Fed de St. Louis): S&P 500 (SP500, índice de preço, sem dividendos), Fed Funds efetivo (DFF) e juro dos
-  Treasuries de 2 e de 10 anos (DGS2, DGS10);
+- FRED (Fed de St. Louis): juro dos Treasuries de 2 e de 10 anos (DGS2, DGS10), séries do governo americano. Desde 21/11/2026
+  a bolsa global não vem mais do FRED (o S&P 500 lá tem copyright da S&P Dow Jones Indices): vem da cota de um fundo na CVM;
 - CVM, dados abertos: cotas diárias de fundos passivos, que fazem as vezes dos índices da B3 e da Anbima
   (cotas líquidas de taxa de administração; ver FUNDOS);
 - Tesouro Transparente: preços e taxas do Tesouro Direto, para o juro de 1 ano a termo (LTNs de ~1 e ~2 anos).
@@ -30,7 +30,8 @@ PASTA = Path(sys.argv[1]).resolve()
 BRUTOS, DADOS = PASTA / 'dados-brutos', PASTA / 'dados'
 INICIO = dt.date(2024, 11, 13)          # 24 meses de simulação
 ATIVA = dt.date(2026, 11, 13)           # data de corte do case: a carteira passa a existir
-HOJE = dt.date.today()
+BRT = dt.timezone(dt.timedelta(hours=-3))
+HOJE = dt.datetime.now(BRT).date()
 
 FUNDOS = {  # classe: (CNPJ, nome do fundo) — fundos de investimento que reportam cota diária à CVM (os ETFs não reportam)
     'ibov': ('24546223000117', 'Itaú Vértice Ibovespa Equities FIF Ações'),
@@ -39,7 +40,14 @@ FUNDOS = {  # classe: (CNPJ, nome do fundo) — fundos de investimento que repor
     'imab5mais': ('13327340000173', 'BB Previdenciário RF IMA-B 5+ Títulos Públicos FIF'),
     'irfm': ('14508605000100', 'Caixa Brasil IRF-M Títulos Públicos FIF RF'),
     'credito': ('07096435000120', 'Itaú High Grade RF Crédito Privado FIF'),
+    'global': ('31874833000105', 'Trend S&P 500 Dólar FIA (XP Asset)'),  # replica o S&P 500 sem proteção cambial
 }
+FERIADOS = {dt.date(*d) for d in (
+    (2024, 11, 15), (2024, 11, 20), (2024, 12, 25), (2025, 1, 1), (2025, 3, 3), (2025, 3, 4), (2025, 4, 18), (2025, 4, 21),
+    (2025, 5, 1), (2025, 6, 19), (2025, 11, 20), (2025, 12, 25), (2026, 1, 1), (2026, 2, 16), (2026, 2, 17), (2026, 4, 3),
+    (2026, 4, 21), (2026, 5, 1), (2026, 6, 4), (2026, 9, 7), (2026, 10, 12), (2026, 11, 2), (2026, 11, 20), (2026, 12, 25),
+    (2027, 1, 1), (2027, 2, 8), (2027, 2, 9), (2027, 3, 26), (2027, 4, 21), (2027, 5, 27), (2027, 9, 7), (2027, 10, 12),
+    (2027, 11, 2), (2027, 11, 15), (2027, 11, 20), (2027, 12, 25))}   # feriados bancários nacionais (sem os que caem no fim de semana)
 LCI_CDI = 0.866   # LCI/LCA de banco grande: 86,6% do CDI (Quantum, via Seu Dinheiro, 24/09/2026)
 # classe: (peso na carteira, peso na régua, como a série é feita)
 PESOS = {  # carteira J do case (16/11/2026)
@@ -50,7 +58,7 @@ PESOS = {  # carteira J do case (16/11/2026)
     'IPCA+ curto': (7.5, 7.5, 'cota do ' + FUNDOS['imab5'][1]),
     'IPCA+ longo': (0.0, 7.5, 'cota do ' + FUNDOS['imab5mais'][1]),
     'Ações Brasil': (2.5, 5.0, 'cota do ' + FUNDOS['ibov'][1]),
-    'Bolsa global sem hedge': (2.5, 7.5, 'S&P 500 convertido pela PTAX (FRED, BCB)'),
+    'Bolsa global sem hedge': (2.5, 7.5, 'cota do ' + FUNDOS['global'][1] + ', S&P 500 sem proteção cambial'),
     'Treasury 2 anos': (2.5, 5.0, 'Treasury de 2 anos pelo juro (FRED, DGS2), convertido pela PTAX (BCB)'),
     'Treasury 10 anos': (10.0, 0.0, 'Treasury de 10 anos pelo juro (FRED, DGS10), convertido pela PTAX (BCB)'),
 }
@@ -59,7 +67,7 @@ REALIZAR, SAIR = 14.0, 15.1   # termômetro dos cenários no juro de 2 anos: o b
 
 
 # ------------------------------------------------------------------ coleta
-def baixar(url, destino, sempre=False, tentativas=3):
+def baixar(url, destino, sempre=False, tentativas=6):
     destino.parent.mkdir(parents=True, exist_ok=True)
     if destino.exists() and not sempre:
         return destino
@@ -73,7 +81,7 @@ def baixar(url, destino, sempre=False, tentativas=3):
         except Exception as erro:  # noqa: BLE001
             if k == tentativas - 1:
                 raise RuntimeError(f'falhou {url}: {erro}')
-            time.sleep(5 * (k + 1))
+            time.sleep(10 * (k + 1))   # o BCB às vezes derruba a conexão (21/11/2026): espera mais a cada tentativa
 
 
 def sgs(codigo):
@@ -183,28 +191,24 @@ def ultimo(serie, d, limite=5):
 
 def main():
     cdi, ptax = sgs(12), sgs(1)
-    sp, dff, y2, y10 = fred('SP500'), fred('DFF'), fred('DGS2'), fred('DGS10')
+    y2, y10 = fred('DGS2'), fred('DGS10')
     cotas = cvm()
     termo, pre2 = tesouro()
     dias = sorted(d for d in cdi if d >= INICIO)
     # o último dia é o último em que todas as séries existem (os fundos chegam à CVM com 1–2 dias de atraso)
     # e cada fundo tem de ter a cota daquele dia mesmo: repetir a anterior daria variação zero falsa no fim da série
-    while dias and (any(ultimo(s, dias[-1], 4) is None for s in (ptax, sp, dff, y2, y10))
+    while dias and (any(ultimo(s, dias[-1], 4) is None for s in (ptax, y2, y10))
                     or any(dias[-1] not in c for c in cotas.values()) or dias[-1] not in ptax):
         dias.pop()
-    ret = {k: [] for k in ('cdi', 'lci', 'credito', 'irfm', 'imab5', 'imab5mais', 'imab', 'ibov', 'sp_reais', 'sp_hedge', 'dolar', 'dolar_puro', 'tsy2', 'tsy10')}
+    ret = {k: [] for k in ('cdi', 'lci', 'credito', 'irfm', 'imab5', 'imab5mais', 'imab', 'ibov', 'sp_reais', 'dolar_puro', 'tsy2', 'tsy10')}
     for a, b in zip(dias, dias[1:]):
         r_cdi = cdi[b] / 100  # a taxa do dia b remunera de a para b
         fx = ultimo(ptax, b) / ultimo(ptax, a) - 1
-        rsp = ultimo(sp, b) / ultimo(sp, a) - 1
-        ff = ultimo(dff, a) / 100 * (b - a).days / 360
         ret['cdi'].append(r_cdi)
         ret['lci'].append(LCI_CDI * r_cdi)
         for k in ('credito', 'irfm', 'imab5', 'imab5mais', 'imab', 'ibov'):
             ret[k].append(ultimo(cotas[k], b) / ultimo(cotas[k], a) - 1)
-        ret['sp_reais'].append((1 + rsp) * (1 + fx) - 1)
-        ret['sp_hedge'].append((1 + rsp) * (1 + r_cdi - ff) - 1)
-        ret['dolar'].append((1 + fx) * (1 + ff) - 1)
+        ret['sp_reais'].append(ultimo(cotas['global'], b) / ultimo(cotas['global'], a) - 1)
         ret['dolar_puro'].append(fx)
         for k, y, anos in (('tsy2', y2, 2), ('tsy10', y10, 10)):
             ret[k].append((1 + titulo(ultimo(y, a), ultimo(y, b), (b - a).days, anos)) * (1 + fx) - 1)
@@ -239,9 +243,15 @@ def main():
     def acum(k, desde):
         i0 = max(i for i, d in enumerate(dias) if d <= desde) if desde >= dias[0] else 0
         return (math.prod(1 + r for r in ret[k][i0:]) - 1) * 100
-    um_ano = dias[-1] - dt.timedelta(days=365)
+    def acum_entre(k, d0, d1):
+        i0 = max(i for i, d in enumerate(dias) if d <= d0)
+        i1 = max(i for i, d in enumerate(dias) if d <= d1)
+        return (math.prod(1 + r for r in ret[k][i0:i1]) - 1) * 100
+    # 21/11/2026: nenhum número atravessa a data de corte (GIPS 1.A.27; ANBIMA, Regras de Publicidade, art. 37 §2º):
+    # os 12 meses são os da simulação, até 13/11/2026; o real é medido só desde 13/11/2026
     classes = [dict(classe=c, carteira=PESOS[c][0], regua=PESOS[c][1], desvio=PESOS[c][0] - PESOS[c][1],
-                    ret_dia=round(ret[FONTE[c]][-1] * 100, 3), ret_12m=round(acum(FONTE[c], um_ano), 2),
+                    ret_dia=round(ret[FONTE[c]][-1] * 100, 3) if dias[-1] > ATIVA else None,
+                    ret_12m_sim=round(acum_entre(FONTE[c], ATIVA - dt.timedelta(days=365), ATIVA), 2),
                     ret_ativa=round(acum(FONTE[c], ATIVA), 3) if dias[-1] > ATIVA else None, como=PESOS[c][2])
                for c in PESOS]
 
@@ -254,16 +264,36 @@ def main():
                     data=max(ptax).isoformat(), realizar=None, sair=None, fonte='BCB, série 1')]
     termo_linhas = [dict(data=d.isoformat(), pre_2a=round(pre2[d], 3)) for d in t_dias if d >= HOJE - dt.timedelta(days=200)]
 
+    # frescor: a data do último dado de cada fonte e quantos dias úteis ela está atrás de hoje
+    def atraso(d):
+        n, x = 0, d
+        while x < HOJE:
+            x += dt.timedelta(days=1)
+            if x.weekday() < 5 and x not in FERIADOS:
+                n += 1
+        return n
+    fontes = []
+    for fonte, dado, ult, limite in (('Banco Central', 'CDI (SGS 12)', max(cdi), 2),
+                                     ('Banco Central', 'dólar PTAX (SGS 1)', max(ptax), 2),
+                                     ('CVM', 'cotas dos 7 fundos usados como índice', min(max(c) for c in cotas.values()), 4),
+                                     ('Tesouro Direto', 'taxas das LTNs', max(pre2), 3),
+                                     ('FRED', 'juro dos Treasuries (DGS2, DGS10)', min(max(y2), max(y10)), 3)):
+        fontes.append(dict(fonte=fonte, dado=dado, ultimo=ult.isoformat(), atraso=atraso(ult), limite=limite,
+                           status='ok' if atraso(ult) <= limite else 'atrasado'))
+    fontes.append(dict(fonte='Painel', dado='página gerada', ultimo=HOJE.isoformat(), atraso=0, limite=3,
+                       status='ok', gerado=dt.datetime.now(BRT).strftime('%d/%m/%Y %H:%M'), serie_ate=dias[-1].isoformat()))
+
     codigo = Path(__file__).read_text('utf-8')
     comum = [dict(label='atualizar.py', value=codigo, type='code', lang='python'),
-             dict(label='Atualizado em', value=dt.datetime.now().strftime('%d/%m/%Y %H:%M')),
+             dict(label='Atualizado em', value=dt.datetime.now(BRT).strftime('%d/%m/%Y %H:%M')),
              dict(label='Último dia com todas as séries', value=dias[-1].strftime('%d/%m/%Y'))]
     DADOS.mkdir(parents=True, exist_ok=True)
-    for nome, rows in (('serie', linhas), ('classes', classes), ('monitor', monitor), ('termo', termo_linhas)):
+    for nome, rows in (('serie', linhas), ('classes', classes), ('monitor', monitor), ('termo', termo_linhas), ('fontes', fontes)):
         (DADOS / f'{nome}.json').write_text(json.dumps({'rows': rows, 'meta': comum}, ensure_ascii=False), 'utf-8')
     fim = linhas[-1]
     print(f"ok: {len(linhas)} dias, de {linhas[0]['data']} a {fim['data']} | carteira {fim['carteira']:.2f} régua {fim['regua']:.2f} "
-          f"CDI {fim['cdi']:.2f} Ibov {fim['ibovespa']:.2f} IMA-B {fim['imab']:.2f} dólar {fim['dolar']:.2f} S&P {fim['sp500_reais']:.2f} | "
+          f"CDI {fim['cdi']:.2f} Ibov {fim['ibovespa']:.2f} IMA-B {fim['imab']:.2f} dólar {fim['dolar']:.2f} global {fim['sp500_reais']:.2f} | "
+          f"fontes atrasadas: {[x['dado'] for x in fontes if x['status'] != 'ok'] or 'nenhuma'} | "
           f"prefixado 2a {monitor[0]['valor']} em {monitor[0]['data']}")
 
 

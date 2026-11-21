@@ -47,37 +47,74 @@
   .mz details { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); line-height: 1.6; max-width: 80ch; }
   .mz details summary { cursor: pointer; color: var(--color-fg); }
   [data-dash-source-state=refreshing] { opacity: .5; }
+  .mz-grupo { display: grid; gap: var(--cds-gap-sm); }
+  .mz-grupo-rot { font-size: var(--cds-font-size-caption); font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); text-transform: uppercase; letter-spacing: .06em; }
+  .mz-grupo-rot em { font-style: normal; text-transform: none; letter-spacing: 0; font-weight: 400; }
+  .mz-sim { border-style: dashed; }
+  .mz-selo { font-size: 11px; font-weight: 400; color: var(--color-fg-muted); border: 1px dashed var(--color-border-line); border-radius: 999px; padding: 1px 8px; vertical-align: middle; white-space: nowrap; }
+  .mz-frescor { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: var(--cds-gap-sm) 0 0; }
+  .mz-alerta { border: 1px solid var(--color-warn); color: var(--color-warn); border-radius: var(--cds-radius); padding: var(--cds-pad-md); font-size: var(--cds-font-size-body); }
+  .mz-tab td.falta { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); white-space: normal; text-align: left; }
+  .mz-tab caption { caption-side: top; text-align: left; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); padding-bottom: 6px; }
+  .mz-fontes td { text-align: left; }
+  .mz-fontes .atrasado { color: var(--color-warn); font-weight: var(--cds-font-weight-medium); }
 </style>
 
 <div class="mz">
   <header class="mz-topo" id="topo">
     <h1>Carteira MZR</h1>
     <p id="frase-ativa" hidden>Desde 13/11/2026, quando a carteira passou a existir, ela rende <b data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="ativa">—</b>, contra <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="ativa">—</b> da régua e <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="ativa">—</b> do CDI.</p>
-    <p id="frase-simulada">A carteira passa a existir em 13/11/2026, a data de corte do case. Antes disso, simulada com os pesos de hoje, ela teria rendido <b data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="total">—</b> em 24 meses, contra <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="total">—</b> da régua e <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="total">—</b> do CDI, com maior queda de <b data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="queda">—</b>.</p>
+    <p id="frase-simulada">A carteira passa a existir em 13/11/2026, a data de corte do case. Antes disso, simulada com os pesos de hoje, ela teria rendido <b data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="sim_total">—</b> em 24 meses, contra <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="sim_total">—</b> da régua e <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="sim_total">—</b> do CDI, com maior queda de <b data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="sim_queda">—</b>.</p>
     <span data-draw="frase"></span>
+    <p class="mz-frescor" data-draw="frescor-topo" data-source="fontes">—</p>
   </header>
+  <div class="mz-alerta" id="alerta-frescor" data-draw="frescor-alerta" data-source="fontes" style="display:none"></div>
 
-  <section class="mz-cards" id="resumo" aria-label="Resumo">
-    <div class="mz-card" id="card-ativa">
-      <span class="mz-rot">Desde 13/11/2026 (carteira ativa)</span>
-      <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="ativa">—</span>
-      <span class="mz-sub" id="ativa-cdi" hidden>CDI no período: <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="ativa">—</b></span>
-      <span class="mz-sub" id="ativa-espera">Começa a contar com o fechamento de 13/11/2026</span>
+  <section class="mz-grupo" id="resumo-real" aria-label="Resultado real">
+    <span class="mz-grupo-rot">Real <em>· desde 13/11/2026, quando a carteira passou a existir</em></span>
+    <div class="mz-cards">
+      <div class="mz-card" id="card-ativa">
+        <span class="mz-rot">Carteira desde 13/11/2026</span>
+        <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="ativa">—</span>
+        <span class="mz-sub" id="ativa-cdi" hidden>Régua <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="ativa">—</b> · CDI <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="ativa">—</b> · <b data-draw="pp-cdi" data-source="comparacao" data-field="ativa">—</b> contra o CDI</span>
+        <span class="mz-sub" id="ativa-espera">Começa a contar com o fechamento de 13/11/2026</span>
+      </div>
+      <div class="mz-card" id="card-dia">
+        <span class="mz-rot" data-draw="rot-dia" data-source="serie">Último dia</span>
+        <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="dia">—</span>
+        <span class="mz-sub">Régua <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="dia">—</b> · CDI <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="dia">—</b></span>
+      </div>
+      <div class="mz-card" id="card-risco-real">
+        <span class="mz-rot">Volatilidade, Sharpe e retorno anualizado do real</span>
+        <span class="mz-num">—</span>
+        <span class="mz-sub">Só com 12 meses de dados reais: período curto não se anualiza nem mede risco</span>
+      </div>
+      <div class="mz-card" id="card-termo">
+        <span class="mz-rot">Prefixado 2 anos: taxa contra os cenários</span>
+        <span class="mz-num" data-draw="termo-num" data-source="monitor" data-where="indicador=Prefixado de 2 anos" data-field="valor">—</span>
+        <span class="mz-pill" data-draw="termo-status">—</span>
+      </div>
     </div>
-    <div class="mz-card" id="card-12m">
-      <span class="mz-rot">Últimos 12 meses (simulado)</span>
-      <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="m12">—</span>
-      <span class="mz-sub">Régua <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="m12">—</b> · CDI <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="m12">—</b></span>
-    </div>
-    <div class="mz-card" id="card-queda">
-      <span class="mz-rot">Maior queda em 24 meses</span>
-      <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="queda">—</span>
-      <span class="mz-sub">Régua <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="queda">—</b> · Ibovespa <b data-draw="kpi" data-source="comparacao" data-where="serie=Ibovespa" data-field="queda">—</b></span>
-    </div>
-    <div class="mz-card" id="card-termo">
-      <span class="mz-rot">Prefixado de 2 anos (gatilho de saída)</span>
-      <span class="mz-num" data-draw="termo-num" data-source="monitor" data-where="indicador=Prefixado de 2 anos" data-field="valor">—</span>
-      <span class="mz-pill" data-draw="termo-status">—</span>
+  </section>
+
+  <section class="mz-grupo" id="resumo-sim" aria-label="Simulação">
+    <span class="mz-grupo-rot">Simulação <em>· 13/11/2024 a 13/11/2026, pesos de hoje aplicados ao passado; informação suplementar</em></span>
+    <div class="mz-cards">
+      <div class="mz-card mz-sim" id="card-12m">
+        <span class="mz-rot">12 meses até 13/11/2026</span>
+        <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="sim_m12">—</span>
+        <span class="mz-sub">Régua <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="sim_m12">—</b> · CDI <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="sim_m12">—</b> · <b data-draw="pp-cdi" data-source="comparacao" data-field="sim_m12">—</b> contra o CDI</span>
+      </div>
+      <div class="mz-card mz-sim" id="card-24m">
+        <span class="mz-rot">24 meses até 13/11/2026</span>
+        <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="sim_total">—</span>
+        <span class="mz-sub">Régua <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="sim_total">—</b> · CDI <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="sim_total">—</b> · <b data-draw="pp-cdi" data-source="comparacao" data-field="sim_total">—</b> contra o CDI</span>
+      </div>
+      <div class="mz-card mz-sim" id="card-queda">
+        <span class="mz-rot">Maior queda na simulação</span>
+        <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="sim_queda">—</span>
+        <span class="mz-sub">Régua <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="sim_queda">—</b> · Ibovespa <b data-draw="kpi" data-source="comparacao" data-where="serie=Ibovespa" data-field="sim_queda">—</b></span>
+      </div>
     </div>
   </section>
 
@@ -91,7 +128,7 @@
         <button type="button" class="mz-chip" id="chip-ibovespa" data-serie="ibovespa" aria-pressed="true"><i data-cor="3"></i>Ibovespa</button>
         <button type="button" class="mz-chip" id="chip-imab" data-serie="imab" aria-pressed="false"><i data-cor="4"></i>IMA-B</button>
         <button type="button" class="mz-chip" id="chip-dolar" data-serie="dolar" aria-pressed="false"><i data-cor="5"></i>Dólar</button>
-        <button type="button" class="mz-chip" id="chip-sp500" data-serie="sp500_reais" aria-pressed="false"><i data-cor="6"></i>S&amp;P 500 em reais</button>
+        <button type="button" class="mz-chip" id="chip-sp500" data-serie="sp500_reais" aria-pressed="false"><i data-cor="6"></i>Bolsa americana em reais</button>
       </div>
       <div class="mz-periodos" role="group" aria-label="Período">
         <button type="button" class="mz-chip" id="per-24" data-dias="730" aria-pressed="true">24 meses</button>
@@ -105,17 +142,26 @@
   </section>
 
   <section class="mz-sec" id="risco">
-    <h2>Quanto rendeu e quanto caiu no caminho</h2>
+    <h2>Quanto rendeu e quanto caiu no caminho <span class="mz-selo">simulação · 13/11/2024 a 13/11/2026</span></h2>
     <div class="mz-graf mz-disp" id="dispersao" data-draw="dispersao" data-source="comparacao"></div>
-    <p class="mz-nota">Cada ponto é uma série em 24 meses: no eixo horizontal, a maior queda do pico ao fundo; no vertical, o retorno acumulado. Quanto mais para cima e para a esquerda, melhor. Antes de 13/11/2026, a carteira e a régua são simulação.</p>
+    <p class="mz-nota">Cada ponto é uma série nos 24 meses até 13/11/2026: no eixo horizontal, a maior queda do pico ao fundo; no vertical, o retorno acumulado. Quanto mais para cima e para a esquerda, melhor. A carteira e a régua são simulação: os pesos de hoje aplicados ao passado.</p>
   </section>
 
   <section class="mz-sec" id="comparacao-sec">
     <h2>Retorno por período</h2>
     <div class="mz-tab">
-      <table id="tabela-comparacao" data-source="comparacao" data-row-key="serie">
-        <thead><tr><th data-field="serie">Série</th><th data-field="dia">Último dia</th><th data-field="mes">No mês</th><th data-field="ano">No ano</th><th data-field="m12">12 meses</th><th data-field="ativa">Desde 13/11/26</th><th data-field="queda">Maior queda</th></tr></thead>
-        <tbody data-draw="comparacao-linhas"></tbody>
+      <table id="tabela-real" data-source="comparacao" data-row-key="serie">
+        <caption>Real, desde 13/11/2026</caption>
+        <thead><tr><th>Série</th><th>Último dia</th><th>Desde 13/11/26</th><th>Contra o CDI</th></tr></thead>
+        <tbody data-draw="tabela-real"></tbody>
+      </table>
+    </div>
+    <p class="mz-nota">Volatilidade, Sharpe e retorno anualizado do período real aparecem quando houver 12 meses de dados reais.</p>
+    <div class="mz-tab">
+      <table id="tabela-sim" data-source="comparacao" data-row-key="serie">
+        <caption>Simulação, 13/11/2024 a 13/11/2026 (pesos de hoje aplicados ao passado; informação suplementar)</caption>
+        <thead><tr><th>Série</th><th>12 meses até 13/11/26</th><th>24 meses</th><th>Contra o CDI (24 meses)</th><th>Maior queda</th></tr></thead>
+        <tbody data-draw="tabela-sim"></tbody>
       </table>
     </div>
     <p class="mz-nota" data-draw="ate" data-source="serie">—</p>
@@ -142,17 +188,31 @@
     <h2>As classes</h2>
     <div class="mz-tab">
       <table id="tabela-classes" data-source="classes" data-row-key="classe">
-        <thead><tr><th data-field="classe">Classe</th><th data-field="carteira">Carteira %</th><th data-field="regua">Régua %</th><th data-field="desvio">Desvio</th><th data-field="ret_dia">Último dia</th><th data-field="ret_12m">12 meses</th><th data-field="ret_ativa">Desde 13/11/26</th><th data-field="como">Como medimos</th></tr></thead>
+        <thead><tr><th data-field="classe">Classe</th><th data-field="carteira">Carteira %</th><th data-field="regua">Régua %</th><th data-field="desvio">Desvio</th><th data-field="ret_dia">Último dia (real)</th><th data-field="ret_ativa">Desde 13/11/26 (real)</th><th data-field="ret_12m_sim">12 meses até 13/11/26 (simulação)</th><th data-field="como">Como medimos</th></tr></thead>
         <tbody data-draw="classes-linhas"></tbody>
       </table>
     </div>
   </section>
 
-  <details id="metodo">
+  <section class="mz-sec" id="fontes-sec">
+    <h2>De quando são os dados</h2>
+    <div class="mz-tab">
+      <table class="mz-fontes" id="tabela-fontes" data-source="fontes" data-row-key="dado">
+        <thead><tr><th>Fonte</th><th>Dado</th><th>Último dado</th><th>Situação</th></tr></thead>
+        <tbody data-draw="fontes-linhas"></tbody>
+      </table>
+    </div>
+    <p class="mz-nota">O gráfico e as tabelas vão até o último dia em que todas as fontes publicaram. Cada fonte tem um atraso normal (a CVM publica as cotas com um a três dias úteis de atraso); acima dele, a linha fica em destaque e um aviso aparece no topo.</p>
+  </section>
+
+  <details id="metodo" open>
     <summary>Como o painel é feito</summary>
-    <p>A carteira e a régua são as do case: régua é a carteira moderada mediana de C6, Daycoval e Genial; a carteira tem os desvios com tese (mais prefixado curto, crédito e Treasuries de 10 anos; menos bolsa; sem IPCA+ longo). Pesos fixos, rebalanceados no primeiro dia útil de cada mês, retornos antes do IR.</p>
-    <p>Os dados são públicos e coletados todo dia útil por um script: CDI e dólar do Banco Central, S&amp;P 500, Fed Funds e juro dos Treasuries de 2 e de 10 anos do FRED, cotas diárias de fundos passivos na CVM no lugar dos índices da B3 e da Anbima (Ibovespa, IMA-B, IMA-B 5, IMA-B 5+, IRF-M e crédito high grade, já líquidas da taxa de administração) e taxas do Tesouro Direto. O S&amp;P 500 é o índice de preço, sem dividendos.</p>
-    <p>Até 13/11/2026 a carteira é uma simulação. Simulação não é desempenho: mostra como os pesos de hoje teriam se comportado.</p>
+    <p><b>Real e simulação.</b> A carteira passou a existir em 13/11/2026, a data de corte do case. O que vem antes é simulação: os pesos de hoje, definidos em 16/11/2026, aplicados aos 24 meses anteriores. Escolher os pesos conhecendo o passado favorece a simulação; por isso ela é informação suplementar. Nenhum número do painel junta os dois períodos: o real é medido só desde 13/11/2026, e a simulação, só até 13/11/2026. O gráfico mostra os dois na mesma linha, pontilhada na simulação, com uma marca na data de corte.</p>
+    <p><b>Períodos curtos.</b> Retorno de menos de um ano não é anualizado. Volatilidade, Sharpe e outras medidas de risco do período real só aparecem com 12 meses de dados reais.</p>
+    <p><b>Carteira e régua.</b> A régua é a carteira moderada mediana de C6, Daycoval e Genial; a carteira tem os desvios com tese (mais prefixado curto, crédito e Treasuries de 10 anos; menos bolsa; sem IPCA+ longo). Pesos fixos, rebalanceados no primeiro dia útil de cada mês, sem custo de transação. Taxa livre de risco: CDI.</p>
+    <p><b>Como cada classe é medida.</b> CDI e dólar (PTAX de venda) do Banco Central; LCI/LCA a 86,6% do CDI; Treasuries de 2 e de 10 anos pelo juro publicado no FRED, convertidos pela PTAX; para o que é índice da B3 ou da Anbima (Ibovespa, IMA-B, IMA-B 5, IMA-B 5+, IRF-M, crédito) e para a bolsa americana em reais, a cota diária de fundos passivos na CVM. A cota já desconta a taxa de administração e tem erro de aderência ao índice. Taxas do Tesouro Direto para o juro do prefixado de 2 anos.</p>
+    <p><b>Avisos.</b> Rentabilidade passada não é garantia de rentabilidade futura. A rentabilidade divulgada não é líquida de impostos. A simulação não é desempenho: mostra como os pesos de hoje teriam se comportado.</p>
+    <p><b>Licenças.</b> Dados do Banco Central, da CVM e do Tesouro Transparente, abertos. Juro dos Treasuries: FRED, Federal Reserve Bank of St. Louis; este painel não é endossado nem certificado pelo Federal Reserve Bank of St. Louis.</p>
   </details>
 </div>
 
@@ -164,7 +224,7 @@
   const dataBR = d3.utcFormat('%d/%m/%Y');
   window.MZR = {
     loc, f2, pct, dataBR,
-    nomes: { carteira: 'Carteira', regua: 'Régua', cdi: 'CDI', ibovespa: 'Ibovespa', imab: 'IMA-B', dolar: 'Dólar', sp500_reais: 'S&P 500 em reais' },
+    nomes: { carteira: 'Carteira', regua: 'Régua', cdi: 'CDI', ibovespa: 'Ibovespa', imab: 'IMA-B', dolar: 'Dólar', sp500_reais: 'Bolsa americana (R$)' },
     ordem: ['carteira', 'regua', 'cdi', 'ibovespa', 'imab', 'dolar', 'sp500_reais'],
     ATIVA: '2026-11-13',
     cor: (k) => dash.colors[window.MZR.ordem.indexOf(k) % dash.colors.length],
@@ -182,26 +242,29 @@
 
 <script>
   // ---------- retorno de cada série por período, a partir da série diária (base 100)
+  // 21/11/2026: nenhum número atravessa 13/11/2026 (GIPS 1.A.27; ANBIMA, Regras de Publicidade, art. 37 §2º).
+  // Real: só desde 13/11/2026 (último dia e acumulado, sem anualizar). Simulação: só até 13/11/2026 (12 e 24 meses e maior queda).
   dash.calc('comparacao', {
     inputs: ['serie'],
     title: 'Retorno por período',
-    description: 'Retorno da carteira, da régua e de cada índice no último dia, no mês, no ano, em 12 meses, desde 13/11/2026 e a maior queda, em %.',
+    description: 'Retorno de cada série no período real (último dia e desde 13/11/2026) e na simulação (12 e 24 meses até 13/11/2026, maior queda), em %.',
     fn: (serie) => {
       if (!serie.length) return [];
-      const nomes = { carteira: 'Carteira', regua: 'Régua', cdi: 'CDI', ibovespa: 'Ibovespa', imab: 'IMA-B', dolar: 'Dólar', sp500_reais: 'S&P 500 em reais' };
-      const ult = serie[serie.length - 1], fim = ult.data;
+      const nomes = MZR.nomes;
+      const ult = serie[serie.length - 1], fim = ult.data, CORTE = MZR.ATIVA;
       const ate = (d) => { let r = null; for (const x of serie) { if (x.data <= d) r = x; else break; } return r; };
-      const menos = (dias) => { const t = new Date(fim + 'T00:00:00Z'); t.setUTCDate(t.getUTCDate() - dias); return t.toISOString().slice(0, 10); };
-      const fimMesAnt = ate(fim.slice(0, 8) + '00'), fimAnoAnt = ate(fim.slice(0, 4) + '-00'), ha12 = ate(menos(365));
-      const inicio = ate('2026-11-13'), ativa = fim > '2026-11-13';
+      const menos = (d, dias) => { const t = new Date(d + 'T00:00:00Z'); t.setUTCDate(t.getUTCDate() - dias); return t.toISOString().slice(0, 10); };
+      const corte = ate(CORTE), ativa = fim > CORTE;
+      const sim = serie.filter((x) => x.data <= CORTE);
       const r = (a, b, k) => (a && b) ? (+b[k] / +a[k] - 1) * 100 : null;
       return Object.keys(nomes).map((k) => {
         let pico = -Infinity, queda = 0;
-        for (const x of serie) { pico = Math.max(pico, +x[k]); queda = Math.min(queda, +x[k] / pico - 1); }
+        for (const x of sim) { pico = Math.max(pico, +x[k]); queda = Math.min(queda, +x[k] / pico - 1); }
         return {
           serie: nomes[k],
-          dia: r(serie[serie.length - 2], ult, k), mes: r(fimMesAnt, ult, k), ano: r(fimAnoAnt, ult, k), m12: r(ha12, ult, k),
-          ativa: ativa ? r(inicio, ult, k) : null, total: r(serie[0], ult, k), queda: queda * 100,
+          dia: ativa ? r(serie[serie.length - 2].data >= CORTE ? serie[serie.length - 2] : corte, ult, k) : null,
+          ativa: ativa ? r(corte, ult, k) : null,
+          sim_m12: r(ate(menos(CORTE, 365)), corte, k), sim_total: r(sim[0], corte, k), sim_queda: queda * 100,
         };
       });
     },
@@ -218,6 +281,19 @@
     const v = linha ? linha[el.dataset.field] : null;
     el.textContent = v == null ? '—' : MZR.pct(v, 2);
   });
+  dash.draw('pp-cdi', (el) => {
+    const c = dash.data('comparacao');
+    if (c.status !== 'ok' || !c.data || !c.data.length) { el.textContent = '—'; return; }
+    const car = c.data.find((x) => x.serie === 'Carteira'), cdi = c.data.find((x) => x.serie === 'CDI');
+    const v = car && cdi && car[el.dataset.field] != null && cdi[el.dataset.field] != null ? car[el.dataset.field] - cdi[el.dataset.field] : null;
+    el.textContent = v == null ? '—' : (v > 0 ? '+' : v < 0 ? '−' : '') + MZR.loc.format(',.2f')(Math.abs(v)) + ' p.p.';
+  });
+  dash.draw('rot-dia', (el) => {
+    const s = dash.data('serie');
+    if (s.status !== 'ok' || !s.data.length) return;
+    const d = s.data[s.data.length - 1].data;
+    el.textContent = d > MZR.ATIVA ? 'Último dia (' + MZR.dataBR(new Date(d + 'T00:00:00Z')).slice(0, 5) + ')' : 'Último dia';
+  });
   dash.draw('frase', () => {
     const c = dash.data('comparacao');
     const ativa = c.status === 'ok' && c.data && c.data.some((x) => x.serie === 'Carteira' && x.ativa != null);
@@ -226,11 +302,39 @@
     document.querySelectorAll('#ativa-cdi').forEach((p) => { p.hidden = !ativa; });
     document.querySelectorAll('#ativa-espera').forEach((p) => { p.hidden = ativa; });
   });
+  const fonteGerada = () => { const f = dash.data('fontes'); return f.status === 'ok' ? f.data.find((x) => x.fonte === 'Painel') : null; };
+  dash.draw('frescor-topo', (el) => {
+    const g = fonteGerada();
+    if (!g) { el.textContent = ''; return; }
+    el.textContent = 'Dados até ' + MZR.dataBR(new Date(g.serie_ate + 'T00:00:00Z')) + ' (último dia com todas as fontes) · página gerada em ' + g.gerado + ' (Brasília)';
+  });
+  dash.draw('frescor-alerta', (el) => {
+    const f = dash.data('fontes'), g = fonteGerada();
+    if (f.status !== 'ok' || !g) { el.style.display = 'none'; return; }
+    const msgs = f.data.filter((x) => x.status === 'atrasado').map((x) => x.fonte + ' (' + x.dado + ') está ' + x.atraso + ' dias úteis atrás');
+    const dias = Math.floor((Date.now() - new Date(g.ultimo + 'T12:00:00-03:00').getTime()) / 864e5);
+    if (dias > 3) msgs.unshift('A página não é atualizada há ' + dias + ' dias');
+    el.style.display = msgs.length ? '' : 'none';
+    el.textContent = msgs.length ? 'Atenção: ' + msgs.join('; ') + '.' : '';
+  });
+  dash.draw('fontes-linhas', (tb) => {
+    const f = dash.data('fontes');
+    tb.replaceChildren();
+    if (f.status !== 'ok') return;
+    f.data.filter((x) => x.fonte !== 'Painel').forEach((x) => {
+      const tr = document.createElement('tr'); tr.dataset.key = encodeURIComponent(x.dado);
+      [x.fonte, x.dado, MZR.dataBR(new Date(x.ultimo + 'T00:00:00Z'))].forEach((v) => { const td = document.createElement('td'); td.textContent = v; tr.append(td); });
+      const td = document.createElement('td');
+      td.textContent = x.status === 'ok' ? (x.atraso === 0 ? 'em dia' : x.atraso + (x.atraso === 1 ? ' dia útil' : ' dias úteis') + ' atrás (normal)') : x.atraso + ' dias úteis atrás (acima do normal)';
+      if (x.status !== 'ok') td.className = 'atrasado';
+      tr.append(td); tb.append(tr);
+    });
+  });
   dash.draw('ate', (el) => {
     const s = dash.data('serie');
     if (s.status !== 'ok' || !s.data.length) { el.textContent = '—'; return; }
     const d = s.data[s.data.length - 1].data;
-    el.textContent = 'Até ' + MZR.dataBR(new Date(d + 'T00:00:00Z')) + ', o último dia em que todas as fontes já publicaram (os fundos chegam à CVM com um ou dois dias de atraso).';
+    el.textContent = 'Até ' + MZR.dataBR(new Date(d + 'T00:00:00Z')) + ', o último dia em que todas as fontes já publicaram. O real começa no fechamento de 13/11/2026; a simulação termina nele.';
   });
 </script>
 
@@ -249,7 +353,7 @@
     if (!linhas.length) { el.textContent = '—'; return; }
     const base = linhas[0];
     const pts = linhas.map((x) => { const o = { d: x.d, data: x.data }; MZR.ordem.forEach((k) => { o[k] = +x[k] / +base[k] * 100; }); return o; });
-    const curto = { ...MZR.nomes, sp500_reais: 'S&P 500 (R$)' };   // rótulo do fim da linha, mais curto que o da legenda
+    const curto = { ...MZR.nomes, sp500_reais: 'Bolsa EUA (R$)' };   // rótulo do fim da linha, mais curto que o da legenda
     const W = Math.max(280, el.clientWidth), H = 340, m = { t: 12, r: 132, b: 28, l: 44 };
     const x = d3.scaleUtc().domain(d3.extent(pts, (p) => p.d)).range([m.l, W - m.r]);
     const vals = pts.flatMap((p) => visiveis.map((k) => p[k]));
@@ -308,12 +412,12 @@
     el.replaceChildren();
     if (c.status !== 'ok' || !c.data || !c.data.length) { el.textContent = c.status === 'error' ? 'Não carregou' : '—'; return; }
     const chave = Object.fromEntries(Object.entries(MZR.nomes).map(([k, n]) => [n, k]));
-    const pts = c.data.filter((r) => r.total != null && r.queda != null).map((r) => ({ nome: r.serie, k: chave[r.serie], x: Math.abs(+r.queda), y: +r.total }));
+    const pts = c.data.filter((r) => r.sim_total != null && r.sim_queda != null).map((r) => ({ nome: r.serie, k: chave[r.serie], x: Math.abs(+r.sim_queda), y: +r.sim_total }));
     const W = Math.max(280, el.clientWidth), H = 320, m = { t: 16, r: 16, b: 40, l: 48 };
     const x = d3.scaleLinear().domain([0, d3.max(pts, (p) => p.x) * 1.08]).nice().range([m.l, W - m.r]);
     const y = d3.scaleLinear().domain(d3.extent([0, ...pts.map((p) => p.y)])).nice().range([H - m.b, m.t]);
     const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
-      .attr('aria-label', 'Retorno em 24 meses contra a maior queda de cada série: a carteira rende perto do CDI com queda quase nula; Ibovespa e S&P 500 caíram mais de 20%');
+      .attr('aria-label', 'Simulação, 24 meses até 13/11/2026: retorno contra a maior queda de cada série');
     svg.append('g').selectAll('line').data(y.ticks(5)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y).style('stroke', 'var(--cds-chart-grid)');
     svg.append('g').attr('transform', `translate(0,${H - m.b})`).call(d3.axisBottom(x).ticks(Math.max(3, Math.floor(W / 120))).tickSize(0).tickFormat((v) => v === 0 ? '0%' : '−' + MZR.loc.format(',.0f')(v) + '%'))
       .call((g) => g.select('.domain').style('stroke', 'var(--cds-chart-axis)'));
@@ -351,7 +455,7 @@
         const p = d3.least(rot, (r) => (r.px - mx) ** 2 + (r.py - my) ** 2);
         if (!p || (p.px - mx) ** 2 + (p.py - my) ** 2 > 900) { dica.style('display', 'none'); return; }
         dica.style('display', null).selectAll('*').remove();
-        dica.append('div').attr('class', 't').text(p.nome + ', 24 meses');
+        dica.append('div').attr('class', 't').text(p.nome + ' · simulação, 24 meses até 13/11/2026');
         [['Retorno', MZR.pct(p.y, 1)], ['Maior queda', MZR.pct(-p.x, 1)], ['Por R$ 1 milhão, no fundo', '−R$ ' + MZR.loc.format(',.0f')(p.x * 10) + ' mil']].forEach(([a, b]) => { const r = dica.append('div'); r.append('span').text(a); r.append('span').text(b); });
         dica.style('left', Math.min(p.px + 12, W - 210) + 'px').style('top', Math.max(0, p.py - 60) + 'px');
       })
@@ -361,22 +465,32 @@
 
 <script>
   // ---------- tabelas
-  dash.draw('comparacao-linhas', (tb) => {
+  const linhaTabela = (tb, campos, ppCampo) => {
     const c = dash.data('comparacao');
     tb.replaceChildren();
     if (c.status !== 'ok' || !c.data) return;
+    const cdi = c.data.find((x) => x.serie === 'CDI');
     c.data.forEach((r) => {
       const tr = document.createElement('tr'); if (r.serie === 'Carteira') tr.className = 'eu';
       tr.dataset.key = encodeURIComponent(r.serie);
       const td0 = document.createElement('td'); td0.textContent = r.serie; tr.append(td0);
-      ['dia', 'mes', 'ano', 'm12', 'ativa', 'queda'].forEach((k) => {
+      campos.forEach((k) => {
         const td = document.createElement('td'); td.textContent = MZR.pct(r[k], 2);
-        if (r[k] != null && k !== 'queda') td.className = r[k] > 0 ? 'mz-pos' : r[k] < 0 ? 'mz-neg' : '';
+        if (r[k] != null && !k.endsWith('queda')) td.className = r[k] > 0 ? 'mz-pos' : r[k] < 0 ? 'mz-neg' : '';
         tr.append(td);
       });
+      if (ppCampo) {
+        const td = document.createElement('td');
+        const v = r.serie === 'CDI' || r[ppCampo] == null || !cdi || cdi[ppCampo] == null ? null : r[ppCampo] - cdi[ppCampo];
+        td.textContent = v == null ? '—' : (v > 0 ? '+' : v < 0 ? '−' : '') + MZR.loc.format(',.2f')(Math.abs(v)) + ' p.p.';
+        if (v != null) td.className = v > 0 ? 'mz-pos' : v < 0 ? 'mz-neg' : '';
+        tr.insertBefore(td, ppCampo === 'sim_total' ? tr.lastChild : null);
+      }
       tb.append(tr);
     });
-  });
+  };
+  dash.draw('tabela-real', (tb) => linhaTabela(tb, ['dia', 'ativa'], 'ativa'));
+  dash.draw('tabela-sim', (tb) => linhaTabela(tb, ['sim_m12', 'sim_total', 'sim_queda'], 'sim_total'));
   dash.draw('classes-linhas', (tb) => {
     const c = dash.data('classes');
     tb.replaceChildren();
@@ -388,7 +502,7 @@
       cel(r.classe);
       cel(num(r.carteira)); cel(num(r.regua));
       const dv = +r.desvio; cel(dv === 0 ? '—' : (dv > 0 ? '+' : '−') + MZR.loc.format(',.2f')(Math.abs(dv)));
-      ['ret_dia', 'ret_12m', 'ret_ativa'].forEach((k) => cel(MZR.pct(r[k] == null ? null : +r[k], 2), r[k] == null ? '' : (+r[k] > 0 ? 'mz-pos' : +r[k] < 0 ? 'mz-neg' : '')));
+      ['ret_dia', 'ret_ativa', 'ret_12m_sim'].forEach((k) => cel(MZR.pct(r[k] == null ? null : +r[k], 2), r[k] == null ? '' : (+r[k] > 0 ? 'mz-pos' : +r[k] < 0 ? 'mz-neg' : '')));
       cel(r.como, 'como');
       tb.append(tr);
     });
