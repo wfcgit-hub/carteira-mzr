@@ -168,17 +168,53 @@
     .mz > * + *, .mz-sec > * + *, .mz-mais-corpo > * + * { margin-top: 14px; }
     .mz > .mz-bloco { margin-top: 32px; }
   }
+  /* ---------- versão 3: a tese primeiro */
+  .mz-topo h1 { font-size: clamp(28px, 4.2vw, 42px); line-height: 1.15; max-width: 30ch; margin-top: 8px; text-wrap: balance; }
+  .mz-lead { margin: 12px 0 0; color: var(--color-fg-muted); font-size: 15px; max-width: 70ch; line-height: 1.5; }
+  .mz-tese { margin-top: 30px; display: grid; gap: 10px; }
+  .mz-tese-cab { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .mz-tese-cab h2 { font-size: 17px; font-weight: var(--cds-font-weight-medium); margin: 0; }
+  .mz-tese-cab .mz-nota { margin: 0; }
+  .mz-tese-graf, .mz-choq { min-height: 0; }
+  .mz-tese-graf text { font-size: 13px; }
+  .mz-topo > .mz-mais { display: block; margin-top: 18px; }
+  .mz-topo > .mz-frescor { margin-top: 18px; }
+  .mz-trilha { min-height: 300px; }
+  .mz-comb th, .mz-comb td { text-align: center; white-space: nowrap; }
+  .mz-comb th[scope=row] { text-align: left; }
+  .mz-comb-c b { display: block; font-size: 15px; font-weight: var(--cds-font-weight-medium); }
+  .mz-comb-c span { font-size: 11px; color: var(--color-fg-muted); }
+  .mz-comb-c.acima { background: color-mix(in srgb, var(--color-ok) 13%, transparent); }
+  .mz-comb-c.abaixo { background: color-mix(in srgb, var(--color-bad) 10%, transparent); }
+  .mz-aloc td { vertical-align: middle; padding-top: 10px; padding-bottom: 10px; }
+  .mz-aloc td.cl { min-width: 210px; font-weight: var(--cds-font-weight-medium); }
+  .mz-aloc th.mz-aloc-barras, .mz-aloc td.mz-aloc-barras { width: 46%; min-width: 170px; text-align: left; }
+  .mz-aloc-l { display: flex; align-items: center; gap: 6px; height: 15px; }
+  .mz-aloc-l i { display: block; border-radius: 2px; min-width: 1px; }
+  .mz-aloc-l.c i { background: var(--serie-0); height: 12px; }
+  .mz-aloc-l.r i { background: var(--serie-1); opacity: .5; height: 6px; }
+  .mz-aloc-l span { font-size: 12px; font-variant-numeric: tabular-nums; }
+  .mz-aloc-l.c span { font-weight: var(--cds-font-weight-medium); }
+  .mz-aloc-l.r span { color: var(--color-fg-muted); }
+  .mz-leg-c, .mz-leg-r { display: inline-flex; align-items: center; gap: 4px; margin-right: 10px; }
+  .mz-leg-c::before { content: ''; width: 12px; height: 10px; border-radius: 2px; background: var(--serie-0); }
+  .mz-leg-r::before { content: ''; width: 12px; height: 6px; border-radius: 2px; background: var(--serie-1); opacity: .5; }
+  .mz-dv { font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); }
+  .mz-dv.mais, .mz-dv.menos { color: var(--color-fg); }
+  .mz-cen-classes tr.ref td { border-top: 1px solid var(--color-fg-muted); color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+  .mz-tab td.eu-c { font-weight: var(--cds-font-weight-medium); }
 </style>
 
 <div class="mz">
   <nav class="mz-nav" aria-label="Seções do painel">
     <div class="mz-nav-links">
-      <a href="#topo">Resumo</a>
-      <a href="#desempenho">Desempenho</a>
-      <a href="#risco">Risco</a>
-      <a href="#diferenca">Contra a régua</a>
-      <a href="#cenarios">Cenários</a>
-      <a href="#dados">Dados e método</a>
+      <a href="#topo">Tese</a>
+      <a href="#cenarios">Mercado hoje</a>
+      <a href="#acompanhamento">Acompanhamento</a>
+      <a href="#carteira">Carteira</a>
+      <a href="#riscos">Riscos</a>
+      <a href="#passado">Passado</a>
+      <a href="#dados">Dados</a>
     </div>
     <div class="mz-controles">
       <a class="mz-chip" href="?apresentacao=1" id="link-apresentacao">Apresentar</a>
@@ -187,185 +223,46 @@
     </div>
   </nav>
 
-  <!-- 1. RESUMO: a resposta em uma frase e três números -->
+  <!-- 1. A TESE: o que a carteira deve render, em cada cenário -->
   <header class="mz-topo" id="topo">
-    <span class="mz-sobre">Case MZR Family Office · carteira moderada de uma família, em reais, para 12 meses</span>
-    <h1>Carteira MZR</h1>
-    <p class="mz-veredito" data-draw="veredito" data-source="comparacao">—</p>
-    <div class="mz-numeros">
-      <div class="mz-n">
-        <span class="mz-rot">Desde 13/11/2026 <i class="mz-tag real">real</i></span>
-        <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="ativa">—</span>
-        <span class="mz-sub">Régua <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="ativa">—</b> · CDI <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="ativa">—</b></span>
+    <span class="mz-sobre">Case MZR Family Office · montada em 13/11/2026 para os 12 meses seguintes · família de perfil moderado, em reais</span>
+    <h1>Uma carteira que rende ~14% ao ano e protege na crise</h1>
+    <p class="mz-lead">Comparada com a régua, a carteira moderada mediana de C6, Daycoval e Genial, e com o CDI.</p>
+
+    <div class="mz-tese">
+      <div class="mz-tese-cab">
+        <h2>Quanto deve render em 12 meses, em cada cenário</h2>
+        <span class="mz-nota">Antes do IR · chances do case</span>
       </div>
-      <div class="mz-n">
-        <span class="mz-rot">12 meses até 13/11/2026 <i class="mz-tag sim">simulação</i></span>
-        <span class="mz-num" data-draw="kpi" data-source="comparacao" data-where="serie=Carteira" data-field="sim_m12">—</span>
-        <span class="mz-sub">Régua <b data-draw="kpi" data-source="comparacao" data-where="serie=Régua" data-field="sim_m12">—</b> · CDI <b data-draw="kpi" data-source="comparacao" data-where="serie=CDI" data-field="sim_m12">—</b></span>
-      </div>
-      <div class="mz-n">
-        <span class="mz-rot">Cenário mais perto do mercado hoje</span>
-        <span class="mz-num" data-draw="cenario-num" data-source="premissas">—</span>
-        <span class="mz-sub" data-draw="cenario-sub" data-source="premissas">—</span>
-      </div>
+      <div class="mz-graf mz-tese-graf" id="tese" data-draw="tese" data-source="tese"></div>
     </div>
+    <div class="mz-numeros" data-draw="tese-fatos" data-source="tese"></div>
+
+    <details class="mz-mais">
+      <summary>Ver detalhes: as nove combinações e o retorno depois do IR</summary>
+      <div class="mz-mais-corpo">
+        <h3>As nove combinações de Brasil e mundo</h3>
+        <div class="mz-tab"><table class="mz-comb" id="tabela-comb" data-source="tese"><tbody data-draw="comb-linhas"></tbody></table></div>
+        <p class="mz-nota">Retorno da carteira em 12 meses e a chance de cada combinação. Verde: acima do CDI do cenário; vermelho: abaixo.</p>
+        <h3>Depois do IR</h3>
+        <div class="mz-tab">
+          <table id="tabela-tese-liq" data-source="tese">
+            <thead><tr><th>Cenário</th><th>Carteira</th><th>Régua</th><th>Tesouro Selic</th></tr></thead>
+            <tbody data-draw="tese-liq-linhas"></tbody>
+          </table>
+        </div>
+        <p class="mz-nota">Retorno líquido de IR, pessoa física. A LCI/LCA é isenta; o Tesouro Selic paga 17,5% de IR em 12 meses.</p>
+        <p class="mz-nota" data-draw="pl-lci" data-source="classes"></p>
+        <p class="mz-nota">A vantagem média sobre o CDI depende do dólar: os cenários levam a ~6,15 em 12 meses, acima do que o mercado a termo precifica (6,06).</p>
+      </div>
+    </details>
     <p class="mz-frescor" data-draw="frescor-topo" data-source="fontes">—</p>
   </header>
   <div class="mz-alerta" id="alerta-frescor" data-draw="frescor-alerta" data-source="fontes" style="display:none"></div>
 
-  <!-- 2. DESEMPENHO -->
-  <section class="mz-sec mz-bloco" id="desempenho">
-    <h2>Como a carteira está indo</h2>
-    <p class="mz-msg" data-draw="msg" data-msg="evolucao" style="display:none"></p>
-    <div class="mz-barra">
-      <div class="mz-chips" role="group" aria-label="Séries no gráfico">
-        <button type="button" class="mz-chip" id="chip-carteira" data-serie="carteira" aria-pressed="true"><i data-cor="0"></i>Carteira</button>
-        <button type="button" class="mz-chip" id="chip-regua" data-serie="regua" aria-pressed="true"><i data-cor="1"></i>Régua</button>
-        <button type="button" class="mz-chip" id="chip-cdi" data-serie="cdi" aria-pressed="true"><i data-cor="2"></i>CDI</button>
-        <button type="button" class="mz-chip" id="chip-ibovespa" data-serie="ibovespa" aria-pressed="false"><i data-cor="3"></i>Ibovespa</button>
-        <button type="button" class="mz-chip" id="chip-imab" data-serie="imab" aria-pressed="false"><i data-cor="4"></i>IMA-B</button>
-        <button type="button" class="mz-chip" id="chip-dolar" data-serie="dolar" aria-pressed="false"><i data-cor="5"></i>Dólar</button>
-        <button type="button" class="mz-chip" id="chip-sp500" data-serie="sp500_reais" aria-pressed="false"><i data-cor="6"></i>Bolsa americana</button>
-      </div>
-      <div class="mz-periodos" role="group" aria-label="Período">
-        <button type="button" class="mz-chip" id="per-24" data-dias="730" aria-pressed="true">24 meses</button>
-        <button type="button" class="mz-chip" id="per-12" data-dias="365" aria-pressed="false">12 meses</button>
-        <button type="button" class="mz-chip" id="per-3" data-dias="92" aria-pressed="false">3 meses</button>
-      </div>
-    </div>
-    <div class="mz-graf" id="grafico" data-draw="grafico" data-source="serie"></div>
-    <div class="mz-legenda" aria-hidden="true"><span><i class="p"></i>Simulação: pesos de hoje aplicados ao passado</span><span><i></i>Real, desde 13/11/2026</span></div>
-    <p class="mz-nota">Base 100 no início do período. Retornos antes do imposto.</p>
-
-    <details class="mz-mais">
-      <summary>Ver detalhes: retorno por período, mês a mês e imposto</summary>
-      <div class="mz-mais-corpo">
-        <p class="mz-comentario" data-draw="comentario" data-source="classes" style="display:none"></p>
-        <div class="mz-tab">
-          <table id="tabela-real" data-source="comparacao" data-row-key="serie">
-            <caption>Real, desde 13/11/2026</caption>
-            <thead><tr><th>Série</th><th>Último dia</th><th>Desde 13/11/26</th><th>Contra o CDI</th><th>% do CDI</th></tr></thead>
-            <tbody data-draw="tabela-real"></tbody>
-          </table>
-        </div>
-        <div class="mz-tab">
-          <table id="tabela-sim" data-source="comparacao" data-row-key="serie">
-            <caption>Simulação, até 13/11/2026</caption>
-            <thead><tr><th>Série</th><th>12 meses</th><th>% do CDI em 12 meses</th><th>24 meses</th><th>Contra o CDI (24 meses)</th><th>Maior queda do pico</th></tr></thead>
-            <tbody data-draw="tabela-sim"></tbody>
-          </table>
-        </div>
-        <p class="mz-nota">Nos 12 meses da simulação, a carteira rendeu <b data-draw="real-ipca" data-source="mensal">—</b> acima do IPCA (nov/25 a out/26). Período real curto não se anualiza: volatilidade e Sharpe do real só com 12 meses de dados.</p>
-
-        <h3>Mês a mês</h3>
-        <p class="mz-msg" data-draw="msg" data-msg="mensal" style="display:none"></p>
-        <div class="mz-tab">
-          <table class="mz-mes" id="tabela-mensal" data-source="mensal" data-row-key="linha">
-            <thead><tr><th>Ano</th><th></th><th>Jan</th><th>Fev</th><th>Mar</th><th>Abr</th><th>Mai</th><th>Jun</th><th>Jul</th><th>Ago</th><th>Set</th><th>Out</th><th>Nov</th><th>Dez</th><th class="ano">No ano</th></tr></thead>
-            <tbody data-draw="mensal-linhas"></tbody>
-          </table>
-        </div>
-        <p class="mz-nota">Retorno de cada mês, em %. Verde: a carteira rendeu mais que o CDI; vermelho: menos. Contorno dourado: real. Novembro de 2026 aparece partido em simulação e real.</p>
-
-        <h3>Antes e depois do imposto</h3>
-        <div class="mz-dois">
-          <div class="mz-tab">
-            <table id="tabela-liquido-real" data-source="liquido" data-row-key="serie">
-              <caption>Real, se resgatado no último dia</caption>
-              <thead><tr><th>Série</th><th>Bruto</th><th>IR estimado</th><th>IOF câmbio</th><th>Líquido</th></tr></thead>
-              <tbody data-draw="liquido-linhas" data-periodo="real"></tbody>
-            </table>
-          </div>
-          <div class="mz-tab">
-            <table id="tabela-liquido-sim" data-source="liquido" data-row-key="serie">
-              <caption>Simulação, 12 meses até 13/11/2026</caption>
-              <thead><tr><th>Série</th><th>Bruto</th><th>IR estimado</th><th>IOF câmbio</th><th>Líquido</th></tr></thead>
-              <tbody data-draw="liquido-linhas" data-periodo="sim12"></tbody>
-            </table>
-          </div>
-        </div>
-        <p class="mz-nota">Estimativa para pessoa física. A LCI/LCA é isenta, o que favorece a carteira contra o CDI tributado.</p>
-        <p class="mz-nota" data-draw="pl-lci" data-source="classes"></p>
-        <p class="mz-nota" data-draw="ate" data-source="serie">—</p>
-      </div>
-    </details>
-  </section>
-
-  <!-- 3. RISCO -->
-  <section class="mz-sec mz-bloco" id="risco">
-    <h2>Quanto risco a carteira correu</h2>
-    <p class="mz-msg" data-draw="msg-risco" data-source="comparacao" style="display:none"></p>
-    <div class="mz-graf mz-queda" id="queda" data-draw="queda" data-source="serie"></div>
-    <p class="mz-nota">Quanto a carteira e a régua estiveram abaixo do seu último pico. O pico recomeça em 13/11/2026, quando a carteira passou a existir. Segue o período escolhido no gráfico de desempenho.</p>
-
-    <details class="mz-mais">
-      <summary>Ver detalhes: retorno contra queda, medidas de risco e estresse</summary>
-      <div class="mz-mais-corpo">
-        <h3>Retorno contra queda, 24 meses <i class="mz-tag sim">simulação</i></h3>
-        <div class="mz-graf mz-disp" id="dispersao" data-draw="dispersao" data-source="comparacao"></div>
-        <p class="mz-nota">Mais para cima e para a esquerda é melhor: mais retorno com menos queda.</p>
-
-        <h3>Medidas de risco <i class="mz-tag sim">simulação</i></h3>
-        <div class="mz-tab">
-          <table class="mz-risco" id="tabela-risco" data-source="risco" data-row-key="chave">
-            <thead><tr><th>Medida</th><th>Carteira</th><th>Régua</th><th>CDI</th><th>Como se calcula</th></tr></thead>
-            <tbody data-draw="risco-linhas"></tbody>
-          </table>
-        </div>
-        <p class="mz-nota">O Sharpe é negativo porque, na simulação, a carteira rendeu menos que o CDI. A margem de erro tem o tamanho do próprio número: dois anos não bastam para separar carteira, régua e CDI.</p>
-
-        <h3>Em momentos de estresse</h3>
-        <p class="mz-msg" data-draw="msg" data-msg="estresse" style="display:none"></p>
-        <div class="mz-tab">
-          <table class="mz-estresse" id="tabela-episodios" data-source="episodios" data-row-key="nome">
-            <caption>Episódios dentro da simulação</caption>
-            <thead><tr><th>Episódio</th><th>Carteira</th><th>Régua</th><th>CDI</th><th>Ibovespa</th><th>Dólar</th><th>Prefixado 2 anos</th><th>O que mais tirou</th><th>O que mais somou</th></tr></thead>
-            <tbody data-draw="episodios-linhas"></tbody>
-          </table>
-        </div>
-        <div class="mz-tab">
-          <table class="mz-estresse" id="tabela-choques" data-source="choques" data-row-key="nome">
-            <caption>Choques hipotéticos, efeito imediato no valor</caption>
-            <thead><tr><th>Choque</th><th>Carteira</th><th>Régua</th><th>Diferença</th><th>Classe que mais pesa</th></tr></thead>
-            <tbody data-draw="choques-linhas"></tbody>
-          </table>
-        </div>
-        <p class="mz-nota">Choques calculados pela duration de hoje, beta 1 nas bolsas e câmbio sem hedge. Aproximação linear: sem carrego nem correlação.</p>
-      </div>
-    </details>
-  </section>
-
-  <!-- 4. CONTRA A RÉGUA -->
-  <section class="mz-sec mz-bloco" id="diferenca">
-    <h2>De onde vem a diferença para a régua</h2>
-    <p class="mz-msg" data-draw="msg" data-msg="atribuicao" style="display:none"></p>
-    <div class="mz-alterna" id="atr-periodos" role="group" aria-label="Período">
-      <button type="button" class="mz-chip" data-periodo="sim12" aria-pressed="true">12 meses até 13/11/26 · simulação</button>
-      <button type="button" class="mz-chip" data-periodo="real" aria-pressed="false">Desde 13/11/26 · real</button>
-    </div>
-    <div class="mz-graf mz-atr" id="atribuicao" data-draw="atribuicao" data-source="atribuicao"></div>
-    <p class="mz-nota">Em pontos percentuais. Uma classe só pesa quando a carteira tem mais ou menos dela que a régua.</p>
-
-    <details class="mz-mais">
-      <summary>Ver detalhes: as classes e a liquidez</summary>
-      <div class="mz-mais-corpo">
-        <div class="mz-tab">
-          <table id="tabela-classes" data-source="classes" data-row-key="classe">
-            <thead><tr><th data-field="classe">Classe</th><th data-field="carteira">Carteira %</th><th data-field="peso_hoje">Peso hoje %</th><th data-field="regua">Régua %</th><th data-field="desvio">Desvio</th><th data-field="ret_dia">Último dia (real)</th><th data-field="ret_ativa">Desde 13/11/26 (real)</th><th data-field="ret_12m_sim">12 meses até 13/11/26 (simulação)</th><th data-field="como">Como medimos</th></tr></thead>
-            <tbody data-draw="classes-linhas"></tbody>
-          </table>
-        </div>
-        <p class="mz-nota">Os pesos andam com os preços e voltam ao alvo no 1º dia útil de cada mês. Nas classes em dólar, o retorno em reais aparece dividido em retorno em dólar e câmbio.</p>
-        <h3>Em quanto tempo cada parte vira caixa</h3>
-        <div class="mz-graf mz-liq" id="liquidez" data-draw="liquidez" data-source="classes"></div>
-        <p class="mz-nota">Até 2 dias úteis: Tesouro Direto, ações e Treasuries. Até 30 dias: crédito e bolsa global, por fundo. Depois da carência de 6 meses: LCI/LCA (Resolução CMN 5.215/2025).</p>
-      </div>
-    </details>
-  </section>
-
-  <!-- 5. CENÁRIOS -->
+  <!-- 2. MERCADO HOJE -->
   <section class="mz-sec mz-bloco" id="cenarios">
-    <h2>Em que cenário o mercado está</h2>
+    <h2>Em que cenário o mercado está hoje</h2>
     <p class="mz-msg" data-draw="msg" data-msg="gatilhos" style="display:none"></p>
     <div class="mz-graf mz-sinais" id="sinais" data-draw="sinais" data-source="premissas"></div>
     <p class="mz-nota">Cada linha põe um sinal de hoje na escala dos três cenários do case. Mostra distância, não probabilidade.</p>
@@ -375,32 +272,201 @@
       <div class="mz-mais-corpo">
         <div class="mz-dois">
           <div class="mz-card" id="gatilho-termo">
-            <span class="mz-rot">Juro do prefixado de 2 anos: ~14,0 põe o cenário base no preço; acima de ~15,1, a deterioração</span>
+            <span class="mz-rot">Juro do prefixado de 2 anos: ~14,0 põe o cenário mais provável no preço; acima de ~15,1, a deterioração</span>
             <span class="mz-num" data-draw="termo-ult" data-source="termo" data-campo="pre_2a">—</span>
-            <div class="mz-mini" data-draw="termo-linha" data-source="termo" role="img" aria-label="Juro do prefixado de 2 anos nos últimos seis meses, com as linhas do cenário base e da deterioração"></div>
+            <div class="mz-mini" data-draw="termo-linha" data-source="termo" role="img" aria-label="Juro do prefixado de 2 anos nos últimos seis meses"></div>
           </div>
           <div class="mz-card" id="gatilho-termo-1a1a">
             <span class="mz-rot">Juro de 1 ano daqui a 1 ano, contra a Selic de cada cenário</span>
             <span class="mz-num" data-draw="termo-ult" data-source="termo" data-campo="fwd_1a1a">—</span>
-            <div class="mz-mini" data-draw="termo-mini" data-source="termo" data-campo="fwd_1a1a" data-refs="12.0:ajuste 12,0|13.5:base 13,5|15.5:deterioração 15,5" role="img" aria-label="Juro a termo de 1 ano daqui a 1 ano nos últimos seis meses"></div>
+            <div class="mz-mini" data-draw="termo-mini" data-source="termo" data-campo="fwd_1a1a" data-refs="12.0:ajuste 12,0|13.5:apresentado 13,5|15.5:deterioração 15,5" role="img" aria-label="Juro a termo de 1 ano daqui a 1 ano nos últimos seis meses"></div>
           </div>
           <div class="mz-card" id="gatilho-inflacao">
             <span class="mz-rot">Inflação implícita de 3 anos, contra o IPCA de cada cenário</span>
             <span class="mz-num" data-draw="termo-ult" data-source="termo" data-campo="infl_impl_3a">—</span>
-            <div class="mz-mini" data-draw="termo-mini" data-source="termo" data-campo="infl_impl_3a" data-refs="4.6:ajuste 4,6|5.5:base 5,5|7.1:deterioração 7,1" role="img" aria-label="Inflação implícita de 3 anos nos últimos seis meses"></div>
+            <div class="mz-mini" data-draw="termo-mini" data-source="termo" data-campo="infl_impl_3a" data-refs="4.6:ajuste 4,6|5.5:apresentado 5,5|7.1:deterioração 7,1" role="img" aria-label="Inflação implícita de 3 anos nos últimos seis meses"></div>
           </div>
         </div>
         <p class="mz-nota">Taxas do Tesouro Direto. O juro a termo e a inflação implícita incluem prêmio de risco, por isso tendem a ficar acima do que se espera.</p>
         <h3>Premissas do case contra o Focus</h3>
         <div class="mz-prem-lista" data-draw="premissas" data-source="premissas"></div>
-        <p class="mz-nota"><i class="mz-marca" style="color: var(--serie-0)">●</i> mediana do Focus · faixa dourada: da menor à maior resposta · <i class="mz-marca" style="color: var(--serie-1)">◇</i> o que já aconteceu · traços: os cenários do case. No dólar, a deterioração com o mundo em aversão chega a R$ 7,48.</p>
+        <p class="mz-nota"><i class="mz-marca" style="color: var(--serie-0)">●</i> mediana do Focus · faixa dourada: da menor à maior resposta · <i class="mz-marca" style="color: var(--serie-1)">◇</i> o que já aconteceu · traços: os cenários do case.</p>
         <h3>Próximos eventos</h3>
         <ol class="mz-cal" data-draw="calendario"></ol>
       </div>
     </details>
   </section>
 
-  <!-- 6. DADOS E MÉTODO -->
+  <!-- 3. ACOMPANHAMENTO -->
+  <section class="mz-sec mz-bloco" id="acompanhamento">
+    <h2>Como está indo desde 13/11/2026</h2>
+    <p class="mz-msg" data-draw="msg-trilha" data-source="serie" style="display:none"></p>
+    <div class="mz-alterna" id="trilha-zoom" role="group" aria-label="Horizonte do gráfico">
+      <button type="button" class="mz-chip" data-zoom="agora" aria-pressed="true">Até agora</button>
+      <button type="button" class="mz-chip" data-zoom="ano" aria-pressed="false">Os 12 meses</button>
+    </div>
+    <div class="mz-graf mz-trilha" id="trilha" data-draw="trilha" data-source="serie"></div>
+    <p class="mz-nota">Retorno acumulado desde 13/11/2026. A faixa dourada vai do cenário de ajuste ao de deterioração; o tracejado é o caminho esperado no cenário mais provável.</p>
+
+    <details class="mz-mais">
+      <summary>Ver detalhes: cada série, cada classe e o último dia</summary>
+      <div class="mz-mais-corpo">
+        <p class="mz-comentario" data-draw="comentario" data-source="classes" style="display:none"></p>
+        <div class="mz-tab">
+          <table id="tabela-real" data-source="comparacao" data-row-key="serie">
+            <thead><tr><th>Série</th><th>Último dia</th><th>Desde 13/11/26</th><th>Contra o CDI</th><th>% do CDI</th></tr></thead>
+            <tbody data-draw="tabela-real"></tbody>
+          </table>
+        </div>
+        <h3>Cada classe</h3>
+        <div class="mz-tab">
+          <table id="tabela-classes" data-source="classes" data-row-key="classe">
+            <thead><tr><th data-field="classe">Classe</th><th data-field="carteira">Peso-alvo %</th><th data-field="peso_hoje">Peso hoje %</th><th data-field="regua">Régua %</th><th data-field="desvio">Desvio</th><th data-field="ret_dia">Último dia</th><th data-field="ret_ativa">Desde 13/11/26</th><th data-field="ret_12m_sim">12 meses até 13/11/26 (simulação)</th><th data-field="como">Como medimos</th></tr></thead>
+            <tbody data-draw="classes-linhas"></tbody>
+          </table>
+        </div>
+        <p class="mz-nota">Os pesos andam com os preços e voltam ao alvo no 1º dia útil de cada mês. Nas classes em dólar, o retorno em reais aparece dividido em retorno em dólar e câmbio.</p>
+        <h3>De onde vem a diferença para a régua</h3>
+        <div class="mz-alterna" id="atr-periodos" role="group" aria-label="Período">
+          <button type="button" class="mz-chip" data-periodo="real" aria-pressed="true">Desde 13/11/26</button>
+          <button type="button" class="mz-chip" data-periodo="sim12" aria-pressed="false">12 meses até 13/11/26 · simulação</button>
+        </div>
+        <div class="mz-graf mz-atr" id="atribuicao" data-draw="atribuicao" data-source="atribuicao"></div>
+        <p class="mz-nota">Em pontos percentuais. Uma classe só pesa quando a carteira tem mais ou menos dela que a régua.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- 4. A CARTEIRA -->
+  <section class="mz-sec mz-bloco" id="carteira">
+    <h2>O que a carteira tem, e por quê</h2>
+    <p class="mz-msg">Três escolhas contra a régua: mais prefixado curto, mais Treasuries como seguro e menos bolsa e juro longo.</p>
+    <div class="mz-tab mz-aloc-tab">
+      <table class="mz-aloc" id="tabela-aloc" data-source="tese">
+        <thead><tr><th>Classe</th><th class="mz-aloc-barras"><span class="mz-leg-c">Carteira</span> <span class="mz-leg-r">Régua</span></th><th>Contra a régua</th></tr></thead>
+        <tbody data-draw="aloc-linhas"></tbody>
+      </table>
+    </div>
+
+    <details class="mz-mais">
+      <summary>Ver detalhes: retorno de cada classe por cenário, veículo e liquidez</summary>
+      <div class="mz-mais-corpo">
+        <div class="mz-tab">
+          <table class="mz-cen-classes" id="tabela-cen-classes" data-source="tese">
+            <thead><tr><th>Classe</th><th>Ajuste crível (10%)</th><th>Ajuste já apresentado (60%)</th><th>Deterioração (30%)</th><th>Média</th></tr></thead>
+            <tbody data-draw="cen-classes-linhas"></tbody>
+          </table>
+        </div>
+        <p class="mz-nota">Retorno de 12 meses, em reais, antes do IR. Verde: acima do CDI do cenário; vermelho: abaixo.</p>
+        <div class="mz-tab">
+          <table id="tabela-veiculos" data-source="tese">
+            <thead><tr><th>Classe</th><th>Como se compra</th><th>Liquidez</th></tr></thead>
+            <tbody data-draw="veiculos-linhas"></tbody>
+          </table>
+        </div>
+        <h3>Em quanto tempo cada parte vira caixa</h3>
+        <div class="mz-graf mz-liq" id="liquidez" data-draw="liquidez" data-source="classes"></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- 5. RISCOS -->
+  <section class="mz-sec mz-bloco" id="riscos">
+    <h2>O que acontece num choque</h2>
+    <p class="mz-msg" data-draw="msg-choques" data-source="choques" style="display:none"></p>
+    <div class="mz-graf mz-choq" id="choques-graf" data-draw="choques-graf" data-source="choques"></div>
+    <p class="mz-nota">Efeito imediato no valor, em pontos percentuais. Aproximação linear pela duration de hoje, beta 1 nas bolsas e câmbio sem hedge.</p>
+
+    <details class="mz-mais">
+      <summary>Ver detalhes: crises passadas e o risco em 10 anos</summary>
+      <div class="mz-mais-corpo">
+        <h3>Nas crises dos últimos 10 anos, com os pesos de hoje</h3>
+        <div class="mz-tab">
+          <table id="tabela-historia" data-source="tese">
+            <thead><tr><th>Episódio</th><th>Carteira</th><th>Régua</th><th>Diferença</th></tr></thead>
+            <tbody data-draw="historia-linhas"></tbody>
+          </table>
+        </div>
+        <div class="mz-tab">
+          <table id="tabela-historia-risco" data-source="tese">
+            <thead><tr><th>Dez/2016 a out/2026</th><th>Carteira</th><th>Régua</th><th>CDI</th></tr></thead>
+            <tbody data-draw="historia-risco-linhas"></tbody>
+          </table>
+        </div>
+        <p class="mz-nota">Backtest do case: 119 meses, pesos de hoje rebalanceados todo mês, sem custos.</p>
+        <h3>Os choques, um a um</h3>
+        <div class="mz-tab">
+          <table class="mz-estresse" id="tabela-choques" data-source="choques" data-row-key="nome">
+            <thead><tr><th>Choque</th><th>Carteira</th><th>Régua</th><th>Diferença</th><th>Classe que mais pesa</th></tr></thead>
+            <tbody data-draw="choques-linhas"></tbody>
+          </table>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- 6. O PASSADO, RECOLHIDO -->
+  <section class="mz-sec mz-bloco" id="passado">
+    <h2>Como teria se comportado no passado</h2>
+    <p class="mz-msg" data-draw="msg-passado" data-source="comparacao" style="display:none"></p>
+
+    <details class="mz-mais">
+      <summary>Ver a simulação dos últimos 24 meses</summary>
+      <div class="mz-mais-corpo">
+        <div class="mz-barra">
+          <div class="mz-chips" role="group" aria-label="Séries no gráfico">
+            <button type="button" class="mz-chip" id="chip-carteira" data-serie="carteira" aria-pressed="true"><i data-cor="0"></i>Carteira</button>
+            <button type="button" class="mz-chip" id="chip-regua" data-serie="regua" aria-pressed="true"><i data-cor="1"></i>Régua</button>
+            <button type="button" class="mz-chip" id="chip-cdi" data-serie="cdi" aria-pressed="true"><i data-cor="2"></i>CDI</button>
+            <button type="button" class="mz-chip" id="chip-ibovespa" data-serie="ibovespa" aria-pressed="false"><i data-cor="3"></i>Ibovespa</button>
+            <button type="button" class="mz-chip" id="chip-imab" data-serie="imab" aria-pressed="false"><i data-cor="4"></i>IMA-B</button>
+            <button type="button" class="mz-chip" id="chip-dolar" data-serie="dolar" aria-pressed="false"><i data-cor="5"></i>Dólar</button>
+            <button type="button" class="mz-chip" id="chip-sp500" data-serie="sp500_reais" aria-pressed="false"><i data-cor="6"></i>Bolsa americana</button>
+          </div>
+          <div class="mz-periodos" role="group" aria-label="Período">
+            <button type="button" class="mz-chip" id="per-24" data-dias="730" aria-pressed="true">24 meses</button>
+            <button type="button" class="mz-chip" id="per-12" data-dias="365" aria-pressed="false">12 meses</button>
+            <button type="button" class="mz-chip" id="per-3" data-dias="92" aria-pressed="false">3 meses</button>
+          </div>
+        </div>
+        <div class="mz-graf" id="grafico" data-draw="grafico" data-source="serie"></div>
+        <div class="mz-legenda" aria-hidden="true"><span><i class="p"></i>Simulação: pesos de hoje aplicados ao passado</span><span><i></i>Real, desde 13/11/2026</span></div>
+        <div class="mz-graf mz-queda" id="queda" data-draw="queda" data-source="serie"></div>
+        <p class="mz-nota">Base 100 no início do período. Embaixo, quanto cada uma esteve abaixo do seu último pico.</p>
+        <div class="mz-tab">
+          <table id="tabela-sim" data-source="comparacao" data-row-key="serie">
+            <caption>Simulação, até 13/11/2026</caption>
+            <thead><tr><th>Série</th><th>12 meses</th><th>% do CDI em 12 meses</th><th>24 meses</th><th>Contra o CDI (24 meses)</th><th>Maior queda do pico</th></tr></thead>
+            <tbody data-draw="tabela-sim"></tbody>
+          </table>
+        </div>
+        <h3>Mês a mês</h3>
+        <div class="mz-tab">
+          <table class="mz-mes" id="tabela-mensal" data-source="mensal" data-row-key="linha">
+            <thead><tr><th>Ano</th><th></th><th>Jan</th><th>Fev</th><th>Mar</th><th>Abr</th><th>Mai</th><th>Jun</th><th>Jul</th><th>Ago</th><th>Set</th><th>Out</th><th>Nov</th><th>Dez</th><th class="ano">No ano</th></tr></thead>
+            <tbody data-draw="mensal-linhas"></tbody>
+          </table>
+        </div>
+        <p class="mz-nota">Retorno de cada mês, em %. Verde: a carteira rendeu mais que o CDI; vermelho: menos. Contorno dourado: real.</p>
+        <h3>Medidas de risco</h3>
+        <div class="mz-tab">
+          <table class="mz-risco" id="tabela-risco" data-source="risco" data-row-key="chave">
+            <thead><tr><th>Medida</th><th>Carteira</th><th>Régua</th><th>CDI</th><th>Como se calcula</th></tr></thead>
+            <tbody data-draw="risco-linhas"></tbody>
+          </table>
+        </div>
+        <h3>Crises dentro dos 24 meses</h3>
+        <div class="mz-tab">
+          <table class="mz-estresse" id="tabela-episodios" data-source="episodios" data-row-key="nome">
+            <thead><tr><th>Episódio</th><th>Carteira</th><th>Régua</th><th>CDI</th><th>Ibovespa</th><th>Dólar</th><th>Prefixado 2 anos</th><th>O que mais tirou</th><th>O que mais somou</th></tr></thead>
+            <tbody data-draw="episodios-linhas"></tbody>
+          </table>
+        </div>
+      </div>
+    </details>
+  </section>
+
+  <!-- 7. DADOS E MÉTODO -->
   <section class="mz-sec mz-bloco mz-rodape" id="dados">
     <h2>Dados e método</h2>
     <details class="mz-dobra">
@@ -415,6 +481,7 @@
     </details>
     <details class="mz-dobra" id="metodo">
       <summary>Como o painel é feito</summary>
+      <p><b>A tese.</b> Os retornos esperados, as chances dos cenários (Brasil 10/60/30; mundo 50/25/25; correlação 0,3), o retorno de cada classe e o backtest de 10 anos vêm do modelo do case, de 16/11/2026. São fixos: só mudam se o case mudar.</p>
       <p><b>Real e simulação.</b> A carteira passou a existir em 13/11/2026, a data de corte do case. O que vem antes é simulação: os pesos de hoje, definidos em 16/11/2026, aplicados aos 24 meses anteriores. Escolher os pesos conhecendo o passado favorece a simulação; por isso ela é informação suplementar. Nenhum número do painel junta os dois períodos: o real é medido só desde 13/11/2026, e a simulação, só até 13/11/2026. O gráfico mostra os dois na mesma linha, pontilhada na simulação, com uma marca na data de corte.</p>
     <p><b>Períodos curtos.</b> Retorno de menos de um ano não é anualizado. Volatilidade, Sharpe e outras medidas de risco do período real só aparecem com 12 meses de dados reais.</p>
     <p><b>Carteira e régua.</b> A régua é a carteira moderada mediana de C6, Daycoval e Genial; a carteira tem os desvios com tese (mais prefixado curto, crédito e Treasuries de 10 anos; menos bolsa; sem IPCA+ longo). Pesos fixos, rebalanceados no primeiro dia útil de cada mês, sem custo de transação. Taxa livre de risco: CDI.</p>
@@ -433,13 +500,13 @@
       <summary>Glossário</summary>
       <dl class="mz-glossario">
         <dt>Régua</dt><dd>A carteira moderada mediana de C6, Daycoval e Genial. É o padrão de comparação da carteira.</dd>
-        <dt>Real e simulação</dt><dd>A carteira passou a existir em 13/11/2026; o que vem depois é real. Antes disso, simulação: os pesos de hoje aplicados ao passado. Os dois nunca se somam.</dd>
+        <dt>Cenários</dt><dd>Ajuste crível (10% de chance): um pacote fiscal novo e maior. Ajuste já apresentado (60%): o PLP 299 passa, mas não segura a dívida. Deterioração (30%): a dívida piora e o dólar sobe.</dd>
+        <dt>Real e simulação</dt><dd>A carteira passou a existir em 13/11/2026; o que vem depois é real. Antes disso, simulação: os pesos de hoje aplicados ao passado.</dd>
         <dt>p.p. (ponto percentual)</dt><dd>A diferença entre dois percentuais: +0,43% contra +0,15% é +0,28 p.p.</dd>
         <dt>% do CDI</dt><dd>O retorno dividido pelo do CDI no mesmo período: 100% é empatar com o CDI.</dd>
         <dt>Maior queda do pico</dt><dd>A maior perda entre um pico e o ponto mais baixo depois dele (em inglês, drawdown).</dd>
-        <dt>Volatilidade</dt><dd>Quanto o retorno oscila de um dia para o outro, em termos anuais.</dd>
-        <dt>Sharpe</dt><dd>Retorno acima do CDI para cada unidade de oscilação. Negativo quando a série rende menos que o CDI.</dd>
-        <dt>Tracking error</dt><dd>Quanto a carteira se afasta da régua, dia a dia, em termos anuais.</dd>
+        <dt>Volatilidade</dt><dd>Quanto o retorno oscila, em termos anuais.</dd>
+        <dt>Sharpe</dt><dd>Retorno acima do CDI para cada unidade de oscilação.</dd>
         <dt>Duration</dt><dd>Quanto um título perde, em %, para cada 1 p.p. de alta do juro.</dd>
         <dt>Focus</dt><dd>Pesquisa semanal do Banco Central com as projeções de cerca de 150 instituições.</dd>
         <dt>Juro a termo</dt><dd>O juro de um período futuro que já está no preço dos títulos de hoje.</dd>
@@ -788,7 +855,7 @@
     const x = d3.scaleUtc().domain(d3.extent(pts, (p) => p.d)).range([m.l, W - m.r]);
     const y = d3.scaleLinear().domain([Math.min(13, d3.min(pts, (p) => p.v)), Math.max(16.4, d3.max(pts, (p) => p.v))]).nice().range([H - m.b, m.t]);
     const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`);
-    [[REALIZAR, 'base 14,0', 'var(--color-ok)'], [SAIR, 'deterioração 15,1', 'var(--color-bad)']].forEach(([v, rot, cor]) => {
+    [[REALIZAR, 'apresentado 14,0', 'var(--color-ok)'], [SAIR, 'deterioração 15,1', 'var(--color-bad)']].forEach(([v, rot, cor]) => {
       svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(v)).attr('y2', y(v)).style('stroke', cor).style('stroke-dasharray', '4 3');
       svg.append('text').attr('x', W - m.r + 4).attr('y', y(v) + 4).style('fill', cor).text(rot);
     });
@@ -1049,7 +1116,7 @@
         svg.append('rect').attr('x', x(r.focus_min)).attr('width', Math.max(2, x(r.focus_max) - x(r.focus_min))).attr('y', yb - 5).attr('height', 10).attr('rx', 5)
           .style('fill', 'var(--serie-0)').style('opacity', 0.22);
         let fimAnterior = -Infinity;
-        [['Ajuste', r.ajuste], ['Base', r.base], ['Deterioração', r.deterioracao]].forEach(([nome, v]) => {
+        [['Ajuste', r.ajuste], ['Apresentado', r.base], ['Deterioração', r.deterioracao]].forEach(([nome, v]) => {
           svg.append('line').attr('x1', x(v)).attr('x2', x(v)).attr('y1', yb - 9).attr('y2', yb + 9).style('stroke', 'var(--cds-chart-reference)').style('stroke-width', 1.5);
           const tx = svg.append('text').attr('x', x(v)).attr('y', yb + 24).attr('text-anchor', 'middle').text(nome + ' ' + L.format(',.2f')(v));
           const larg = Math.max(tx.node().getComputedTextLength() || 0, (nome.length + 5) * 6.6);
@@ -1204,7 +1271,7 @@
       const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
         .attr('aria-label', 'Posição de cada sinal de mercado entre os cenários de ajuste, base e deterioração do case');
       const cores = ['var(--color-ok)', 'var(--cds-chart-reference)', 'var(--color-bad)'];
-      ['Ajuste', 'Base', 'Deterioração'].forEach((n, i) => {
+      ['Ajuste crível', 'Já apresentado', 'Deterioração'].forEach((n, i) => {
         svg.append('text').attr('x', x(i)).attr('y', 12).attr('text-anchor', 'middle').style('fill', cores[i]).style('font-weight', 600).text(n);
         svg.append('line').attr('x1', x(i)).attr('x2', x(i)).attr('y1', m.t - 4).attr('y2', H - m.b).style('stroke', cores[i]).style('stroke-dasharray', '2 3').style('opacity', 0.7);
       });
@@ -1222,8 +1289,8 @@
 
     // ---- liquidez: em quanto tempo cada parte da carteira vira caixa
     const BALDE = { 'Tesouro Selic': 0, 'Prefixado': 0, 'IPCA+ curto': 0, 'IPCA+ longo': 0, 'Ações Brasil': 0, 'Treasury 2 anos': 0, 'Treasury 10 anos': 0,
-      'Crédito high grade': 1, 'Bolsa global sem hedge': 1, 'LCI/LCA': 2 };
-    const BALDES = ['Até 2 dias úteis', 'Até 30 dias', 'Depois da carência'];
+      'Bolsa global sem hedge': 0, 'Crédito high grade': 1, 'LCI/LCA': 2 };
+    const BALDES = ['Até 5 dias úteis', 'Até 30 dias', 'LCI/LCA: escada de 6 a 24 meses'];
     dash.draw('liquidez', (el) => {
       const c = dash.data('classes');
       el.replaceChildren();
@@ -1336,7 +1403,7 @@
         const ss = sinais();
         if (ss.length) {
           const n = [0, 1, 2].map((k) => ss.filter((s) => s.perto === k).length);
-          const nomes = ['do ajuste', 'da base', 'da deterioração'];
+          const nomes = ['do ajuste crível', 'do ajuste já apresentado', 'da deterioração'];
           const ordem = [0, 1, 2].filter((k) => n[k]).sort((p, q) => n[q] - n[p]);
           const partes = ordem.map((k, j) => (j === 0 ? n[k] + ' dos ' + ss.length + ' sinais ' + (n[k] === 1 ? 'está' : 'estão') + ' mais perto ' : n[k] + ' ') + nomes[k]);
           t = partes.slice(0, -1).join(', ') + (partes.length > 1 ? ' e ' : '') + partes[partes.length - 1] + '. Os sinais do Tesouro incluem prêmio de risco; os do Focus, não.';
@@ -1347,7 +1414,7 @@
     });
 
     // ---- modo apresentação: ?apresentacao=1, quatro paradas; setas ou espaço avançam, Esc sai
-    const PARADAS = [['topo', 'Resumo'], ['desempenho', 'Desempenho'], ['risco', 'Risco'], ['diferenca', 'Contra a régua'], ['cenarios', 'Cenários']];
+    const PARADAS = [['topo', 'A tese'], ['cenarios', 'Mercado hoje'], ['acompanhamento', 'Acompanhamento'], ['carteira', 'A carteira'], ['riscos', 'Riscos']];
     if (new URLSearchParams(location.search).has('apresentacao')) {
       document.body.classList.add('mz-apres');
       const nav = document.createElement('nav'); nav.id = 'mz-apres'; nav.setAttribute('aria-label', 'Modo apresentação');
@@ -1464,5 +1531,332 @@
       }), { rootMargin: '-30% 0px -60% 0px' });
       links.forEach((l) => { const alvo = document.querySelector(l.getAttribute('href')); if (alvo) io.observe(alvo); });
     }
+  })();
+</script>
+
+<script>
+  // ---------- versão 3 (21/11/2026): a página parte da tese (retorno esperado por cenário) e não do passado
+  (() => {
+    const L = MZR.loc;
+    const f1 = (v) => (v == null || !isFinite(v) ? '—' : (v < 0 ? '−' : '') + L.format(',.1f')(Math.abs(v)));
+    const p1 = (v) => (v == null ? '—' : f1(v) + '%');
+    const sp1 = (v, suf = '') => { if (v == null || !isFinite(v)) return '—'; const r = Math.round(v * 10) / 10; return (r > 0 ? '+' : r < 0 ? '−' : '') + L.format(',.1f')(Math.abs(r)) + suf; };
+    const sn2 = (v, suf = '') => { if (v == null || !isFinite(v)) return '—'; const r = Math.round(v * 100) / 100; return (r > 0 ? '+' : r < 0 ? '−' : '') + L.format(',.2f')(Math.abs(r)) + suf; };
+    const tese = () => { const d = dash.data('tese'); return d.status === 'ok' && d.data.length ? d.data[0] : null; };
+    const cel = (tr, txt, cls) => { const c = document.createElement('td'); c.textContent = txt; if (cls) c.className = cls; tr.append(c); return c; };
+    const dia = (s) => new Date(s + 'T00:00:00Z');
+    const COR = { carteira: 'var(--serie-0)', regua: 'var(--serie-1)', cdi: 'var(--serie-2)' };
+    // de qual cenário o mercado está mais perto hoje (maioria dos sinais; empate = nenhum)
+    const cenarioHoje = () => {
+      const ss = MZR.sinais ? MZR.sinais() : [];
+      if (!ss.length) return null;
+      const n = [0, 1, 2].map((k) => ss.filter((x) => x.perto === k).length), mx = Math.max(...n);
+      return n.filter((x) => x === mx).length === 1 ? n.indexOf(mx) : null;
+    };
+
+    // ---- o gráfico da tese: um ponto por série em cada cenário, com os números ao lado
+    dash.draw('tese', (el) => {
+      const T = tese();
+      el.replaceChildren();
+      if (!T) return;
+      const linhas = T.cenarios.map((c) => ({ ...c, rot: c.nome, sub: c.chance + '% de chance' }))
+        .concat([{ ...T.media, rot: 'Média pelas chances', sub: 'o retorno esperado', media: true }]);
+      const hoje = cenarioHoje();
+      const W = Math.max(280, el.clientWidth), estreito = W < 640;
+      const lh = estreito ? 74 : 52, cab = 26;
+      const m = { l: estreito ? 8 : 230, r: estreito ? 8 : 250 };
+      const H = cab + linhas.length * lh + 10;
+      const vals = linhas.flatMap((r) => [r.carteira, r.regua, r.cdi]);
+      const x = d3.scaleLinear().domain([Math.floor(d3.min(vals) - 0.3), Math.ceil(d3.max(vals) + 0.3)]).range([m.l + 10, W - m.r - 10]);
+      const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+        .attr('aria-label', 'Retorno esperado em 12 meses da carteira, da régua e do CDI em cada cenário: ' + linhas.map((r) => r.rot + ', carteira ' + p1(r.carteira)).join('; '));
+      // cabeçalho: legenda das três séries; no desktop, sobre as colunas de números
+      const cols = [['carteira', 'Carteira'], ['regua', 'Régua'], ['cdi', 'CDI']];
+      if (!estreito) {
+        cols.forEach(([k, n], i) => {
+          const cx = W - m.r + 40 + i * 76;
+          svg.append('circle').attr('cx', cx - 26).attr('cy', 10).attr('r', 5).style('fill', k === 'cdi' ? 'var(--color-panel)' : COR[k]).style('stroke', COR[k]).style('stroke-width', 2);
+          svg.append('text').attr('x', cx - 18).attr('y', 14).style('fill', 'var(--color-fg)').style('font-weight', k === 'carteira' ? 600 : 400).text(n);
+        });
+      } else {
+        let lx = 0;
+        cols.forEach(([k, n]) => {
+          svg.append('circle').attr('cx', lx + 5).attr('cy', 10).attr('r', 5).style('fill', k === 'cdi' ? 'var(--color-panel)' : COR[k]).style('stroke', COR[k]).style('stroke-width', 2);
+          const t = svg.append('text').attr('x', lx + 14).attr('y', 14).style('fill', 'var(--color-fg)').text(n);
+          lx += 14 + (t.node().getComputedTextLength() || n.length * 7) + 18;
+        });
+      }
+      linhas.forEach((r, i) => {
+        const yy = cab + i * lh, yb = estreito ? yy + 42 : yy + lh / 2;
+        if (r.media) svg.append('line').attr('x1', 0).attr('x2', W).attr('y1', yy + 2).attr('y2', yy + 2).style('stroke', 'var(--color-border-line)');
+        if (i === hoje) svg.append('rect').attr('x', 0).attr('y', yy + 4).attr('width', W).attr('height', lh - 8).attr('rx', 8).style('fill', 'var(--serie-0)').style('opacity', 0.09);
+        // nome e chance
+        svg.append('text').attr('x', estreito ? 0 : 12).attr('y', estreito ? yy + 14 : yb - 2).style('fill', 'var(--color-fg)').style('font-size', '14px').style('font-weight', r.media ? 600 : 500).text(r.rot);
+        const st = svg.append('text').attr('x', estreito ? 0 : 12).attr('y', estreito ? yy + 18 : yb + 15).attr('dx', estreito ? 0 : 0);
+        if (estreito) st.attr('x', 0).attr('y', yy + 64);
+        st.text(r.sub + (i === hoje ? ' · mais perto do mercado hoje' : '')).style('fill', i === hoje ? 'var(--serie-0)' : null).style('font-weight', i === hoje ? 600 : null);
+        // trilho e pontos
+        svg.append('line').attr('x1', x.range()[0] - 8).attr('x2', x.range()[1] + 8).attr('y1', yb).attr('y2', yb).style('stroke', 'var(--cds-chart-grid)').style('stroke-width', 4).style('stroke-linecap', 'round');
+        ['regua', 'cdi', 'carteira'].forEach((k) => {
+          svg.append('circle').attr('cx', x(r[k])).attr('cy', yb).attr('r', k === 'carteira' ? 8 : 6)
+            .style('fill', k === 'cdi' ? 'var(--color-panel)' : COR[k]).style('stroke', k === 'carteira' ? 'var(--color-panel)' : COR[k]).style('stroke-width', 2);
+        });
+        if (estreito) {
+          svg.append('text').attr('x', x(r.carteira)).attr('y', yb - 13).attr('text-anchor', 'middle').style('fill', 'var(--color-fg)').style('font-weight', 600).text(p1(r.carteira));
+        } else {
+          cols.forEach(([k], j) => svg.append('text').attr('x', W - m.r + 40 + j * 76 + 30).attr('y', yb + 5).attr('text-anchor', 'end')
+            .style('fill', 'var(--color-fg)').style('font-size', k === 'carteira' ? '16px' : '14px').style('font-weight', k === 'carteira' ? 600 : 400).text(p1(r[k])));
+        }
+      });
+      if (!estreito) {
+        svg.append('g').attr('transform', `translate(0,${H - 2})`);
+      }
+    });
+
+    // ---- três fatos da tese, sob o gráfico
+    dash.draw('tese-fatos', (el) => {
+      const T = tese();
+      el.replaceChildren();
+      if (!T) return;
+      const fatos = [
+        ['Depois do IR', p1(T.media.carteira_liq), 'contra ' + p1(T.media.selic_liq) + ' do Tesouro Selic e ' + p1(T.media.regua_liq) + ' da régua'],
+        ['Chance de perder do CDI', '~' + T.perde_cdi_chance + '%', 'no ajuste crível ou com inflação alta nos EUA'],
+        ['Maior queda em 10 anos', p1(T.historia.carteira.perda_max), 'contra ' + p1(T.historia.regua.perda_max) + ' da régua, com os pesos de hoje'],
+      ];
+      fatos.forEach(([rot, num, sub]) => {
+        const d = document.createElement('div'); d.className = 'mz-n';
+        const a = document.createElement('span'); a.className = 'mz-rot'; a.textContent = rot;
+        const b = document.createElement('span'); b.className = 'mz-num'; b.textContent = num;
+        const c = document.createElement('span'); c.className = 'mz-sub'; c.textContent = sub;
+        d.append(a, b, c); el.append(d);
+      });
+    });
+
+    // ---- as nove combinações
+    dash.draw('comb-linhas', (tb) => {
+      const T = tese();
+      tb.replaceChildren();
+      if (!T) return;
+      const cab = document.createElement('tr');
+      ['Brasil ↓ · Mundo →', ...T.mundos, 'CDI'].forEach((t) => { const th = document.createElement('th'); th.textContent = t; cab.append(th); });
+      tb.append(cab);
+      T.cenarios.forEach((c, i) => {
+        const tr = document.createElement('tr');
+        const th = document.createElement('th'); th.scope = 'row'; th.textContent = c.nome; tr.append(th);
+        T.comb_carteira[i].forEach((v, j) => {
+          const td = cel(tr, '', 'mz-comb-c ' + (v >= c.cdi ? 'acima' : 'abaixo'));
+          const b = document.createElement('b'); b.textContent = p1(v);
+          const s = document.createElement('span'); s.textContent = L.format(',.1f')(T.comb_chance[i][j]) + '% de chance';
+          td.append(b, s);
+        });
+        cel(tr, p1(c.cdi));
+        tb.append(tr);
+      });
+    });
+
+    // ---- depois do IR, por cenário
+    dash.draw('tese-liq-linhas', (tb) => {
+      const T = tese();
+      tb.replaceChildren();
+      if (!T) return;
+      T.cenarios.concat([{ nome: 'Média pelas chances', ...T.media, media: true }]).forEach((c) => {
+        const tr = document.createElement('tr'); if (c.media) tr.className = 'eu';
+        cel(tr, c.nome + (c.chance ? ' (' + c.chance + '%)' : ''));
+        cel(tr, p1(c.carteira_liq), c.carteira_liq >= c.selic_liq ? 'mz-pos' : 'mz-neg'); cel(tr, p1(c.regua_liq)); cel(tr, p1(c.selic_liq));
+        tb.append(tr);
+      });
+    });
+
+    // ---- a carteira contra a régua, classe a classe
+    dash.draw('aloc-linhas', (tb) => {
+      const T = tese();
+      tb.replaceChildren();
+      if (!T) return;
+      const mx = d3.max(T.classes, (c) => Math.max(c.carteira, c.regua));
+      T.classes.forEach((c) => {
+        const tr = document.createElement('tr');
+        const td0 = cel(tr, c.classe, 'cl');
+        const q = document.createElement('span'); q.className = 'q'; q.textContent = c.porque; td0.append(q);
+        const tdb = cel(tr, '', 'mz-aloc-barras');
+        [['c', c.carteira], ['r', c.regua]].forEach(([k, v]) => {
+          const linha = document.createElement('div'); linha.className = 'mz-aloc-l ' + k;
+          const bar = document.createElement('i'); bar.style.width = (v / mx * 100 * 0.82) + '%';
+          const val = document.createElement('span'); val.textContent = L.format(',.1~f')(v) + '%';
+          linha.append(bar, val); tdb.append(linha);
+        });
+        const dv = c.carteira - c.regua;
+        cel(tr, dv === 0 ? '—' : sp1(dv, ' p.p.'), dv > 0 ? 'mz-dv mais' : dv < 0 ? 'mz-dv menos' : 'mz-dv');
+        tb.append(tr);
+      });
+    });
+
+    // ---- retorno de cada classe por cenário (contra o CDI do cenário)
+    dash.draw('cen-classes-linhas', (tb) => {
+      const T = tese();
+      tb.replaceChildren();
+      if (!T) return;
+      const cdi = T.cenarios.map((c) => c.cdi);
+      T.classes.concat([{ classe: 'CDI', cen: cdi, media: T.media.cdi, ref: true }]).forEach((c) => {
+        const tr = document.createElement('tr'); if (c.ref) tr.className = 'ref';
+        cel(tr, c.classe, 'cl');
+        c.cen.forEach((v, i) => cel(tr, p1(v), c.ref ? '' : v >= cdi[i] ? 'mz-pos' : 'mz-neg'));
+        cel(tr, p1(c.media), c.ref ? '' : c.media >= T.media.cdi ? 'mz-pos' : 'mz-neg');
+        tb.append(tr);
+      });
+    });
+    dash.draw('veiculos-linhas', (tb) => {
+      const T = tese();
+      tb.replaceChildren();
+      if (!T) return;
+      T.classes.filter((c) => c.carteira > 0).forEach((c) => { const tr = document.createElement('tr'); cel(tr, c.classe, 'cl'); cel(tr, c.veiculo, 'cl'); cel(tr, c.liquidez, 'cl'); tb.append(tr); });
+    });
+
+    // ---- trilha: o que a carteira fez desde 13/11 contra o caminho esperado em cada cenário
+    const zoom = () => { const b = document.querySelector('#trilha-zoom .mz-chip[aria-pressed="true"]'); return b ? b.dataset.zoom : 'agora'; };
+    document.querySelectorAll('#trilha-zoom .mz-chip').forEach((b) => b.addEventListener('click', () => {
+      document.querySelectorAll('#trilha-zoom .mz-chip').forEach((o) => o.setAttribute('aria-pressed', o === b ? 'true' : 'false'));
+      dash.draw('trilha');
+    }));
+    const esperado = (taxa, d) => (Math.pow(1 + taxa / 100, (d - dia(MZR.ATIVA)) / (365 * 864e5)) - 1) * 100;
+    dash.draw('trilha', (el) => {
+      const s = dash.data('serie'), T = tese();
+      el.replaceChildren();
+      if (s.status !== 'ok' || !T) return;
+      const base = s.data.find((x) => x.data === MZR.ATIVA) || [...s.data].reverse().find((x) => x.data <= MZR.ATIVA);
+      const reais = s.data.filter((x) => x.data >= base.data).map((x) => ({ d: dia(x.data), carteira: (+x.carteira / +base.carteira - 1) * 100, regua: (+x.regua / +base.regua - 1) * 100, cdi: (+x.cdi / +base.cdi - 1) * 100 }));
+      const ini = dia(MZR.ATIVA), fimAno = new Date(ini); fimAno.setUTCFullYear(fimAno.getUTCFullYear() + 1);
+      const ult = reais[reais.length - 1].d;
+      const fim = zoom() === 'ano' ? fimAno : new Date(Math.max(ult.getTime() + 21 * 864e5, ini.getTime() + 35 * 864e5));
+      const datas = d3.utcDay.range(ini, new Date(fim.getTime() + 864e5), zoom() === 'ano' ? 7 : 1).concat([fim]);
+      const [aj, ba, de] = T.cenarios;
+      const faixa = datas.map((d) => ({ d, lo: esperado(Math.min(aj.carteira, de.carteira), d), hi: esperado(Math.max(aj.carteira, de.carteira), d), base: esperado(ba.carteira, d), cdi: esperado(ba.cdi, d) }));
+      const W = Math.max(280, el.clientWidth), H = 300, m = { t: 14, r: 150, b: 26, l: 46 };
+      const x = d3.scaleUtc().domain([ini, fim]).range([m.l, W - m.r]);
+      const vmax = Math.max(d3.max(faixa, (f) => f.hi), d3.max(reais, (r) => Math.max(r.carteira, r.regua, r.cdi)));
+      const vmin = Math.min(0, d3.min(reais, (r) => Math.min(r.carteira, r.regua, r.cdi)));
+      const y = d3.scaleLinear().domain([vmin, vmax]).nice().range([H - m.b, m.t]);
+      const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+        .attr('aria-label', 'Retorno acumulado da carteira, da régua e do CDI desde 13/11/2026, com o caminho esperado da carteira em cada cenário');
+      svg.append('g').selectAll('line').data(y.ticks(5)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y).style('stroke', 'var(--cds-chart-grid)');
+      svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(0).tickFormat((v) => L.format(',.1~f')(v) + '%')).call((g) => g.select('.domain').remove());
+      svg.append('g').attr('transform', `translate(0,${H - m.b})`)
+        .call(d3.axisBottom(x).ticks(Math.max(3, Math.floor((W - m.l - m.r) / 90))).tickFormat(zoom() === 'ano' ? d3.utcFormat('%m/%y') : d3.utcFormat('%d/%m')).tickSizeOuter(0))
+        .call((g) => g.select('.domain').style('stroke', 'var(--cds-chart-axis)')).call((g) => g.selectAll('line').remove());
+      svg.append('path').datum(faixa).attr('d', d3.area().x((f) => x(f.d)).y0((f) => y(f.lo)).y1((f) => y(f.hi))).style('fill', 'var(--serie-0)').style('opacity', 0.14);
+      svg.append('path').datum(faixa).attr('d', d3.line().x((f) => x(f.d)).y((f) => y(f.base))).style('fill', 'none').style('stroke', 'var(--serie-0)').style('stroke-width', 1.5).style('stroke-dasharray', '5 4');
+      svg.append('path').datum(faixa).attr('d', d3.line().x((f) => x(f.d)).y((f) => y(f.cdi))).style('fill', 'none').style('stroke', COR.cdi).style('stroke-width', 1).style('stroke-dasharray', '2 3');
+      ['cdi', 'regua', 'carteira'].forEach((k) => svg.append('path').datum(reais).attr('d', d3.line().x((r) => x(r.d)).y((r) => y(r[k])))
+        .style('fill', 'none').style('stroke', COR[k]).style('stroke-width', k === 'carteira' ? 2.5 : 1.5));
+      const u = reais[reais.length - 1];
+      svg.append('circle').attr('cx', x(u.d)).attr('cy', y(u.carteira)).attr('r', 4.5).style('fill', COR.carteira);
+      // rótulos à direita: o fim de cada caminho esperado
+      const ff = faixa[faixa.length - 1];
+      const rot = [
+        { y: y(ff.hi), t: 'deterioração ' + p1(esperado(Math.max(aj.carteira, de.carteira), fim)), c: 'var(--color-fg-muted)' },
+        { y: y(ff.base), t: 'mais provável ' + p1(ff.base), c: 'var(--serie-0)' },
+        { y: y(ff.lo), t: 'ajuste ' + p1(ff.lo), c: 'var(--color-fg-muted)' },
+        { y: y(ff.cdi), t: 'CDI esperado ' + p1(ff.cdi), c: 'var(--color-fg-muted)' },
+      ].sort((a, b) => a.y - b.y);
+      for (let i = 1; i < rot.length; i++) if (rot[i].y - rot[i - 1].y < 13) rot[i].y = rot[i - 1].y + 13;
+      rot.forEach((r) => svg.append('text').attr('x', W - m.r + 8).attr('y', r.y + 4).style('fill', r.c).text(r.t));
+      svg.append('text').attr('x', x(u.d) + 8).attr('y', y(u.carteira) - 8).style('fill', 'var(--color-fg)').style('font-weight', 600).text('carteira ' + MZR.pct(u.carteira, 2));
+      // dica
+      const dica = d3.select(el).append('div').attr('class', 'mz-dica').style('display', 'none');
+      const bis = d3.bisector((r) => r.d).center;
+      svg.append('rect').attr('x', m.l).attr('y', m.t).attr('width', W - m.l - m.r).attr('height', H - m.t - m.b).style('fill', 'transparent')
+        .on('pointermove', (ev) => {
+          const d = x.invert(d3.pointer(ev)[0]);
+          dica.style('display', null).selectAll('*').remove();
+          dica.append('div').attr('class', 't').text(MZR.dataBR(d));
+          if (d <= u.d) { const r = reais[bis(reais, d)]; [['carteira', 'Carteira'], ['regua', 'Régua'], ['cdi', 'CDI']].forEach(([k, n]) => { const z = dica.append('div'); z.append('span').style('color', COR[k]).text(n); z.append('span').text(MZR.pct(r[k], 2)); }); }
+          const z = dica.append('div'); z.append('span').text('Esperado, mais provável'); z.append('span').text(MZR.pct(esperado(ba.carteira, d), 2));
+          dica.style('left', Math.min(x(d) + 12, W - 210) + 'px').style('top', '0px');
+        })
+        .on('pointerleave', () => dica.style('display', 'none'));
+    });
+    dash.draw('msg-trilha', (el) => {
+      const s = dash.data('serie'), T = tese();
+      if (s.status !== 'ok' || !T) { el.style.display = 'none'; return; }
+      const base = s.data.find((x) => x.data === MZR.ATIVA), u = s.data[s.data.length - 1];
+      if (!base || u.data <= MZR.ATIVA) { el.textContent = 'A carteira passa a existir em 13/11/2026.'; el.style.display = ''; return; }
+      const r = (k) => (+u[k] / +base[k] - 1) * 100;
+      const du = s.data.filter((x) => x.data > MZR.ATIVA).length;
+      const esp = esperado(T.cenarios[1].carteira, dia(u.data));
+      el.textContent = 'Em ' + du + (du === 1 ? ' dia útil' : ' dias úteis') + ', a carteira rendeu ' + MZR.pct(r('carteira'), 2) + ', contra ' + MZR.pct(r('regua'), 2) + ' da régua e '
+        + MZR.pct(r('cdi'), 2) + ' do CDI. No cenário mais provável, o esperado até aqui seria ' + MZR.pct(esp, 2) + '.' + (du < 21 ? ' Ainda é pouco tempo para conclusões.' : '');
+      el.style.display = '';
+    });
+
+    // ---- choques: carteira contra régua
+    dash.draw('choques-graf', (el) => {
+      const c = dash.data('choques');
+      el.replaceChildren();
+      if (c.status !== 'ok') return;
+      const rows = c.data;
+      const W = Math.max(280, el.clientWidth), estreito = W < 600, lh = estreito ? 50 : 34;
+      const m = { t: 24, r: 14, b: 6, l: estreito ? 8 : Math.min(260, W * 0.36) };
+      const H = m.t + m.b + rows.length * lh + 10;
+      const mx = d3.max(rows, (r) => Math.max(Math.abs(r.carteira), Math.abs(r.regua))) || 1;
+      const x = d3.scaleLinear().domain([-mx * 1.45, mx * 1.45]).range([m.l, W - m.r]);
+      const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', 'Efeito de cada choque na carteira e na régua, em pontos percentuais');
+      [['carteira', 'Carteira'], ['regua', 'Régua']].reduce((lx, [k, n]) => {
+        svg.append('rect').attr('x', lx).attr('y', 4).attr('width', 12).attr('height', 10).attr('rx', 2).style('fill', COR[k]);
+        const t = svg.append('text').attr('x', lx + 16).attr('y', 13).style('fill', 'var(--color-fg)').text(n);
+        return lx + 16 + (t.node().getComputedTextLength() || n.length * 7) + 16;
+      }, estreito ? 0 : m.l);
+      svg.append('line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', m.t).attr('y2', H - m.b).style('stroke', 'var(--cds-chart-axis)');
+      rows.forEach((r, i) => {
+        const comb = r.tipo === 'combinado', yy = m.t + i * lh + (comb ? 10 : 0);
+        if (comb && (i === 0 || rows[i - 1].tipo !== 'combinado')) svg.append('line').attr('x1', 0).attr('x2', W).attr('y1', yy - 4).attr('y2', yy - 4).style('stroke', 'var(--color-border-line)');
+        svg.append('text').attr('x', estreito ? 0 : m.l - 10).attr('y', estreito ? yy + 12 : yy + lh / 2 + 4).attr('text-anchor', estreito ? 'start' : 'end')
+          .style('fill', 'var(--color-fg)').style('font-weight', comb ? 600 : null).text(((n) => n.charAt(0).toUpperCase() + n.slice(1))(r.nome.replace('Combinado: ', '')));
+        const y0 = estreito ? yy + 18 : yy + 6;
+        [['carteira', 0], ['regua', 1]].forEach(([k, j]) => {
+          const v = r[k], yb = y0 + j * 12;
+          svg.append('rect').attr('x', Math.min(x(0), x(v))).attr('width', Math.max(1, Math.abs(x(v) - x(0)))).attr('y', yb).attr('height', 10).attr('rx', 2).style('fill', COR[k]);
+          svg.append('text').attr('x', x(v) + (v >= 0 ? 5 : -5)).attr('y', yb + 9).attr('text-anchor', v >= 0 ? 'start' : 'end')
+            .style('fill', 'var(--color-fg)').style('font-weight', k === 'carteira' ? 600 : null).text(sn2(v));
+        });
+      });
+    });
+    dash.draw('msg-choques', (el) => {
+      const c = dash.data('choques'), T = tese();
+      if (c.status !== 'ok' || !T) { el.style.display = 'none'; return; }
+      const pior = c.data.filter((r) => r.carteira < r.regua - 0.005);
+      el.textContent = 'No choque de 26/10/2026, a carteira caiu ' + MZR.pct(T.choque_2610.carteira, 2) + ', e a régua, ' + MZR.pct(T.choque_2610.regua, 2) + '. '
+        + 'Nos ' + c.data.length + ' choques hipotéticos, a carteira se sai melhor que a régua em ' + (c.data.length - pior.length)
+        + (pior.length ? '; perde mais em ' + pior.map((r) => r.nome.charAt(0).toLowerCase() + r.nome.slice(1)).join(' e ').replace(/\.$/, '') + '.' : '.');
+      el.style.display = '';
+    });
+
+    // ---- crises e risco em 10 anos (backtest do case)
+    dash.draw('historia-linhas', (tb) => {
+      const T = tese();
+      tb.replaceChildren();
+      if (!T) return;
+      T.historia.episodios.forEach(([n, c, r]) => { const tr = document.createElement('tr'); cel(tr, n); cel(tr, MZR.pct(c, 1), c >= 0 ? 'mz-pos' : 'mz-neg'); cel(tr, MZR.pct(r, 1), r >= 0 ? 'mz-pos' : 'mz-neg'); cel(tr, sp1(c - r, ' p.p.')); tb.append(tr); });
+    });
+    dash.draw('historia-risco-linhas', (tb) => {
+      const T = tese();
+      tb.replaceChildren();
+      if (!T) return;
+      const h = T.historia;
+      [['Retorno ao ano', p1(h.carteira.retorno_anual), p1(h.regua.retorno_anual), p1(h.cdi_anual)], ['Volatilidade', p1(h.carteira.vol), p1(h.regua.vol), '—'],
+        ['Maior queda do pico', p1(h.carteira.perda_max), p1(h.regua.perda_max), '—'], ['Pior mês', p1(h.carteira.pior_mes), p1(h.regua.pior_mes), '—']]
+        .forEach((l) => { const tr = document.createElement('tr'); l.forEach((v, i) => cel(tr, v, i === 1 ? 'eu-c' : '')); tb.append(tr); });
+    });
+
+    // ---- o passado em uma frase
+    dash.draw('msg-passado', (el) => {
+      const c = dash.data('comparacao'), T = tese();
+      const r = (n) => (c.status === 'ok' ? c.data.find((x) => x.serie === n) : null);
+      const a = r('Carteira'), b = r('Régua'), d = r('CDI');
+      if (!T || !a) { el.style.display = 'none'; return; }
+      const h = T.historia;
+      el.textContent = 'Com os pesos de hoje, a carteira teria rendido ' + p1(h.carteira.retorno_anual) + ' ao ano em 10 anos, contra ' + p1(h.cdi_anual) + ' do CDI e '
+        + p1(h.regua.retorno_anual) + ' da régua, com cerca de metade da queda. Nos últimos 24 meses, de real forte e bolsa em alta, teria rendido '
+        + MZR.pct(a.sim_total, 1) + ', contra ' + MZR.pct(b.sim_total, 1) + ' da régua e ' + MZR.pct(d.sim_total, 1) + ' do CDI: o seguro custou.';
+      el.style.display = '';
+    });
   })();
 </script>

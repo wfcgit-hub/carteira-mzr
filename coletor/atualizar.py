@@ -67,6 +67,52 @@ PESOS = {  # carteira J do case (16/11/2026)
 assert abs(sum(p[0] for p in PESOS.values()) - 100) < 1e-9 and abs(sum(p[1] for p in PESOS.values()) - 100) < 1e-9
 REALIZAR, SAIR = 14.0, 15.1   # termômetro dos cenários no juro de 2 anos: o base no preço (~14,0) e o piso da deterioração no preço (15,1); a carteira não vende no meio (candidato, 16/11)
 
+# A tese do case (modelo de 16/11/2026: saidas/mzr-summer/slides/carteira.json e risco_carteira.json; documento 17).
+# Fixa: muda só se o case mudar. Retornos de 12 meses, em reais, antes do IR, salvo os "_liq".
+TESE = dict(
+    cenarios=[
+        dict(nome='Ajuste crível', chance=10, carteira=12.50, regua=13.49, cdi=12.9, carteira_liq=10.29, regua_liq=11.22, selic_liq=10.64,
+             selic=12.0, ipca=4.6, dolar=5.10),
+        dict(nome='Ajuste já apresentado', chance=60, carteira=13.53, regua=13.18, cdi=13.5, carteira_liq=11.26, regua_liq=11.01, selic_liq=11.14,
+             selic=13.5, ipca=5.5, dolar=5.67),
+        dict(nome='Deterioração', chance=30, carteira=15.88, regua=13.44, cdi=14.5, carteira_liq=13.23, regua_liq=11.18, selic_liq=11.96,
+             selic=15.5, ipca=7.1, dolar=6.80),
+    ],
+    media=dict(carteira=14.13, regua=13.29, cdi=13.74, carteira_liq=11.75, regua_liq=11.08, selic_liq=11.34),
+    perde_cdi_chance=24,
+    mundos=['Mundo base', 'Inflação alta nos EUA', 'Aversão a risco'],
+    comb_carteira=[[12.6, 11.8, 13.1], [13.6, 12.8, 14.2], [15.8, 14.9, 16.6]],
+    comb_regua=[[14.0, 12.8, 11.4], [14.1, 12.8, 11.3], [14.9, 13.6, 11.9]],
+    comb_chance=[[7.1, 1.9, 1.1], [32.1, 14.9, 12.9], [10.8, 8.2, 11.0]],
+    classes=[
+        dict(classe='Pós-fixado (LCI/LCA e Tesouro Selic)', regua=50.0, carteira=42.5, cen=[12.9, 13.5, 14.5], media=13.7,
+             veiculo='LCI/LCA de 3 ou 4 bancos grandes (30%), em escada de 6 a 24 meses, e Tesouro Selic (12,5%)', liquidez='D+0 a D+1; LCI/LCA no vencimento',
+             porque='Menos caixa, para abrir espaço aos desvios'),
+        dict(classe='Crédito high grade', regua=10.0, carteira=12.5, cen=[14.9, 14.75, 12.9], media=14.2,
+             veiculo='Fundo de crédito high grade', liquidez='D+30', porque='Rende 14,8% no cenário mais provável, acima do CDI'),
+        dict(classe='Prefixado 2 anos', regua=7.5, carteira=20.0, cen=[17.11, 15.51, 13.37], media=15.0,
+             veiculo='Tesouro Prefixado (LTN) de ~2 anos', liquidez='D+1', porque='Rende 15,5% no cenário mais provável, 2 pontos acima do CDI'),
+        dict(classe='IPCA+ 3 anos', regua=7.5, carteira=7.5, cen=[16.52, 14.1, 11.41], media=13.5,
+             veiculo='Tesouro IPCA+ curto e incentivadas AAA', liquidez='D+1', porque='Igual à régua'),
+        dict(classe='IPCA+ 10 anos', regua=7.5, carteira=0.0, cen=[22.4, 14.92, 5.6], media=12.9,
+             veiculo='Tesouro IPCA+ longo', liquidez='D+1', porque='Rende só 5,6% na deterioração'),
+        dict(classe='Bolsa Brasil', regua=5.0, carteira=2.5, cen=[29.86, 12.0, -15.48], media=5.5,
+             veiculo='Ações de bancos de qualidade e exportadoras', liquidez='D+2', porque='Cai 15,5% na deterioração'),
+        dict(classe='Bolsa global sem hedge', regua=7.5, carteira=2.5, cen=[0.29, 7.54, 23.27], media=11.5,
+             veiculo='Fundo de ações no exterior, sem hedge', liquidez='D+3 a D+5', porque='Rende 7,5% no cenário mais provável, abaixo do CDI'),
+        dict(classe='Treasury 2 anos', regua=5.0, carteira=2.5, cen=[-3.27, 8.98, 32.98], media=15.0,
+             veiculo='Treasury de 2 anos, sem hedge', liquidez='D+2', porque='A moeda forte foi para o Treasury de 10 anos'),
+        dict(classe='Treasury 10 anos', regua=0.0, carteira=10.0, cen=[-1.74, 10.73, 35.56], media=16.9,
+             veiculo='Treasury de 10 anos, sem hedge', liquidez='D+2', porque='O seguro da carteira: +35,6% na deterioração'),
+    ],
+    historia=dict(janela='dez/2016 a out/2026', meses=119, cdi_anual=9.3,
+                  carteira=dict(retorno_anual=9.8, vol=1.8, perda_max=-0.9, pior_mes=-0.6),
+                  regua=dict(retorno_anual=10.4, vol=2.0, perda_max=-1.7, pior_mes=-1.5),
+                  episodios=[('Greve dos caminhoneiros (mai–jun/18)', 1.7, 1.0), ('Covid (fev–mar/20)', 2.4, -1.5), ('Fiscal 2021 (jul–nov/21)', 2.2, 2.0),
+                             ('Juros globais 2022 (jan–out/22)', 5.1, 6.0), ('Fiscal 2024 (out–dez/24)', 2.1, 2.2), ('Eleição 2026 (out/26)', 1.1, 0.4)]),
+    choque_2610=dict(carteira=-0.10, regua=-0.74),
+)
+
 
 # ------------------------------------------------------------------ coleta
 def baixar(url, destino, sempre=False, tentativas=6):
@@ -527,7 +573,7 @@ def main():
     DADOS.mkdir(parents=True, exist_ok=True)
     for nome, rows in (('serie', linhas), ('classes', classes), ('monitor', monitor), ('termo', termo_linhas), ('fontes', fontes),
                        ('mensal', mensal), ('risco', risco_linhas), ('atribuicao', atrib), ('liquido', liq),
-                       ('premissas', premissas), ('focus', focus_hist), ('episodios', episodios), ('choques', choques)):
+                       ('premissas', premissas), ('focus', focus_hist), ('episodios', episodios), ('choques', choques), ('tese', [TESE])):
         (DADOS / f'{nome}.json').write_text(json.dumps({'rows': rows, 'meta': comum}, ensure_ascii=False), 'utf-8')
     fim = linhas[-1]
     print(f"ok: {len(linhas)} dias, de {linhas[0]['data']} a {fim['data']} | carteira {fim['carteira']:.2f} régua {fim['regua']:.2f} "
