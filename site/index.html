@@ -228,6 +228,25 @@
     .mz-aloc th:last-child, .mz-aloc td.mz-dv { white-space: nowrap; font-size: 13px; }
     .mz-aloc td.mz-aloc-barras .mz-aloc-l span { font-size: 11px; }
   }
+  /* ---------- placar: o rendimento desde a montagem, o número principal da página */
+  .mz-topo-grade { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(300px, 1fr); gap: 28px 40px; align-items: center; }
+  .mz-placar { border: 1.5px solid var(--serie-0); box-shadow: 0 0 0 4px color-mix(in srgb, var(--serie-0) 12%, transparent); background: color-mix(in srgb, var(--serie-0) 11%, var(--color-panel));
+               border-radius: 16px; padding: 22px 24px 18px; display: grid; gap: 6px; min-width: 0; }
+  .mz-placar-rot { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); letter-spacing: .02em; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .mz-placar-num { font-family: var(--font-anthropic-serif); font-size: clamp(52px, 7vw, 76px); line-height: 1; font-variant-numeric: tabular-nums; color: var(--color-fg); margin-top: 4px; }
+  .mz-placar-frase { font-size: 15px; font-weight: var(--cds-font-weight-medium); color: var(--color-fg); }
+  .mz-placar-barras { display: grid; grid-template-columns: auto 1fr auto; gap: 7px 10px; align-items: center; margin-top: 10px; font-size: 13px; }
+  .mz-placar-barras .n { color: var(--color-fg-muted); white-space: nowrap; }
+  .mz-placar-barras .n.eu { color: var(--color-fg); font-weight: var(--cds-font-weight-medium); }
+  .mz-placar-barras .v { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--color-fg); }
+  .mz-placar-barras .v.eu { font-weight: var(--cds-font-weight-medium); }
+  .mz-placar-barras .trilho { position: relative; height: 10px; }
+  .mz-placar-barras .trilho i { position: absolute; top: 0; bottom: 0; border-radius: 3px; }
+  .mz-placar-barras .trilho i.esp { background: transparent; border: 1.5px dashed var(--serie-0); }
+  .mz-placar-barras .trilho b { position: absolute; top: -3px; bottom: -3px; width: 1px; background: var(--cds-chart-axis); }
+  .mz-placar-pe { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin-top: 8px; }
+  @media (max-width: 860px) { .mz-topo-grade { grid-template-columns: 1fr; } }
+  @media print { .mz-topo-grade { display: block !important; } .mz-placar { margin-top: 16px; } }
 </style>
 
 <div class="mz">
@@ -250,9 +269,14 @@
 
   <!-- 1. A TESE: o que a carteira deve render, em cada cenário -->
   <header class="mz-topo" id="topo">
-    <span class="mz-sobre">Case MZR Family Office · montada em 13/11/2026 para os 12 meses seguintes · família de perfil moderado, em reais</span>
-    <h1>Uma carteira que rende ~14% ao ano e protege na crise</h1>
-    <p class="mz-lead">Comparada com a régua, a carteira moderada mediana de C6, Daycoval e Genial, e com o CDI.</p>
+    <div class="mz-topo-grade">
+      <div class="mz-topo-texto">
+        <span class="mz-sobre">Case MZR Family Office · montada em 13/11/2026 para os 12 meses seguintes · família de perfil moderado, em reais</span>
+        <h1>Uma carteira que rende ~14% ao ano e protege na crise</h1>
+        <p class="mz-lead">Comparada com a régua, a carteira moderada mediana de C6, Daycoval e Genial, e com o CDI.</p>
+      </div>
+      <section class="mz-placar" aria-label="Rendimento desde que a carteira foi montada" data-draw="placar" data-source="serie"></section>
+    </div>
 
     <div class="mz-tese">
       <div class="mz-tese-cab">
@@ -1756,6 +1780,7 @@
       '2027-09-07', '2027-10-12', '2027-11-02', '2027-11-15', '2027-11-20']);
     const duAte = (d) => { let n = 0; const x = dia(MZR.ATIVA); while (x < d) { x.setUTCDate(x.getUTCDate() + 1); if (x.getUTCDay() % 6 !== 0 && !FER.has(x.toISOString().slice(0, 10))) n++; } return n; };
     const esperado = (taxa, d) => (Math.pow(1 + taxa / 100, duAte(d) / 252) - 1) * 100;
+    MZR.esperado = esperado;
     dash.draw('trilha', (el) => {
       const s = dash.data('serie'), T = tese();
       el.replaceChildren();
@@ -1931,6 +1956,55 @@
       if (!u) { el.textContent = '—'; return; }
       el.textContent = 'O mercado cobra ' + L.format(',.2f')(u.fwd_1a1a) + '% (' + MZR.dataBR(new Date(u.data + 'T00:00:00Z')).slice(0, 5) + '); o case espera '
         + L.format(',.2f')(ESPERADO) + '% no cenário mais provável e ' + L.format(',.2f')(MEDIA) + '% na média. Com o termo acima do esperado, o prefixado de 2 anos tende a render mais que o CDI: 15,5% contra 13,5% no cenário mais provável.';
+    });
+  })();
+</script>
+
+<script>
+  // ---------- placar do topo: quanto a carteira rendeu desde 13/11/2026, contra régua, CDI e o esperado no cenário mais provável
+  (() => {
+    const L = MZR.loc;
+    const pp = (v) => (Math.round(v * 100) / 100 === 0 ? 'empatada com' : L.format(',.2f')(Math.abs(v)) + ' p.p. ' + (v > 0 ? 'à frente' : 'atrás'));
+    const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+    dash.draw('placar', (box) => {
+      const s = dash.data('serie'), td = dash.data('tese');
+      box.replaceChildren();
+      const rot = el('span', 'mz-placar-rot');
+      rot.append(document.createTextNode('Desde que foi montada, em 13/11/2026'));
+      const tag = el('i', 'mz-tag real', 'real'); rot.append(tag);
+      box.append(rot);
+      if (s.status !== 'ok' || !s.data.length) { box.append(el('span', 'mz-placar-num', '—')); return; }
+      const base = s.data.find((x) => x.data === MZR.ATIVA), u = s.data[s.data.length - 1];
+      if (!base || u.data <= MZR.ATIVA) { box.append(el('span', 'mz-placar-num', '—'), el('span', 'mz-placar-frase', 'Começa a contar com o fechamento de 13/11/2026.')); return; }
+      const r = (k) => (+u[k] / +base[k] - 1) * 100;
+      const car = r('carteira'), reg = r('regua'), cdi = r('cdi');
+      const T = td.status === 'ok' && td.data.length ? td.data[0] : null;
+      const esp = T && MZR.esperado ? MZR.esperado(T.cenarios[1].carteira, new Date(u.data + 'T00:00:00Z')) : null;
+      const du = s.data.filter((x) => x.data > MZR.ATIVA).length;
+      box.append(el('span', 'mz-placar-num', MZR.pct(car, 2)));
+      const dr = car - reg, dc = car - cdi;
+      const frase = Math.sign(Math.round(dr * 100)) === Math.sign(Math.round(dc * 100)) && Math.round(dr * 100) === Math.round(dc * 100)
+        ? pp(dr) + ' da régua e do CDI' : pp(dr) + ' da régua e ' + pp(dc) + ' do CDI';
+      box.append(el('span', 'mz-placar-frase', frase.charAt(0).toUpperCase() + frase.slice(1)));
+      // barras: todas na mesma escala, com o zero marcado
+      const itens = [['Carteira', car, 'var(--serie-0)', true], ['Régua', reg, 'var(--serie-1)'], ['CDI', cdi, 'var(--serie-2)']];
+      if (esp != null) itens.push(['Esperado (cenário mais provável)', esp, null, false, true]);
+      const lo = Math.min(0, ...itens.map((i) => i[1])), hi = Math.max(0.0001, ...itens.map((i) => i[1]));
+      const x = (v) => ((v - lo) / (hi - lo)) * 100;
+      const grade = el('div', 'mz-placar-barras');
+      itens.forEach(([nome, v, cor, eu, esperado]) => {
+        grade.append(el('span', 'n' + (eu ? ' eu' : ''), nome));
+        const tr = el('span', 'trilho');
+        const barra = el('i', esperado ? 'esp' : '');
+        barra.style.left = Math.min(x(0), x(v)) + '%'; barra.style.width = Math.max(0.8, Math.abs(x(v) - x(0))) + '%';
+        if (cor) barra.style.background = cor;
+        tr.append(barra);
+        if (lo < 0) { const z = el('b'); z.style.left = x(0) + '%'; tr.append(z); }
+        grade.append(tr, el('span', 'v' + (eu ? ' eu' : ''), MZR.pct(v, 2)));
+      });
+      box.append(grade);
+      box.append(el('span', 'mz-placar-pe', du + (du === 1 ? ' dia útil' : ' dias úteis') + ' · dados até ' + MZR.dataBR(new Date(u.data + 'T00:00:00Z')) + ' · antes do IR'
+        + (du < 21 ? ' · ainda é pouco tempo para conclusões' : '')));
     });
   })();
 </script>
