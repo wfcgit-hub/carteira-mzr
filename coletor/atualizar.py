@@ -424,6 +424,8 @@ def main():
     for linha in classes:
         c = linha['classe']
         linha['peso_hoje'] = round(PESOS_DIA[0][-1][c] * 100, 2)
+        # 24/11/2026: quanto a classe somou à carteira desde 13/11 (peso de cada dia × retorno do dia, em p.p.)
+        linha['contrib_ativa'] = round(sum(PESOS_DIA[0][i][c] * ret[FONTE[c]][i] for i in range(i_corte, len(dias) - 1)) * 100, 4) if ativa else None
         if FONTE[c] in ('sp_reais', 'tsy2', 'tsy10'):
             linha['sim12_moeda'], linha['sim12_cambio'] = separa(FONTE[c], i_12, i_corte)
             if ativa:
