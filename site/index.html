@@ -113,7 +113,8 @@
     .mz-sec h2, .mz-msg, caption { break-after: avoid; }
   }
   /* ---------- versão 2: resumo + quatro blocos */
-  .mz { gap: 40px; }
+  .mz { gap: 40px; grid-template-columns: minmax(0, 1fr); }  /* a coluna não cresce com o conteúdo (a barra de seções empurrava a página para 597 px no celular) */
+  .mz > * { min-width: 0; }
   .mz-nav { position: sticky; top: 0; z-index: 5; display: flex; gap: var(--cds-gap-md); align-items: center; justify-content: space-between;
             background: var(--color-bg); border-bottom: 1px solid var(--color-border-line); padding: 8px 0; margin-bottom: -16px; }
   .mz-nav-links { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; min-width: 0; }
@@ -227,6 +228,13 @@
     .mz-aloc th, .mz-aloc td { padding-left: 6px; padding-right: 6px; }
     .mz-aloc th:last-child, .mz-aloc td.mz-dv { white-space: nowrap; font-size: 13px; }
     .mz-aloc td.mz-aloc-barras .mz-aloc-l span { font-size: 11px; }
+    /* celular: larguras fixas, para o nome da classe não virar uma coluna de uma palavra por linha */
+    .mz-aloc { table-layout: fixed; }
+    .mz-aloc th:first-child { width: 44%; }
+    .mz-aloc th.mz-aloc-barras { width: 32%; }
+    .mz-aloc th:last-child { width: 24%; white-space: normal; }
+    /* a primeira coluna fixa quebra a linha em vez de passar por cima dos números ao lado */
+    .mz-tab td:first-child, .mz-tab th:first-child { white-space: normal; min-width: 8em; }
   }
   /* ---------- placar: o rendimento desde a montagem, o número principal da página */
   .mz-topo-grade { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(300px, 1fr); gap: 28px 40px; align-items: center; }
@@ -246,6 +254,8 @@
   .mz-placar-barras .trilho b { position: absolute; top: -3px; bottom: -3px; width: 1px; background: var(--cds-chart-axis); }
   .mz-placar-pe { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin-top: 8px; }
   @media (max-width: 860px) { .mz-topo-grade { grid-template-columns: 1fr; } }
+  /* celular: o nome longo quebra em duas linhas para a barra ter espaço */
+  @media (max-width: 520px) { .mz-placar-barras { grid-template-columns: minmax(0, 8.5em) minmax(0, 1fr) auto; } .mz-placar-barras .n { white-space: normal; line-height: 1.25; } }
   @media print { .mz-topo-grade { display: block !important; } .mz-placar { margin-top: 16px; } }
 </style>
 
@@ -716,7 +726,7 @@
     const base = linhas[0];
     const pts = linhas.map((x) => { const o = { d: x.d, data: x.data }; MZR.ordem.forEach((k) => { o[k] = +x[k] / +base[k] * 100; }); return o; });
     const curto = { ...MZR.nomes, sp500_reais: 'Bolsa EUA (R$)' };   // rótulo do fim da linha, mais curto que o da legenda
-    const W = Math.max(280, el.clientWidth), H = 340, m = { t: 12, r: 132, b: 28, l: 44 };
+    const W = Math.max(280, el.clientWidth), H = 340, estreito = W < 560, m = { t: estreito ? 46 : 12, r: estreito ? 118 : 132, b: 28, l: 40 };
     const x = d3.scaleUtc().domain(d3.extent(pts, (p) => p.d)).range([m.l, W - m.r]);
     const vals = pts.flatMap((p) => visiveis.map((k) => p[k]));
     const y = d3.scaleLinear().domain(d3.extent(vals.length ? vals : [99, 101])).nice().range([H - m.b, m.t]);
@@ -725,21 +735,21 @@
     svg.append('g').selectAll('line').data(y.ticks(5)).join('line')
       .attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y).style('stroke', 'var(--cds-chart-grid)');
     svg.append('g').attr('transform', `translate(0,${H - m.b})`)
-      .call(d3.axisBottom(x).ticks(Math.max(2, Math.floor(W / 110))).tickFormat(d3.utcFormat('%m/%y')).tickSizeOuter(0))
+      .call(d3.axisBottom(x).tickValues(x.ticks(estreito ? d3.utcMonth.every(dias > 400 ? 6 : dias > 200 ? 4 : 1) : Math.max(2, Math.floor((W - m.l - m.r) / 48))).filter((d) => x(d) - m.l > 18)).tickFormat(d3.utcFormat('%m/%y')).tickSizeOuter(0))
       .call((g) => g.select('.domain').style('stroke', 'var(--cds-chart-axis)')).call((g) => g.selectAll('line').remove());
     svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(0).tickFormat((v) => MZR.loc.format(',.0f')(v)))
       .call((g) => g.select('.domain').remove());
     const ativa = new Date(MZR.ATIVA + 'T00:00:00Z');
     if (ativa >= pts[0].d && ativa <= pts[pts.length - 1].d) {
       svg.append('line').attr('x1', x(ativa)).attr('x2', x(ativa)).attr('y1', m.t).attr('y2', H - m.b).style('stroke', 'var(--cds-chart-reference)').style('stroke-dasharray', '3 3');
-      svg.append('text').attr('x', x(ativa) - 4).attr('y', m.t + 10).attr('text-anchor', 'end').text('carteira ativa →');
+      svg.append('text').attr('x', x(ativa) - 4).attr('y', estreito ? 12 : m.t + 10).attr('text-anchor', 'end').text('carteira ativa →');
     }
     // eventos: o pacote fiscal (27/11/2024) e os dois turnos da eleição (04 e 25/10/2026)
     [['2024-11-27', 'pacote fiscal', 'start'], ['2026-10-04', 'eleição', 'end'], ['2026-10-25', null, null]].forEach(([d0, rot, lado]) => {
       const d = new Date(d0 + 'T00:00:00Z');
       if (d < pts[0].d || d > pts[pts.length - 1].d) return;
       svg.append('line').attr('x1', x(d)).attr('x2', x(d)).attr('y1', m.t).attr('y2', H - m.b).style('stroke', 'var(--cds-chart-reference)').style('stroke-dasharray', '2 4').style('opacity', 0.7);
-      if (rot) svg.append('text').attr('x', x(d) + (lado === 'start' ? 4 : -4)).attr('y', lado === 'start' ? m.t + 10 : m.t + 26).attr('text-anchor', lado).text(rot);
+      if (rot) svg.append('text').attr('x', x(d) + (lado === 'start' ? 4 : -4)).attr('y', estreito ? (lado === 'start' ? 40 : 26) : (lado === 'start' ? m.t + 10 : m.t + 26)).attr('text-anchor', lado).text(rot);
     });
     const ln = (k) => d3.line().x((p) => x(p.d)).y((p) => y(p[k]));
     const sim = pts.filter((p) => p.d <= ativa), viva = pts.filter((p) => p.d >= ativa);
@@ -752,7 +762,7 @@
     // rótulos no fim das linhas, afastados para não se encostarem
     const ultimo = pts[pts.length - 1];
     const rot = visiveis.map((k) => ({ k, y: y(ultimo[k]) })).sort((a, b) => a.y - b.y);
-    for (let i = 1; i < rot.length; i++) if (rot[i].y - rot[i - 1].y < 13) rot[i].y = rot[i - 1].y + 13;
+    for (let i = 1; i < rot.length; i++) if (rot[i].y - rot[i - 1].y < 15) rot[i].y = rot[i - 1].y + 15;
     svg.append('g').selectAll('text').data(rot).join('text').attr('x', W - m.r + 6).attr('y', (r) => r.y + 4)
       .style('fill', (r) => MZR.cor(r.k)).style('font-weight', (r) => r.k === 'carteira' ? 600 : 400)
       .text((r) => `${curto[r.k]} ${MZR.loc.format(',.1f')(ultimo[r.k])}`);
@@ -768,7 +778,7 @@
         dica.style('display', null).selectAll('*').remove();
         dica.append('div').attr('class', 't').text(MZR.dataBR(p.d) + (p.data < MZR.ATIVA ? ' · simulação' : ' · carteira ativa'));
         visiveis.forEach((k) => { const r = dica.append('div'); r.append('span').style('color', MZR.cor(k)).text(MZR.nomes[k]); r.append('span').text(MZR.loc.format(',.2f')(p[k])); });
-        const lx = Math.min(x(p.d) + 12, W - 190); dica.style('left', lx + 'px').style('top', '8px');
+        const lx = Math.max(0, Math.min(x(p.d) + 12, W - 190)); dica.style('left', lx + 'px').style('top', '8px');
       })
       .on('pointerleave', () => { cruz.style('display', 'none'); dica.style('display', 'none'); });
   });
@@ -956,7 +966,7 @@
         ant = x; return o;
       });
       if (pts.length < 2) return;
-      const W = Math.max(280, el.clientWidth), H = 220, m = { t: 30, r: 132, b: 22, l: 44 };
+      const W = Math.max(280, el.clientWidth), H = 220, estreito = W < 560, m = { t: 30, r: estreito ? 104 : 132, b: 22, l: 44 };
       const x = d3.scaleUtc().domain(d3.extent(pts, (p) => p.d)).range([m.l, W - m.r]);
       const lo = Math.min(-0.5, d3.min(pts, (p) => Math.min(p.carteira, p.regua)));
       const y = d3.scaleLinear().domain([lo, 0]).nice().range([H - m.b, m.t]);
@@ -992,9 +1002,13 @@
       const pior = pts.reduce((a, p) => (p.carteira < a.carteira ? p : a), pts[0]);
       if (pior.carteira < -0.05) {
         svg.append('circle').attr('cx', x(pior.d)).attr('cy', y(pior.carteira)).attr('r', 3).style('fill', MZR.cor('carteira'));
-        const dir = x(pior.d) > (W - m.r) * 0.7;
-        svg.append('text').attr('x', x(pior.d) + (dir ? -6 : 6)).attr('y', y(pior.carteira) + 4).attr('text-anchor', dir ? 'end' : 'start')
-          .style('fill', 'var(--color-fg)').text('pior ponto da carteira ' + n2(pior.carteira) + '%');
+        const tx = svg.append('text').attr('y', y(pior.carteira) + 4).style('fill', 'var(--color-fg)')
+          .text((estreito ? 'pior ponto ' : 'pior ponto da carteira ') + n2(pior.carteira) + '%');
+        const len = tx.node().getComputedTextLength() || 150, px = x(pior.d);
+        // à direita do ponto; senão à esquerda; sem espaço dos dois lados, logo acima do ponto, dentro da área
+        if (px + 6 + len <= W - m.r) tx.attr('x', px + 6);
+        else if (px - 6 - len >= m.l + 4) tx.attr('x', px - 6).attr('text-anchor', 'end');
+        else tx.attr('x', Math.max(m.l + 4, Math.min(px - len / 2, W - m.r - len))).attr('y', y(pior.carteira) - 8);
       }
       const dica = d3.select(el).append('div').attr('class', 'mz-dica').style('display', 'none');
       const cruz = svg.append('line').attr('y1', m.t).attr('y2', H - m.b).style('stroke', 'var(--cds-chart-axis)').style('display', 'none');
@@ -1006,7 +1020,7 @@
           dica.style('display', null).selectAll('*').remove();
           dica.append('div').attr('class', 't').text(MZR.dataBR(p.d) + (p.f === 's' ? ' · simulação' : ' · carteira ativa'));
           ks.forEach((k) => { const r = dica.append('div'); r.append('span').style('color', MZR.cor(k)).text(MZR.nomes[k]); r.append('span').text(n2(p[k]) + '%'); });
-          dica.style('left', Math.min(x(p.d) + 12, W - 190) + 'px').style('top', '0px');
+          dica.style('left', Math.max(0, Math.min(x(p.d) + 12, W - 190)) + 'px').style('top', '0px');
         })
         .on('pointerleave', () => { cruz.style('display', 'none'); dica.style('display', 'none'); });
     });
@@ -1350,7 +1364,8 @@
       if (c.status !== 'ok') return;
       const soma = (col) => BALDES.map((_, b) => d3.sum(c.data.filter((r) => BALDE[r.classe] === b), (r) => +r[col]));
       const barras = [['Carteira', soma('carteira')], ['Régua', soma('regua')]];
-      const W = Math.max(260, el.clientWidth), m = { l: 70, r: 4 }, H = 2 * 34 + 30;
+      const W = Math.max(260, el.clientWidth), m = { l: 70, r: 4 };
+      let H = 2 * 34 + 30;
       const x = d3.scaleLinear().domain([0, 100]).range([m.l, W - m.r]);
       const svg = d3.select(el).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
         .attr('aria-label', 'Parte da carteira e da régua que vira caixa em até 2 dias úteis, até 30 dias e depois da carência');
@@ -1367,13 +1382,20 @@
           acc += w;
         });
       });
-      const lg = svg.append('g').attr('transform', `translate(${m.l},${H - 8})`);
-      let lx = 0;
+      // legenda: começa sob as barras e quebra de linha quando o próximo item não cabe
+      const lg = svg.append('g').attr('transform', `translate(0,${H - 8})`);
+      let lx = m.l, ly = 0;
       BALDES.forEach((n, b) => {
-        lg.append('rect').attr('x', lx).attr('y', -9).attr('width', 10).attr('height', 10).attr('rx', 2).style('fill', 'var(--serie-1)').style('opacity', op[b]);
-        const t = lg.append('text').attr('x', lx + 14).attr('y', 0).text(n);
-        lx += 14 + (t.node().getComputedTextLength() || n.length * 6.5) + 14;
+        const g = lg.append('g');
+        g.append('rect').attr('x', 0).attr('y', -9).attr('width', 10).attr('height', 10).attr('rx', 2).style('fill', 'var(--serie-1)').style('opacity', op[b]);
+        const tt = g.append('text').attr('x', 14).attr('y', 0).text(n);
+        const w = 14 + (tt.node().getComputedTextLength() || n.length * 6.5);
+        if (lx + w > W - m.r && lx > m.l) { lx = 0; ly += 18; }
+        g.attr('transform', `translate(${lx},${ly})`);
+        lx += w + 14;
       });
+      H += ly;
+      svg.attr('viewBox', `0 0 ${W} ${H}`);
     });
 
     // ---- próximos eventos
@@ -1799,7 +1821,7 @@
       const datas = ano ? d3.utcDay.range(ini, new Date(fim.getTime() + 864e5), 7).concat([fim]) : reais.map((r) => r.d);
       const [aj, ba, de] = T.cenarios;
       const faixa = datas.map((d) => ({ d, lo: esperado(Math.min(aj.carteira, de.carteira), d), hi: esperado(Math.max(aj.carteira, de.carteira), d), base: esperado(ba.carteira, d), cdi: esperado(ba.cdi, d) }));
-      const W = Math.max(280, el.clientWidth), H = 300, m = { t: 14, r: ano ? 150 : 200, b: 26, l: 46 };
+      const W = Math.max(280, el.clientWidth), H = 300, estreito = W < 560, m = { t: 14, r: estreito ? (ano ? 104 : 112) : (ano ? 150 : 200), b: 26, l: estreito ? 40 : 46 };
       const x = d3.scaleUtc().domain([ini, fim]).range([m.l, W - m.r]);
       const vmax = Math.max(d3.max(faixa, (f) => f.hi), d3.max(reais, (r) => Math.max(r.carteira, r.regua, r.cdi)));
       const vmin = Math.min(0, d3.min(reais, (r) => Math.min(r.carteira, r.regua, r.cdi)));
@@ -1809,7 +1831,7 @@
       svg.append('g').selectAll('line').data(y.ticks(5)).join('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y).attr('y2', y).style('stroke', 'var(--cds-chart-grid)');
       svg.append('g').attr('transform', `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(5).tickSize(0).tickFormat((v) => L.format(',.1~f')(v) + '%')).call((g) => g.select('.domain').remove());
       svg.append('g').attr('transform', `translate(0,${H - m.b})`)
-        .call(((eixo) => (!ano && reais.length <= 12 ? eixo.tickValues(reais.map((r) => r.d)) : eixo.ticks(Math.max(3, Math.floor((W - m.l - m.r) / 120)))))(d3.axisBottom(x)).tickFormat(ano ? d3.utcFormat('%m/%y') : d3.utcFormat('%d/%m')).tickSizeOuter(0))
+        .call(((eixo) => (!ano && reais.length <= 12 ? eixo.tickValues(((ds) => { const passo = Math.max(1, Math.ceil(ds.length * 46 / (W - m.l - m.r))); return ds.filter((_, i) => (ds.length - 1 - i) % passo === 0); })(reais.map((r) => r.d))) : eixo.ticks(Math.max(2, Math.floor((W - m.l - m.r) / 70)))))(d3.axisBottom(x)).tickFormat(ano ? d3.utcFormat('%m/%y') : d3.utcFormat('%d/%m')).tickSizeOuter(0))
         .call((g) => g.select('.domain').style('stroke', 'var(--cds-chart-axis)')).call((g) => g.selectAll('line').remove());
       svg.append('path').datum(faixa).attr('d', d3.area().x((f) => x(f.d)).y0((f) => y(f.lo)).y1((f) => y(f.hi))).style('fill', 'var(--serie-0)').style('opacity', 0.14);
       svg.append('path').datum(faixa).attr('d', d3.line().x((f) => x(f.d)).y((f) => y(f.base))).style('fill', 'none').style('stroke', 'var(--serie-0)').style('stroke-width', 1.5).style('stroke-dasharray', '5 4');
@@ -1822,19 +1844,19 @@
       const ff = faixa[faixa.length - 1];
       // 12 meses: onde cada caminho esperado chega; até agora: onde cada série está, ao lado do esperado para hoje
       const rot = (ano ? [
-        { y: y(ff.hi), t: 'deterioração ' + p1(ff.hi), c: 'var(--color-fg-muted)' },
-        { y: y(ff.base), t: 'mais provável ' + p1(ff.base), c: 'var(--serie-0)' },
+        { y: y(ff.hi), t: (estreito ? 'deterior. ' : 'deterioração ') + p1(ff.hi), c: 'var(--color-fg-muted)' },
+        { y: y(ff.base), t: (estreito ? 'provável ' : 'mais provável ') + p1(ff.base), c: 'var(--serie-0)' },
         { y: y(ff.lo), t: 'ajuste ' + p1(ff.lo), c: 'var(--color-fg-muted)' },
-        { y: y(ff.cdi), t: 'CDI esperado ' + p1(ff.cdi), c: 'var(--color-fg-muted)' },
+        { y: y(ff.cdi), t: (estreito ? 'CDI ' : 'CDI esperado ') + p1(ff.cdi), c: 'var(--color-fg-muted)' },
       ] : [
         { y: y(u.carteira), t: 'Carteira ' + MZR.pct(u.carteira, 2), c: COR.carteira, b: true },
         { y: y(u.regua), t: 'Régua ' + MZR.pct(u.regua, 2), c: COR.regua },
         { y: y(u.cdi), t: 'CDI ' + MZR.pct(u.cdi, 2), c: COR.cdi },
-        { y: y(ff.base), t: 'Esperado, mais provável ' + MZR.pct(ff.base, 2), c: 'var(--color-fg-muted)' },
+        { y: y(ff.base), t: (estreito ? 'Esperado ' : 'Esperado, mais provável ') + MZR.pct(ff.base, 2), c: 'var(--color-fg-muted)' },
       ]).sort((a, b) => a.y - b.y);
       for (let i = 1; i < rot.length; i++) if (rot[i].y - rot[i - 1].y < 15) rot[i].y = rot[i - 1].y + 15;
       rot.forEach((r) => svg.append('text').attr('x', W - m.r + 8).attr('y', r.y + 4).style('fill', r.c).style('font-weight', r.b ? 600 : null).text(r.t));
-      if (ano) svg.append('text').attr('x', x(u.d) + 8).attr('y', y(u.carteira) - 8).style('fill', 'var(--color-fg)').style('font-weight', 600).text('carteira ' + MZR.pct(u.carteira, 2));
+      if (ano) svg.append('text').attr('x', x(u.d) + 8).attr('y', Math.max(m.t + 10, y(u.carteira) - 8)).style('fill', 'var(--color-fg)').style('font-weight', 600).text('carteira ' + MZR.pct(u.carteira, 2));
       // dica
       const dica = d3.select(el).append('div').attr('class', 'mz-dica').style('display', 'none');
       const bis = d3.bisector((r) => r.d).center;
@@ -1845,7 +1867,7 @@
           dica.append('div').attr('class', 't').text(MZR.dataBR(d));
           if (d <= u.d) { const r = reais[bis(reais, d)]; [['carteira', 'Carteira'], ['regua', 'Régua'], ['cdi', 'CDI']].forEach(([k, n]) => { const z = dica.append('div'); z.append('span').style('color', COR[k]).text(n); z.append('span').text(MZR.pct(r[k], 2)); }); }
           const z = dica.append('div'); z.append('span').text('Esperado, mais provável'); z.append('span').text(MZR.pct(esperado(ba.carteira, d), 2));
-          dica.style('left', Math.min(x(d) + 12, W - 210) + 'px').style('top', '0px');
+          dica.style('left', Math.max(0, Math.min(x(d) + 12, W - 210)) + 'px').style('top', '0px');
         })
         .on('pointerleave', () => dica.style('display', 'none'));
     });
@@ -1868,7 +1890,7 @@
       el.replaceChildren();
       if (c.status !== 'ok') return;
       const rows = c.data;
-      const W = Math.max(280, el.clientWidth), estreito = W < 600, lh = estreito ? 50 : 34;
+      const W = Math.max(280, el.clientWidth), estreito = W < 600, lh = estreito ? 54 : 37, passo = 14;
       const m = { t: 24, r: 14, b: 6, l: estreito ? 8 : Math.min(260, W * 0.36) };
       const H = m.t + m.b + rows.length * lh + 10;
       const mx = d3.max(rows, (r) => Math.max(Math.abs(r.carteira), Math.abs(r.regua))) || 1;
@@ -1887,7 +1909,7 @@
           .style('fill', 'var(--color-fg)').style('font-weight', comb ? 600 : null).text(((n) => n.charAt(0).toUpperCase() + n.slice(1))(r.nome.replace('Combinado: ', '')));
         const y0 = estreito ? yy + 18 : yy + 6;
         [['carteira', 0], ['regua', 1]].forEach(([k, j]) => {
-          const v = r[k], yb = y0 + j * 12;
+          const v = r[k], yb = y0 + j * passo;
           svg.append('rect').attr('x', Math.min(x(0), x(v))).attr('width', Math.max(1, Math.abs(x(v) - x(0)))).attr('y', yb).attr('height', 10).attr('rx', 2).style('fill', COR[k]);
           svg.append('text').attr('x', x(v) + (v >= 0 ? 5 : -5)).attr('y', yb + 9).attr('text-anchor', v >= 0 ? 'start' : 'end')
             .style('fill', 'var(--color-fg)').style('font-weight', k === 'carteira' ? 600 : null).text(sn2(v));
