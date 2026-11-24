@@ -267,6 +267,25 @@ def main():
     cdi, ptax = sgs(12), sgs(1)
     y2, y10 = fred('DGS2'), fred('DGS10')
     cotas = cvm()
+    cvm_ult = min(max(c) for c in cotas.values())   # o que a CVM de fato publicou, antes de qualquer ponte
+    # 24/11/2026: ponte provisória. Num dia útil em que a CVM ainda não tem a cota de um fundo, entra o retorno do índice
+    # que o fundo replica (IMA, IDA e Ibovespa baixados à mão da Anbima e da B3; S&P 500 do FRED com a PTAX), lido de
+    # manuais/ponte.json. A ponte só preenche dia que falta e só a partir da cota anterior declarada: quando a CVM
+    # publica, a cota real vence sozinha.
+    ponte_dias = []
+    arq_ponte = PASTA / 'manuais' / 'ponte.json'
+    if arq_ponte.exists():
+        ponte = json.loads(arq_ponte.read_text('utf-8'))
+        for d_iso, item in sorted(ponte['dias'].items()):
+            d, desde = dt.date.fromisoformat(d_iso), dt.date.fromisoformat(item['desde'])
+            usou = False
+            for k, r in item['retornos'].items():
+                if k in cotas and d not in cotas[k] and desde in cotas[k] and max(x for x in cotas[k] if x < d) == desde:
+                    cotas[k][d] = cotas[k][desde] * (1 + r / 100)
+                    usou = True
+            if usou:
+                ponte_dias.append(d)
+                print(f'ponte provisória em {d}: ' + ', '.join(k for k in item['retornos'] if cotas.get(k, {}).get(d)))
     termo, pre2, inf3, juro_real = tesouro()
     dias = sorted(d for d in cdi if d >= INICIO)
     # o último dia é o último em que todas as séries existem (os fundos chegam à CVM com 1–2 dias de atraso)
@@ -559,14 +578,15 @@ def main():
     fontes = []
     for fonte, dado, ult, limite in (('Banco Central', 'CDI (SGS 12)', max(cdi), 2),
                                      ('Banco Central', 'dólar PTAX (SGS 1)', max(ptax), 2),
-                                     ('CVM', 'cotas dos 7 fundos usados como índice', min(max(c) for c in cotas.values()), 4),
+                                     ('CVM', 'cotas dos 7 fundos usados como índice', cvm_ult, 4),
                                      ('Tesouro Direto', 'taxas das LTNs', max(pre2), 3),
                                      ('FRED', 'juro dos Treasuries (DGS2, DGS10)', min(max(y2), max(y10)), 3),
                                      ('Banco Central', 'Focus (expectativas de 2027)', max(dt.date.fromisoformat(x['Data']) for x in fz), 6)):
         fontes.append(dict(fonte=fonte, dado=dado, ultimo=ult.isoformat(), atraso=atraso(ult), limite=limite,
                            status='ok' if atraso(ult) <= limite else 'atrasado'))
     fontes.append(dict(fonte='Painel', dado='página gerada', ultimo=HOJE.isoformat(), atraso=0, limite=3,
-                       status='ok', gerado=dt.datetime.now(BRT).strftime('%d/%m/%Y %H:%M'), serie_ate=dias[-1].isoformat()))
+                       status='ok', gerado=dt.datetime.now(BRT).strftime('%d/%m/%Y %H:%M'), serie_ate=dias[-1].isoformat(),
+                       ponte=[d.isoformat() for d in ponte_dias if d > cvm_ult]))
 
     codigo = Path(__file__).read_text('utf-8')
     comum = [dict(label='atualizar.py', value=codigo, type='code', lang='python'),

@@ -837,6 +837,8 @@
     const g = fonteGerada();
     if (!g) { el.textContent = ''; return; }
     el.textContent = 'Dados até ' + MZR.dataBR(new Date(g.serie_ate + 'T00:00:00Z')) + ' · página gerada em ' + g.gerado + ' (Brasília)';
+    if (g.ponte && g.ponte.length) el.textContent += ' · ' + g.ponte.map((d) => MZR.dataBR(new Date(d + 'T00:00:00Z')).slice(0, 5)).join(' e ')
+      + ' provisório: os índices da Anbima e da B3 no lugar das cotas que a CVM ainda não publicou; a cota real substitui quando sair';
   });
   dash.draw('frescor-alerta', (el) => {
     const f = dash.data('fontes'), g = fonteGerada();
@@ -2321,7 +2323,7 @@
 </script>
 
 <footer class="publico-rodape">
-  Atualizado em 24/11/2026 12:58 (Brasília), com dados até 19/11/2026. Fontes públicas: Banco Central (CDI, PTAX, Selic, IPCA e Focus), CVM (cotas diárias de fundos passivos, no lugar dos índices),
+  Atualizado em 24/11/2026 13:08 (Brasília), com dados até 19/11/2026. Fontes públicas: Banco Central (CDI, PTAX, Selic, IPCA e Focus), CVM (cotas diárias de fundos passivos, no lugar dos índices),
   Tesouro Direto e FRED (juro dos Treasuries; este painel não é endossado nem certificado pelo Federal Reserve Bank of St. Louis). Case MZR Family Office, Summer 2026/2.
   Antes de 13/11/2026, simulação com os pesos de hoje, informação suplementar; não é desempenho passado. Rentabilidade passada não é garantia de rentabilidade futura; a rentabilidade divulgada não é líquida de impostos.
 </footer>

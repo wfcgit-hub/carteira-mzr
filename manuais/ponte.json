@@ -1,0 +1,9 @@
+{
+ "nota": "Ponte provisória: retornos em % de 19/11/2026 a 23/11/2026 do índice que cada fundo replica, para o dia em que a CVM ainda não publicou a cota. Fontes: Anbima, quadro-resumo do IMA de 23/11/2026, variação diária (IRF-M, IMA-B 5, IMA-B 5+, IMA-B); B3, evolução diária do Ibovespa 2026 (166.376,43 em 19/11 e 164.796,05 em 23/11), arquivos baixados à mão pela autora em 24/11/2026; S&P 500 do FRED (7.175,83 em 19/11 e 6.910,39 em 20/11, o último publicado) vezes a PTAX (5,8889 e 5,9708); crédito pelo CDI do dia (0,050788%), sem o IDA-DI. A cota real da CVM substitui a ponte quando sair.",
+ "dias": {
+  "2026-11-23": {
+   "desde": "2026-11-19",
+   "retornos": {"irfm": 0.4260, "imab5": 0.2401, "imab5mais": 0.2766, "imab": 0.2625, "ibov": -0.9499, "global": -2.3598, "credito": 0.050788}
+  }
+ }
+}
