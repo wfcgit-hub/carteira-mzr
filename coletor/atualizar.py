@@ -285,6 +285,15 @@ def ultimo(serie, d, limite=5):
 
 def main():
     cdi, ptax = sgs(12), sgs(1)
+    # 27/11/2026: o CDI do dia (SGS 12) só sai na manhã seguinte; a Selic diária (SGS 11) sai no próprio dia e, fora de
+    # mudança da meta, é igual ao CDI diário. Nos dias que faltam no CDI, entra a Selic (a rodada seguinte troca pelo CDI).
+    try:
+        selic = sgs(11)
+        for d, v in selic.items():
+            if d > max(cdi) and d <= HOJE:
+                cdi[d] = v
+    except Exception as erro:  # noqa: BLE001
+        print(f'aviso: Selic diária indisponível ({erro})')
     y2, y10 = fred('DGS2'), fred('DGS10')
     cotas = cvm()
     cvm_ult = min(max(c) for c in cotas.values())   # o que a CVM de fato publicou (com os reservas), antes de qualquer ponte

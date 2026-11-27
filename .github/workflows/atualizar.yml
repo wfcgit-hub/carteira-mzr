@@ -6,8 +6,13 @@ name: Atualizar painel
 
 on:
   schedule:
-    - cron: '0 11 * * *'     # 08:00 em Brasília: BCB, FRED e CVM já publicaram o dia anterior
-    - cron: '0 22 * * 1-5'   # 19:00 em Brasília: pega a PTAX e o Tesouro Direto do próprio dia
+    # 27/11/2026: o GitHub chegou a atrasar 6 a 9 horas as rodadas marcadas em hora cheia. Minutos quebrados atrasam
+    # menos, e as reservas garantem a rodada do dia; rodar a mais não estraga nada (só publica se algo mudou).
+    - cron: '7 21 * * *'     # 18:07 em Brasília: a principal, depois do fechamento do mercado
+    - cron: '37 22 * * *'    # 19:37: reserva (FRED, Tesouro e a ponte do dia, se chegarem depois)
+    - cron: '13 1 * * *'     # 22:13: reserva
+    - cron: '23 5 * * *'     # 02:23: logo depois do arquivo noturno da CVM (cotas do dia útil anterior)
+    - cron: '43 9 * * *'     # 06:43: reserva da madrugada
   workflow_dispatch:
 
 permissions:
