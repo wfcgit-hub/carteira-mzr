@@ -44,6 +44,13 @@ FUNDOS = {  # classe: (CNPJ, nome do fundo) — fundos de investimento que repor
     'credito': ('07096435000120', 'Itaú High Grade RF Crédito Privado FIF'),
     'global': ('31874833000105', 'Trend S&P 500 Dólar FIA (XP Asset)'),  # replica o S&P 500 sem proteção cambial
 }
+# 27/11/2026: o BB IMA-B 5+ parou de informar cotas depois de 23/11 e travou a carteira inteira (a série só fecha o dia
+# com os 7 fundos). Cada classe pode ter um fundo reserva que replica o mesmo índice: nos dias em que o principal ainda
+# não informou, o nível continua pela variação do reserva; quando o principal informa, a cota dele volta a valer.
+RESERVAS = {
+    'imab5mais': ('10577503000188', 'Caixa Brasil IMA-B 5+ Títulos Públicos FIF RF'),
+}
+RESERVA_USADA = {}   # classe: dias em que o reserva cobriu o principal
 FERIADOS = {dt.date(*d) for d in (
     (2024, 11, 15), (2024, 11, 20), (2024, 12, 25), (2025, 1, 1), (2025, 3, 3), (2025, 3, 4), (2025, 4, 18), (2025, 4, 21),
     (2025, 5, 1), (2025, 6, 19), (2025, 11, 20), (2025, 12, 25), (2026, 1, 1), (2026, 2, 16), (2026, 2, 17), (2026, 4, 3),
@@ -173,7 +180,8 @@ def meses():
 
 def cvm():
     alvo = {c: k for k, (c, _) in FUNDOS.items()}
-    cotas = {k: {} for k in FUNDOS}
+    alvo.update({c: k + '#reserva' for k, (c, _) in RESERVAS.items()})
+    cotas = {k: {} for k in alvo.values()}
     lista = list(meses())
     for m in lista:
         nome = f'inf_diario_fi_{m:%Y%m}.zip'
@@ -184,6 +192,18 @@ def cvm():
                 c = ''.join(ch for ch in (x.get('CNPJ_FUNDO_CLASSE') or x.get('CNPJ_FUNDO') or '') if ch.isdigit())
                 if c in alvo and not x.get('ID_SUBCLASSE'):
                     cotas[alvo[c]][dt.date.fromisoformat(x['DT_COMPTC'])] = float(x['VL_QUOTA'])
+    for k in RESERVAS:
+        prim, res = cotas[k], cotas.pop(k + '#reserva')
+        if not prim or not res:
+            continue
+        ult = max(prim)
+        if ult not in res:
+            continue
+        for d in sorted(x for x in res if x > ult):
+            prim[d] = prim[ult] * res[d] / res[ult]
+            RESERVA_USADA.setdefault(k, []).append(d)
+        if RESERVA_USADA.get(k):
+            print(f'fundo reserva em {k}: ' + ', '.join(d.isoformat() for d in RESERVA_USADA[k]))
     return cotas
 
 
@@ -267,7 +287,7 @@ def main():
     cdi, ptax = sgs(12), sgs(1)
     y2, y10 = fred('DGS2'), fred('DGS10')
     cotas = cvm()
-    cvm_ult = min(max(c) for c in cotas.values())   # o que a CVM de fato publicou, antes de qualquer ponte
+    cvm_ult = min(max(c) for c in cotas.values())   # o que a CVM de fato publicou (com os reservas), antes de qualquer ponte
     # 24/11/2026: ponte provisória. Num dia útil em que a CVM ainda não tem a cota de um fundo, entra o retorno do índice
     # que o fundo replica (IMA, IDA e Ibovespa baixados à mão da Anbima e da B3; S&P 500 do FRED com a PTAX), lido de
     # manuais/ponte.json. A ponte só preenche dia que falta e só a partir da cota anterior declarada: quando a CVM
