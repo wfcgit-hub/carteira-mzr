@@ -1,5 +1,5 @@
 {
- "nota": "Ponte provisória: retornos em % de 19/11/2026 a 23/11/2026 do índice que cada fundo replica, para o dia em que a CVM ainda não publicou a cota. Fontes: Anbima, quadro-resumo do IMA de 23/11/2026, variação diária (IRF-M, IMA-B 5, IMA-B 5+, IMA-B); B3, evolução diária do Ibovespa 2026 (166.376,43 em 19/11 e 164.796,05 em 23/11), arquivos baixados à mão pela autora em 24/11/2026; S&P 500 do FRED (7.175,83 em 19/11 e 6.910,39 em 20/11, o último publicado) vezes a PTAX (5,8889 e 5,9708); crédito pelo IDA-DI da Anbima (quadro-resumo de 23/11/2026, variação diária de 0,0788%). A cota real da CVM substitui a ponte quando sair.",
+ "nota": "Ponte provisória: em cada dia, o retorno desde o dia útil anterior do índice que cada fundo replica, para os dias em que a CVM ainda não publicou a cota. Anbima e B3 baixados à mão; S&P 500 do FRED e PTAX do Banco Central. A cota real da CVM substitui a ponte quando sai.",
  "dias": {
   "2026-11-23": {
    "desde": "2026-11-19",
@@ -12,6 +12,19 @@
     "global": -2.3598,
     "credito": 0.0788
    }
+  },
+  "2026-11-26": {
+   "desde": "2026-11-25",
+   "retornos": {
+    "irfm": 0.5921,
+    "imab5": 0.271,
+    "imab5mais": 1.3109,
+    "imab": 0.9098,
+    "credito": 0.0345,
+    "ibov": 6.0685,
+    "global": -2.3442
+   },
+   "fontes": "Anbima (quadros-resumo do IMA e do IDA de 26/11); B3 (Ibovespa 166,684.61 → 176,799.84); FRED S&P 500 até 25/11 e PTAX 5.8825 → 5.7446"
   }
  }
 }
